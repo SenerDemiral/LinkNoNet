@@ -1,0 +1,68 @@
+﻿@page "/"
+@inject IDataAccess db
+
+<PageTitle>Link#Net</PageTitle>
+
+<MudText Typo="Typo.h3">Link#Net</MudText>
+
+<MudDataGrid Items="@data" Dense="true" Groupable="true" Sortable="true" Filterable="true"  >
+    <Columns>
+        <Column T="YA" Field="@nameof(YA.YAid)" Title="ID" Groupable="false" Filterable="false" />
+        <Column T="YA" Field="@nameof(YA.EXD)"  Groupable="false" >
+            <CellTemplate>
+                @context.Item.EXD.ToString("dd.MM.yy HH:mm:ss:fff")
+            </CellTemplate>
+        </Column>
+        <Column T="YA" Field="@nameof(YA.MTid)" Title="Mgz"/>
+        <Column T="YA" Field="@nameof(YA.TTid)" Title="Tnt"/>
+        <Column T="YA" Field="@nameof(YA.IP)" />
+        <Column T="YA" Field="@nameof(YA.URL)" />
+    </Columns>
+</MudDataGrid>
+@*
+<MudTable Items="@data" Hover="true" Dense="true" Striped="true" Breakpoint="Breakpoint.Xs">
+    <HeaderContent>
+        <MudTh>EXD</MudTh>
+        <MudTh>Mağaza</MudTh>
+        <MudTh>Tanıtıcı</MudTh>
+        <MudTh>IP</MudTh>
+        <MudTh>URL</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="EXD">@context.EXD.ToString()</MudTd>
+        <MudTd DataLabel="Mgz">@context.MTid</MudTd>
+        <MudTd DataLabel="Tnt">@context.TTid</MudTd>
+        <MudTd DataLabel="IP">@context.IP</MudTd>
+        <MudTd DataLabel="URL">@context.URL</MudTd>
+    </RowTemplate>
+</MudTable>
+*@
+@code{
+    private IEnumerable<YA>? data; // = new List<Element>(); 
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Deneme
+        string sql = $"select * from YA order by YAid desc";
+        data = await db.LoadData<YA, dynamic>(sql, new { });
+        
+        var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+    }
+
+    private class SMTP
+    {
+        public string Firma { get; set; }
+        public string Client_Host { get; set; }
+        public int Port { get; set; }
+    }
+
+    public class YA
+    {
+        public int YAid { get; set; }
+        public DateTime EXD { get; set; }
+        public string IP { get; set; }
+        public string URL { get; set; }
+        public int MTid { get; set; }
+        public int TTid { get; set; }
+    }
+}

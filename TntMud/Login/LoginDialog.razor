@@ -1,0 +1,75 @@
+﻿@inject ISnackbar Snackbar
+@inject AppState AppState
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Login
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField AutoFocus="true" @bind-Value="Model.UsrName" Label="UsrId" Variant="Variant.Text"></MudTextField>
+        <MudTextField @bind-Value="Model.UsrPwd" 
+            Label="Pwd" Variant="Variant.Text" InputType="@PasswordInput" 
+            Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ToggleShowPwd" AdornmentAriaLabel="Show Password" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="TryLogin">Login</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code{
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private LoginModel Model { get; set; } = new();
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    
+    //@ref="FocusThis" Gerek kalmadi AutoFocus="true" kullan
+    //private MudTextField<string> FocusThis;
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if(firstRender)
+    //        await FocusThis.FocusAsync();
+    //}
+
+    void ToggleShowPwd()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+    private async Task TryLogin()
+    {
+        await AppState.Login(Model.UsrName, Model.UsrPwd);
+        if (AppState.UsrId == 0)
+            Snackbar.Add("Başarısız", Severity.Error);
+        else
+        {
+            Snackbar.Add("Başarılı", Severity.Success);
+            MudDialog.Close();
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private record LoginModel
+    {
+        public string UsrName { get; set; } = string.Empty;
+        public string UsrPwd { get; set; } = string.Empty;
+    }
+}

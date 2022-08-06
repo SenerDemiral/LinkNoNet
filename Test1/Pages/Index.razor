@@ -1,0 +1,49 @@
+﻿@inject NavigationManager nm
+
+
+<h1>Hello, world!</h1>
+
+Redirection...
+
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code{
+        protected override void OnInitialized()
+    {
+        // Subscribe to the event
+        base.OnInitialized();
+         //       nm.NavigateTo("https://medlab.myideasoft.com", replace:true);
+        //nm.NavigateTo("/counter", forceLoad:true);
+    }
+
+
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        //base.OnAfterRender(firstRender);
+            //if(firstRender)
+              //  nm.NavigateTo("https://medlab.myideasoft.com", replace:true);
+        // replace True olmali, aksi taktirde browser back tusu aktif. Geri gelmesini istemiyoruz.
+        // Off-site giderken forceLoad false(default) kalabilir, her halukarda gidiyor
+
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        //nm.NavigateTo("https://medlab.myideasoft.com");
+        //return base.OnInitializedAsync();
+        return Task.CompletedTask;
+    }
+
+    private void IncrementCount()
+    {
+        nm.NavigateTo("https://medlab.myideasoft.com", true, true);
+    }
+
+}

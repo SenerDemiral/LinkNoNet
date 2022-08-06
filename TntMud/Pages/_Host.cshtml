@@ -1,0 +1,32 @@
+﻿@page "/"
+@using System.Net
+@using TntMud
+@using TntMud.Login
+@namespace TntMud.Pages
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+@{
+    string? ip = HttpContext.Connection?.RemoteIpAddress?.ToString();
+
+    //127.0.0.1    localhost
+    //::1          localhost
+    if (ip == "::1")
+    {
+        // var aaa = Dns.GetHostEntry(Dns.GetHostName());
+        ip = Dns.GetHostEntry(Dns.GetHostName()).AddressList[2].ToString();
+    }
+
+    var connectionInfo = new ConnectionInfo
+        {
+            UserAgent = HttpContext.Request.Headers["User-Agent"],
+            IPAddress = ip
+        };
+
+}
+
+@*<component type="typeof(App)" param-ConnectionInfo="connectionInfo" render-mode="Server" />*@
+<component type="typeof(Deneme)" render-mode="Server" param-ConnectionInfo="connectionInfo"/>

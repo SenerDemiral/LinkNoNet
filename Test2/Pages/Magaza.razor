@@ -1,0 +1,74 @@
+﻿@page "/m/{MagazaId}"
+@using DataLibrary
+@inject NavigationManager NavigationManager
+@inject IDataAccess _db
+
+<h3>Magaza: @MagazaId</h3>
+<h3>Tanıtıcı: @Tanitici</h3>
+
+@code {
+    [Parameter]
+    public string MagazaId { get; set; } = "";
+    [CascadingParameter]
+    public ConnectionInfo? connectionInfo { get; set; }
+
+    protected string Tanitici = "";
+
+    protected override void OnInitialized()
+    {
+        int TntId = 0;
+        int MgzId = 0;
+        string dst = string.Empty;
+        string baseUri = NavigationManager.BaseUri;
+        var sdsi = baseUri.IndexOf("//") + 2;
+        var sdei = baseUri.IndexOf(".");
+        if (sdei == -1) // SubDomain bulunamadai
+        {
+            Tanitici = "Tanımsız Influencer";
+        }
+        else
+        {
+            Tanitici = baseUri.Substring(sdsi, sdei - sdsi);
+            //TntId = Convert.ToInt32(InfId.Substring(1));
+            //int.TryParse(InfId, out TntId);
+
+            int index = Tanitici.IndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+            if (index > -1)
+            {
+                string TntPrfx = Tanitici.Substring(0, index);
+                TntId = Int32.Parse(Tanitici.Substring(index));
+            }
+        }
+
+        int.TryParse(MagazaId, out MgzId);
+
+        switch (MgzId)
+        {
+            case 1:
+                dst = "https://medlab.myideasoft.com";
+                break;
+            case 2:
+                dst = "https://savlore.myideasoft.com";
+                break;
+            case 3:
+                dst = "https://perse.myideasoft.com";
+                break;
+            default:
+                dst = "http://linkno.info";
+                break;
+        } 
+        _db.SaveDataProc("YA_INS", new { IP = connectionInfo.IPAddress, URL = NavigationManager.Uri, MTid = MgzId, TTid = TntId });
+        
+        if(TntId != 0)
+            NavigationManager.NavigateTo(dst, replace:false);    
+        
+    }
+
+
+    protected class YAins
+    {
+        public int MTid { get; set; }
+        public int TTid { get; set; }
+        public int URL { get; set; }
+    }
+}

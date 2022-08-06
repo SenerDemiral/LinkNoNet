@@ -1,0 +1,68 @@
+﻿@page "/counter"
+
+<PageTitle>Counter</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Counter</MudText>
+<MudText Class="mb-4">Current count: @currentCount</MudText>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="IncrementCount">Click me</MudButton>
+
+
+
+
+
+<MudChipSet @ref="MCS" AllClosable="true" OnClose="Closed2"  SelectedChipChanged="SelectedChipChanged" Filter="false" Mandatory="true">
+    @foreach (var value in values)
+    {
+        <MudChip Label="true" Text="@value"></MudChip>
+    }
+</MudChipSet>
+
+Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIconButton>
+
+    @code {
+    [CascadingParameter] Deneme Main { get; set; }
+
+    private int currentCount = 0;
+
+    MudChipSet MCS;
+    MudChip selected;
+    MudChip chip;
+
+    int i = 1;
+    List<string> values = new List<string>();
+    public void Add() { 
+        values.Add("Value " + (i++)); 
+    }
+    public void OnSelectionChanged()
+    {
+
+    }
+    public void SelectedChipChanged(MudChip chip) {
+
+    }
+
+    public void Closed2(MudChip chip) {
+
+        //MCS.OnChipDeleted(chip);
+        values.Remove(chip.Text);
+    }
+    private void IncrementCount()
+    {
+        currentCount++;
+        //Main.cmpDic[Main.ActiveTabKey].CmpText = "aaaaaaaaaaaaaaaa";
+        Main.TabSelect(2);
+        //selected = null;
+        var aaaa = MCS.SelectedChip;
+
+        
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        MudChipSet aaa;
+        if (firstRender)
+            aaa = MCS;
+
+    }
+
+}

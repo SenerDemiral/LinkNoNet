@@ -1,0 +1,30 @@
+﻿@page "/"
+@*@inject HttpContext bbb*@
+
+
+<h1>LinkNo.net</h1>
+<h2>@connectionInfo.IPAddress</h2>
+<h2>@connectionInfo.UserAgent</h2>
+
+
+@code{
+    [CascadingParameter]
+    private ConnectionInfo? connectionInfo { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "isredcar")]
+    public bool IsRedCar { get; set; }
+ 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public decimal CarCost { get; set; }
+ 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? CarName { get; set; }
+ 
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "feature")]
+    public string[] Features { get; set; }
+
+}

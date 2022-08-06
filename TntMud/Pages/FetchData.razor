@@ -1,0 +1,35 @@
+﻿@page "/fetchdata"
+
+<p>@P2</p>
+
+<MudChipSet AllClosable="true" OnClose="Closed"  @bind-SelectedChip="selected" Filter="true" Mandatory="true">
+    @foreach (var value in values)
+    {
+        <MudChip Text="@value"></MudChip>
+    }
+</MudChipSet>
+
+<div class="d-flex flex-column align-center">
+    @if (selected != null)
+    {
+        <MudText>You selected the <MudText Color="@selected.Color" Inline="true">@selected.Text</MudText> chip.</MudText>
+    }
+</div>
+
+Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIconButton>
+
+@code
+{
+    [Parameter] public string? P1 { get; set; } = "";
+    [Parameter] public string? P2 { get; set; }
+    [CascadingParameter] Deneme Main { get; set; }
+
+
+    MudChip selected;
+    int i = 1;
+    List<string> values = new List<string>();
+    public void Add() => values.Add("Value " + P1 + (i++));
+    public void Closed(MudChip chip) => values.Remove(chip.Text);
+    }
+}
+

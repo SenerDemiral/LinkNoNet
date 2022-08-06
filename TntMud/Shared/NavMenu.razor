@@ -1,0 +1,56 @@
+﻿@inject AppState AppState
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject ICircuitUserService UserService
+@implements IDisposable
+
+<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
+    <MudNavLink Href="fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Fetch data</MudNavLink>
+    @if (AppState.UsrId == 0)
+    {
+        <MudNavLink Icon="@Icons.Material.Filled.Login"  @onclick="LoginUser">Login  @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString()</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Filled.AccessAlarm" @onclick="TntRegister">Tanıtıcı Ol</MudNavLink>
+    }
+    else
+    {
+        <MudNavLink Icon="@Icons.Material.Filled.Logout"  @onclick="LogoutUser">@AppState.UsrId @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString() </MudNavLink>
+    }
+    </MudNavMenu>
+
+@code{
+    protected override void OnInitialized()
+    {
+        AppState.UsrChanged += App_UsrChanged;
+        UserService.CircuitsChanged += App_UsrChanged;
+    }
+
+    private void App_UsrChanged(object sender, EventArgs e)
+    {
+        //UserRemovedMessage = $"{e.UserId} disconnected";
+        InvokeAsync(StateHasChanged);
+    }
+    public void Dispose()
+    {
+        AppState.UsrChanged -= App_UsrChanged;
+        UserService.CircuitsChanged -= App_UsrChanged;
+    }
+
+    private void LoginUser()
+    {
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogService.Show<LoginDialog>("Simple Dialog", options);
+    }
+    
+    private void LogoutUser()
+    {
+        AppState.Logout();
+        NavigationManager.NavigateTo("/", replace:false);
+    }
+
+    private void TntRegister()
+    {
+        DialogService.Show<TntRegisterDialog>("Simple Dialog");
+    }
+}

@@ -1,0 +1,44 @@
+﻿@inject AppState AppState
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="@OnNavigateAsync">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code{
+    [Parameter]
+    public ConnectionInfo? connectionInfo { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AppState.OnEnter(connectionInfo?.IPAddress!);
+    }
+
+    public void Dispose()
+    {
+        //AppState.OnExit();
+    }
+
+    private async Task OnNavigateAsync(NavigationContext context)
+    {
+        if (context.Path.ToLower() == "testArticle".ToLower())
+        {
+            NavigationManager.NavigateTo("counter");
+        }
+        else if (context.Path.ToLower() == "testGame".ToLower())
+        {
+            NavigationManager.NavigateTo("fetchdata");
+        }
+        await Task.CompletedTask;
+    }
+}
