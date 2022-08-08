@@ -8,13 +8,18 @@
 <MudSnackbarProvider />
 
 <MudAppBar Elevation="0" Dense=true Fixed=true>
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" 
+        OnClick="@((e) => DrawerToggle())" />
     <div class="d-flex gap-2 overflow-x-auto ">
         @foreach (var d in cmpDic)
         {
-            <MudButtonGroup Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small">
-                <MudButton @onclick="() => TabSelect(d.Key)" Class="px-1">@d.Value.TabText</MudButton>
-                <MudIconButton Class="px-1" Icon="@Icons.Material.Filled.Close" @onclick="() => TabRemove(d.Key)"></MudIconButton>
+            <MudButtonGroup @key="d.Key" Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" >
+                <MudButton Class="px-1" OnClick="() => TabSelect(d.Key)">
+                    @d.Value.TabText
+                </MudButton>
+                <MudIconButton Class="px-1" Icon="@Icons.Material.Filled.Close" 
+                    OnClick="() => TabRemove(d.Key)">
+                </MudIconButton>
             </MudButtonGroup>
         }   
     </div>
@@ -23,13 +28,14 @@
     <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
 </MudAppBar>
 
-<MudDrawer @bind-Open="_drawerOpen" Elevation="1"  Variant="@DrawerVariant.Responsive" ClipMode="@DrawerClipMode.Docked">
+<MudDrawer Open="_drawerOpen" Elevation="1" Variant="@DrawerVariant.Persistent">
     <MudDrawerHeader>
         <MudText Typo="Typo.h6">TntMud</MudText>
     </MudDrawerHeader>
     <MudNavMenu>
-        <MudNavLink OnClick="@AddIndex">Index</MudNavLink>
-        <MudNavLink OnClick="@(() => AddFetchData(null, DateTime.Now.ToString()))">FetchData</MudNavLink>
+        <MudNavLink OnClick="() => AddCounter()">Counter</MudNavLink>
+        <MudNavLink OnClick="() => AddIndex()">Index</MudNavLink>
+        <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
         @if (AppState.UsrId == 0)
         {
             <MudNavLink Icon="@Icons.Material.Filled.Login"
@@ -50,38 +56,41 @@
 
 <MudMainContent>
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pt-auto my-2">
-    @*<MudPaper Class="pa-2 ma-2 d-flex justify-center  mud-theme-info" Elevation="0">Paper</MudPaper>*@
-    @*<div class="d-flex justify-center ">Header</div>*@
-        @if (refresh)
-        {
-            <div class="card-body">
-                <CascadingValue Value=this>
-                    @foreach (var d in cmpDic)
-                    {
+        <div class="card-body">
+            <CascadingValue Value=this>
+                @foreach (var d in cmpDic)
+                {
                     <div @key="d.Key" class="@TabClass(d.Key)">
                         <DynamicComponent Type="@d.Value.CmpType" Parameters="d.Value.Params" />
                     </div>
-                    }
+                }
             </CascadingValue>
         </div>
-        }
     </MudContainer>
 </MudMainContent>
 
 @code{
     private async Task Logout()
     {
-        refresh = false;
         await AppState.Logout();
         cmpDic.Clear();
         ActiveTabKey = TabKeyGen;
-        refresh = true;
     }
 
-    public void AddIndex()
+    public void AddIndex(bool refresh = false)
     {
         var i = AddDynCmp("Idx", typeof(Index), null);
         _drawerOpen = false;
+        if (refresh)
+            StateHasChanged();
+    }
+
+    public void AddCounter(bool refresh = false)
+    {
+        var i = AddDynCmp("Ctr", typeof(Counter), null);
+        _drawerOpen = false;
+        if (refresh)
+            StateHasChanged();
     }
 
     public void AddFetchData(string? p1, string? p2)
@@ -107,7 +116,6 @@
 
     public int ActiveTabKey = 0;
     private int TabKeyGen = 0;
-    bool refresh = true;
 
     public Dictionary<int, DynCmp> cmpDic = new();
 
@@ -127,14 +135,10 @@
         //string aaa = Colors.DeepOrange.Accent1;
         return key == ActiveTabKey ? Color.Secondary : Color.Tertiary;
     }
+
     private string TabClass(int key)
     {
         return key == ActiveTabKey ? "d-block" : "d-none";
-    }
-
-    protected override bool ShouldRender()
-    {
-        return refresh;
     }
 
     protected override async Task OnInitializedAsync()
@@ -147,7 +151,7 @@
         //refresh = true;
 
         //TabSelect(0);
-        await Task.CompletedTask;
+        //await Task.CompletedTask;
         //var selectedType = Type.GetType($"TntMud.Pages.{cmpDic[0].Text}");
     }
 
@@ -207,7 +211,7 @@
         cmpDic.Add(TabKeyGen, new DynCmp { TabText = $"{tabText} {i}", CmpType = type, Params = prms });
         TabSelect(TabKeyGen);
         TabKeyGen++;
-
+        //StateHasChanged();
         return i;
     }
 

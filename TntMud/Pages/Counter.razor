@@ -1,13 +1,22 @@
 ﻿@page "/counter"
 
-<PageTitle>Counter</PageTitle>
+<MudMenu FullWidth="false" Class="d-flex justify-center" Label="Open Menu"  PositionAtCursor="true">
+    <ActivatorContent>
+        <MudButton Variant="Variant.Filled" Color="Color.Surface" FullWidth="true" Size="Size.Small" Class="pa-0">
+            Counter #gfdg5645665
+        </MudButton>
+    </ActivatorContent>
+    <ChildContent>
+        <MudMenuItem OnClick="@Enlist">Enlist</MudMenuItem>
+        <MudMenuItem>Barracks</MudMenuItem>
+        <MudMenuItem>Armory</MudMenuItem>
+    </ChildContent>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Counter</MudText>
+</MudMenu>
+
+
 <MudText Class="mb-4">Current count: @currentCount</MudText>
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="IncrementCount">Click me</MudButton>
-
-
-
 
 
 <MudChipSet @ref="MCS" AllClosable="true" OnClose="Closed2"  SelectedChipChanged="SelectedChipChanged" Filter="false" Mandatory="true">
@@ -18,6 +27,9 @@
 </MudChipSet>
 
 Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIconButton>
+
+
+
 
     @code {
     [CascadingParameter] Deneme Main { get; set; }
@@ -38,6 +50,12 @@ Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIc
 
     }
     public void SelectedChipChanged(MudChip chip) {
+
+    }
+    private void Enlist()
+    {
+        Main.AddIndex(true);
+        //Main.AddDynCmp("deneme", typeof(Index), null);
 
     }
 
