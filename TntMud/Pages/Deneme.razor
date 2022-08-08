@@ -55,8 +55,8 @@
 </MudDrawer>
 
 <MudMainContent>
-    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pt-auto my-2">
-        <div class="card-body">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-2">
+        <MudPaper Class="pa-2">
             <CascadingValue Value=this>
                 @foreach (var d in cmpDic)
                 {
@@ -65,7 +65,7 @@
                     </div>
                 }
             </CascadingValue>
-        </div>
+        </MudPaper>
     </MudContainer>
 </MudMainContent>
 
@@ -104,8 +104,6 @@
         });
         _drawerOpen = false;
     }
-
-
 }
 
 @code {

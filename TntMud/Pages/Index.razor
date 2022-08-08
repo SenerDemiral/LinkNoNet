@@ -1,11 +1,23 @@
 ﻿@page "/"
 @inject IDataAccess db
+@inject IDialogService DialogService
 
 <PageTitle>Link#Net</PageTitle>
 
-<MudText Typo="Typo.h3">Link#Net</MudText>
+<MudMenu FullWidth="false" Label="Open Menu" PositionAtCursor="true" Class="d-flex" >
+    <ActivatorContent>
+        <MudButton Variant="Variant.Filled" Color="Color.Surface" FullWidth="true" Size="Size.Small" Class="pa-0">
+            Index #yty63365
+        </MudButton>
+    </ActivatorContent>
+    <ChildContent>
+        <MudMenuItem >Enlist</MudMenuItem>
+        <MudMenuItem>Barracks</MudMenuItem>
+        <MudMenuItem>Armory</MudMenuItem>
+    </ChildContent>
+</MudMenu>
 
-<MudDataGrid Items="@data" Dense="true" Groupable="true" Sortable="true" Filterable="true"  >
+<MudDataGrid T="YA" Items="@data" Dense="true" Groupable="true" Sortable="true" Filterable="false" MultiSelection="false" RowClick="@RowClicked">
     <Columns>
         <Column T="YA" Field="@nameof(YA.YAid)" Title="ID" Groupable="false" Filterable="false" />
         <Column T="YA" Field="@nameof(YA.EXD)"  Groupable="false" >
@@ -19,7 +31,49 @@
         <Column T="YA" Field="@nameof(YA.URL)" />
     </Columns>
 </MudDataGrid>
-@*
+
+@*<MudPopover Open="@_isPopoverOpen"  Class="px-4 pt-4 mx-8" Style="position:fixed; left: 100px !important">
+    <div class="d-flex flex-column">
+        <MudText>MTid:@MTid TTId:@TTid</MudText>
+        <MudButton OnClick="ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+    </div>
+</MudPopover>
+*@
+
+<MudDialog @bind-IsVisible="visible" Options="dialogOptions" DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 10rem; overflow-y: scroll; padding-left: 0px;">
+        <MudTreeView T="string" ExpandOnClick="true" Dense="true" >
+            <MudTreeViewItem Value="@("Applications")">
+                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
+                </MudTreeViewItem>
+            <MudTreeViewItem Value="@("Documents")">
+                <MudTreeViewItem Value="@("MudBlazor")">
+                    <MudTreeViewItem Value="@("Api")" />
+                    <MudTreeViewItem Value="@("Components")" />
+                    <MudTreeViewItem Value="@("Components2")" />
+                    <MudTreeViewItem Value="@("Components3")" />
+                    <MudTreeViewItem Value="@("Components4")" />
+                    <MudTreeViewItem Value="@("Components5")" />
+                    <MudTreeViewItem Value="@("Components6")" />
+                </MudTreeViewItem>
+            </MudTreeViewItem>
+        </MudTreeView>
+        </MudContainer>
+    </DialogContent>
+    
+</MudDialog>
+
+@code { 
+    private bool visible;
+    private int rating;
+    private void OpenDialog() => visible = true;
+    void Submit() => visible = false;
+
+    private DialogOptions dialogOptions = new() { NoHeader = true,  };
+}
+
+
 <MudTable Items="@data" Hover="true" Dense="true" Striped="true" Breakpoint="Breakpoint.Xs">
     <HeaderContent>
         <MudTh>EXD</MudTh>
@@ -36,17 +90,35 @@
         <MudTd DataLabel="URL">@context.URL</MudTd>
     </RowTemplate>
 </MudTable>
-*@
+
 @code{
     private IEnumerable<YA>? data; // = new List<Element>(); 
+    int MTid = 0;
+    int TTid = 0;
+    string sty { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         // Deneme
         string sql = $"select * from YA order by YAid desc";
         data = await db.LoadData<YA, dynamic>(sql, new { });
-        
+
         var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+    }
+
+    bool _isPopoverOpen = false;
+    void RowClicked(DataGridRowClickEventArgs<YA> args)
+    {
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        MTid = args.Item.MTid;
+        TTid = args.Item.TTid;
+        sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        _isPopoverOpen = true;
+        visible = true;
+    }
+    public void ToggleOpen()
+    {
+        _isPopoverOpen = !_isPopoverOpen;
     }
 
     private class SMTP
