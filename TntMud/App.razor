@@ -1,44 +1,262 @@
-﻿@inject AppState AppState
-@inject NavigationManager NavigationManager
+﻿@inject IDialogService DialogService
+@inject AppState AppState
+@inject ICircuitUserService UserService
 @implements IDisposable
 
-<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="@OnNavigateAsync">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+<MudThemeProvider Theme="MyCustomTheme"/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudAppBar Elevation="0" Dense=true Fixed="true">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" 
+        OnClick="@((e) => DrawerToggle())" />
+       <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true" >
+            <div class="d-flex gap-2 overflow-x-auto ">
+                @foreach (var d in cmpDic)
+                {
+                    <MudButtonGroup @key="d.Key" Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" >
+                        <MudButton Class="px-1" OnClick="() => TabSelect(d.Key)">
+                            @d.Value.TabText
+                        </MudButton>
+                        <MudIconButton Class="px-1" Icon="@Icons.Material.Filled.Close" 
+                            OnClick="() => TabRemove(d.Key)">
+                        </MudIconButton>
+                    </MudButtonGroup>
+                }   
+            </div>
+        </MudHidden>
+    <MudSpacer />
+
+    <MudMenu FullWidth="false" Label="Open Menu" Dense="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
+        <ActivatorContent>
+            <MudIconButton Icon="@Icons.Material.Outlined.Label" Color="Color.Inherit" />
+        </ActivatorContent>
+        <ChildContent>
+            @foreach (var d in cmpDic)
+            {
+                <MudMenuItem @key="d.Key" Class="py-0">
+                    <MudButtonGroup Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" >
+                        <MudButton Class="px-1" OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
+                        <MudIconButton Class="px-1" Icon="@Icons.Material.Filled.Close" OnClick="() => TabRemove(d.Key)"></MudIconButton>
+                    </MudButtonGroup>
+                </MudMenuItem>
+            }
+        </ChildContent>
+    </MudMenu>
+    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/SenerDemiral" Target="_blank" />
+</MudAppBar>
+
+
+<MudDrawer Open="_drawerOpen" Elevation="1" Variant="@DrawerVariant.Persistent" DisableOverlay="true">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">TntMud</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink OnClick="() => AddCounter()">Counter</MudNavLink>
+        <MudNavLink OnClick="() => AddIndex()">Index</MudNavLink>
+        <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
+        @if (AppState.UsrId == 0)
+        {
+            <MudNavLink Icon="@Icons.Material.Filled.Login"
+                OnClick="@(() => DialogService.Show<LoginDialog>())">Login
+            </MudNavLink>
+            <MudNavLink Icon="@Icons.Filled.AppRegistration" 
+                OnClick="@(() => DialogService.Show<TntRegisterDialog>())">Tanıtıcı Ol
+            </MudNavLink>
+        }
+        else
+        {
+            <MudNavLink Icon="@Icons.Material.Filled.Logout" 
+                OnClick="@Logout">@AppState.UsrId @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString() 
+            </MudNavLink>
+        }
+    </MudNavMenu>
+</MudDrawer>
+
+<MudMainContent>
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-2">
+        @*<MudPaper Class="pa-2">*@
+            <CascadingValue Value=this>
+                @foreach (var d in cmpDic)
+                {
+                    <div @key="d.Key" class="@TabClass(d.Key)">
+                        <DynamicComponent Type="@d.Value.CmpType" Parameters="d.Value.Params" />
+                    </div>
+                }
+            </CascadingValue>
+        @*</MudPaper>*@
+    </MudContainer>
+</MudMainContent>
 
 @code{
+    private async Task Logout()
+    {
+        await AppState.Logout();
+        cmpDic.Clear();
+        ActiveTabKey = TabKeyGen;
+    }
+
+    public void AddIndex(bool refresh = false)
+    {
+        var i = AddDynCmp("Idx", typeof(Pages.Index), null);
+
+        if (refresh)
+            StateHasChanged();
+    }
+
+    public void AddCounter(bool refresh = false)
+    {
+        var i = AddDynCmp("Ctr", typeof(Counter), null);
+        
+        if (refresh)
+            StateHasChanged();
+    }
+
+    public void AddFetchData(string? p1, string? p2, bool refresh = false)
+    {
+        // Parametre gonderiyorsan ilgili component de bu parametre tanimli olmali, yoksa runtime error
+        // Bekledigi parametreyi gondermezsen sorun cikartmiyor        
+        AddDynCmp("FD", typeof(FetchData), new()
+        {
+            { "P1", p1 },
+            { "P2", p2 }
+        });
+        
+        if (refresh)
+            StateHasChanged();
+    }
+}
+
+@code {
     [Parameter]
     public ConnectionInfo? connectionInfo { get; set; }
 
+    bool _drawerOpen = true;
+    bool _drawerOpen2 = false;
+
+    public int ActiveTabKey = 0;
+    private int TabKeyGen = 0;
+
+    public Dictionary<int, DynCmp> cmpDic = new();
+
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Typography = new Typography()
+        {
+            Button = new Button()
+            {
+              TextTransform = "none"
+            }
+        }
+    };
+
+    private Color TabColor(int key)
+    {
+        //string aaa = Colors.DeepOrange.Accent1;
+        return key == ActiveTabKey ? Color.Secondary : Color.Tertiary;
+    }
+
+    private string TabClass(int key)
+    {
+        return key == ActiveTabKey ? "d-block" : "d-none";
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        //refresh = false;
         await AppState.OnEnter(connectionInfo?.IPAddress!);
+        AppState.UsrChanged += App_UsrChanged;
+        UserService.CircuitsChanged += App_UsrChanged;
+
+        //refresh = true;
+
+        //TabSelect(0);
+        //await Task.CompletedTask;
+        //var selectedType = Type.GetType($"TntMud.Pages.{cmpDic[0].Text}");
+    }
+
+    private void App_UsrChanged(object sender, EventArgs e)
+    {
+        //UserRemovedMessage = $"{e.UserId} disconnected";
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void TabSelect(int selectTabKey)
+    {
+        if (selectTabKey != ActiveTabKey)
+        {
+            ActiveTabKey = selectTabKey;
+        }
+    }
+
+    private void TabRemove(int removeTabKey)
+    {
+        cmpDic.Remove(removeTabKey);
+        if (cmpDic.Count == 0)
+        {
+            ActiveTabKey = -1; // TabKeyGen;
+            _drawerOpen = true;
+        }
+        else
+        {
+            if (ActiveTabKey == removeTabKey)  // if Active removed
+                ActiveTabKey = cmpDic.Keys.First();
+            TabSelect(ActiveTabKey);
+        }
+
+
+        //if (tabKey != ActiveTabKey)
+        //{
+        //    cmpDic.Remove(tabKey);
+        //}
+        //else
+        //{
+        //    cmpDic.Remove(tabKey);
+        //    if (cmpDic.Count == 0)
+        //    {
+        //        ActiveTabKey = TabKeyGen;
+        //    }
+        //    else
+        //    {
+        //        ActiveTabKey = cmpDic.Keys.First();
+        //        TabSelect(ActiveTabKey);
+        //    }
+        //}
+    }
+
+    public int AddDynCmp(string tabText, Type type, Dictionary<string, object>? prms)
+    {
+        int i = TabKeyGen;
+
+        cmpDic.Add(TabKeyGen, new DynCmp { TabText = $"{tabText} {i}", CmpType = type, Params = prms });
+        TabSelect(TabKeyGen);
+        TabKeyGen++;
+        if (_drawerOpen)
+            _drawerOpen = false;
+
+        return i;
+    }
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void DrawerToggle2()
+    {
+        _drawerOpen2 = !_drawerOpen2;
     }
 
     public void Dispose()
     {
-        //AppState.OnExit();
+        AppState.UsrChanged -= App_UsrChanged;
+        UserService.CircuitsChanged -= App_UsrChanged;
     }
 
-    private async Task OnNavigateAsync(NavigationContext context)
+    public class DynCmp
     {
-        if (context.Path.ToLower() == "testArticle".ToLower())
-        {
-            NavigationManager.NavigateTo("counter");
-        }
-        else if (context.Path.ToLower() == "testGame".ToLower())
-        {
-            NavigationManager.NavigateTo("fetchdata");
-        }
-        await Task.CompletedTask;
+        public string TabText { get; set; } = "";
+        public Type? CmpType { get; set; }
+        public Dictionary<string, object>? Params { get; set; }
     }
 }

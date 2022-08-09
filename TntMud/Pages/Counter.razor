@@ -6,12 +6,11 @@
             Counter #gfdg5645665
         </MudButton>
     </ActivatorContent>
-    <ChildContent>
+    <ChildContent >
         <MudMenuItem OnClick="@Enlist">Enlist</MudMenuItem>
         <MudMenuItem>Barracks</MudMenuItem>
         <MudMenuItem>Armory</MudMenuItem>
     </ChildContent>
-
 </MudMenu>
 
 
@@ -28,11 +27,8 @@
 
 Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIconButton>
 
-
-
-
-    @code {
-    [CascadingParameter] Deneme Main { get; set; }
+@code {
+    [CascadingParameter] App app { get; set; }
 
     private int currentCount = 0;
 
@@ -54,9 +50,8 @@ Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIc
     }
     private void Enlist()
     {
-        Main.AddIndex(true);
+        app.AddIndex(true);
         //Main.AddDynCmp("deneme", typeof(Index), null);
-
     }
 
     public void Closed2(MudChip chip) {
@@ -67,12 +62,7 @@ Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIc
     private void IncrementCount()
     {
         currentCount++;
-        //Main.cmpDic[Main.ActiveTabKey].CmpText = "aaaaaaaaaaaaaaaa";
-        Main.TabSelect(2);
-        //selected = null;
         var aaaa = MCS.SelectedChip;
-
-        
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -80,7 +70,6 @@ Add chips <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="Add"></MudIc
         MudChipSet aaa;
         if (firstRender)
             aaa = MCS;
-
     }
 
 }

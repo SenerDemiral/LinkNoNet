@@ -80,7 +80,7 @@
     public void AddIndex(bool refresh = false)
     {
         var i = AddDynCmp("Idx", typeof(Index), null);
-        _drawerOpen = false;
+        
         if (refresh)
             StateHasChanged();
     }
@@ -88,12 +88,12 @@
     public void AddCounter(bool refresh = false)
     {
         var i = AddDynCmp("Ctr", typeof(Counter), null);
-        _drawerOpen = false;
+        
         if (refresh)
             StateHasChanged();
     }
 
-    public void AddFetchData(string? p1, string? p2)
+    public void AddFetchData(string? p1, string? p2, bool refresh = false)
     {
         // Parametre gonderiyorsan ilgili component de bu parametre tanimli olmali, yoksa runtime error
         // Bekledigi parametreyi gondermezsen sorun cikartmiyor        
@@ -102,7 +102,9 @@
             { "P1", p1 },
             { "P2", p2 }
         });
-        _drawerOpen = false;
+        
+        if (refresh)
+            StateHasChanged();
     }
 }
 
@@ -209,7 +211,9 @@
         cmpDic.Add(TabKeyGen, new DynCmp { TabText = $"{tabText} {i}", CmpType = type, Params = prms });
         TabSelect(TabKeyGen);
         TabKeyGen++;
-        //StateHasChanged();
+        if (_drawerOpen)
+            _drawerOpen = false;
+
         return i;
     }
 
