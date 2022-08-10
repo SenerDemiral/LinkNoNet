@@ -14,13 +14,13 @@
             <div class="d-flex gap-2 overflow-x-auto ">
                 @foreach (var d in cmpDic)
                 {
-                    <MudButtonGroup @key="d.Key" Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" >
-                        <MudButton Class="px-1" OnClick="() => TabSelect(d.Key)">
+                    string cls = d.Key == ActiveTabKey ? ActiveTabClass : InActiveTabClass;
+                    <MudButtonGroup @key="d.Key" Class="@cls" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
+                        <MudButton Class="px-1" Style="color: inherit;" OnClick="() => TabSelect(d.Key)">
                             @d.Value.TabText
                         </MudButton>
-                        <MudIconButton Class="px-1" Icon="@Icons.Material.Filled.Close" 
-                            OnClick="() => TabRemove(d.Key)">
-                        </MudIconButton>
+                        <MudIconButton Class="px-1" Style="color: inherit;" Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => TabRemove(d.Key)" />
                     </MudButtonGroup>
                 }   
             </div>
@@ -29,15 +29,20 @@
 
     <MudMenu FullWidth="false" Label="Open Menu" Dense="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
         <ActivatorContent>
-            <MudIconButton Icon="@Icons.Material.Outlined.Label" Color="Color.Inherit" />
+            <MudAvatar Color="Color.Warning" Size="Size.Medium">@TabCount</MudAvatar>
+
+            @*<MudBadge Origin="Origin.CenterLeft" Content="@TabCount" Overlap="true" >
+                <MudIconButton Icon="@Icons.Material.Outlined.Label" Color="Color.Inherit" />
+            </MudBadge>*@
         </ActivatorContent>
         <ChildContent>
             @foreach (var d in cmpDic)
             {
+                string cls = d.Key == ActiveTabKey ? ActiveTabClass : InActiveTabClass;
                 <MudMenuItem @key="d.Key" Class="py-0">
-                    <MudButtonGroup Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" >
-                        <MudButton Class="px-1" OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
-                        <MudIconButton Class="px-1" Icon="@Icons.Material.Filled.Close" OnClick="() => TabRemove(d.Key)"></MudIconButton>
+                    <MudButtonGroup Class="@cls" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
+                        <MudButton Class="px-1" Style="color: inherit;" OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
+                        <MudIconButton Class="px-1" Style="color: inherit;" Icon="@Icons.Material.Filled.Close" OnClick="() => TabRemove(d.Key)" />
                     </MudButtonGroup>
                 </MudMenuItem>
             }
@@ -136,6 +141,9 @@
 
     public int ActiveTabKey = 0;
     private int TabKeyGen = 0;
+    string ActiveTabClass = "red darken-1 shades-text text-white";
+    string InActiveTabClass = "grey shades-text text-white";
+    string TabCount = string.Empty;
 
     public Dictionary<int, DynCmp> cmpDic = new();
 
@@ -153,7 +161,7 @@
     private Color TabColor(int key)
     {
         //string aaa = Colors.DeepOrange.Accent1;
-        return key == ActiveTabKey ? Color.Secondary : Color.Tertiary;
+        return key == ActiveTabKey ? Color.Error : Color.Warning;
     }
 
     private string TabClass(int key)
@@ -203,7 +211,7 @@
                 ActiveTabKey = cmpDic.Keys.First();
             TabSelect(ActiveTabKey);
         }
-
+        TabCount = cmpDic.Count.ToString();
 
         //if (tabKey != ActiveTabKey)
         //{
@@ -234,6 +242,7 @@
         if (_drawerOpen)
             _drawerOpen = false;
 
+        TabCount = cmpDic.Count.ToString();
         return i;
     }
 
