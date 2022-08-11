@@ -7,33 +7,56 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+@*<MudLayout>*@
 <MudAppBar Elevation="0" Dense=true Fixed="true">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" 
         OnClick="@((e) => DrawerToggle())" />
-       <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true" >
-            <div class="d-flex gap-2 overflow-x-auto ">
-                @foreach (var d in cmpDic)
-                {
-                    string cls = d.Key == ActiveTabKey ? ActiveTabClass : InActiveTabClass;
-                    <MudButtonGroup @key="d.Key" Class="@cls" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
-                        <MudButton Class="px-1" Style="color: inherit;" OnClick="() => TabSelect(d.Key)">
-                            @d.Value.TabText
-                        </MudButton>
-                        <MudIconButton Class="px-1" Style="color: inherit;" Icon="@Icons.Material.Filled.Close"
-                               OnClick="() => TabRemove(d.Key)" />
-                    </MudButtonGroup>
-                }   
-            </div>
-        </MudHidden>
+    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true" >
+        <div class="d-flex gap-2 overflow-x-auto ">
+ @*           @foreach (var d in cmpDic)
+            {
+                string cls = d.Key == ActiveTabKey ? ActiveTabClass : InActiveTabClass;
+                <MudButtonGroup @key="d.Key" Class="@cls" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
+                    <MudButton Class="px-1" Style="color: inherit;" OnClick="() => TabSelect(d.Key)">
+                        @d.Value.TabText
+                    </MudButton>
+                    <MudIconButton Class="px-1" Style="color: inherit;" Icon="@Icons.Material.Filled.Close"
+                            OnClick="() => TabRemove(d.Key)" />
+                </MudButtonGroup>
+            }   
+        </div>*@
+           @foreach (var d in cmpDic)
+            {
+                <MudButtonGroup @key="d.Key" Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
+                    <MudButton Class="px-1"  OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
+                    <MudIconButton Class="px-1" Icon="@Icons.Material.Filled.Close" OnClick="() => TabRemove(d.Key)" />
+                </MudButtonGroup>
+            }   
+        </div>
+    </MudHidden>
+
     <MudSpacer />
 
     <MudMenu FullWidth="false" Label="Open Menu" Dense="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
         <ActivatorContent>
             <MudAvatar Color="Color.Warning" Size="Size.Medium">@TabCount</MudAvatar>
+        </ActivatorContent>
+        <ChildContent>
+            @foreach (var d in cmpDic)
+            {
+                <MudMenuItem @key="d.Key" Class="py-0">
+                    <MudButtonGroup Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
+                        <MudButton  OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => TabRemove(d.Key)" />
+                    </MudButtonGroup>
+                </MudMenuItem>
+            }
+        </ChildContent>
+    </MudMenu>
 
-            @*<MudBadge Origin="Origin.CenterLeft" Content="@TabCount" Overlap="true" >
-                <MudIconButton Icon="@Icons.Material.Outlined.Label" Color="Color.Inherit" />
-            </MudBadge>*@
+@*    <MudMenu FullWidth="false" Label="Open Menu" Dense="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
+        <ActivatorContent>
+            <MudAvatar Color="Color.Warning" Size="Size.Medium">@TabCount</MudAvatar>
         </ActivatorContent>
         <ChildContent>
             @foreach (var d in cmpDic)
@@ -48,6 +71,7 @@
             }
         </ChildContent>
     </MudMenu>
+*@
     <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/SenerDemiral" Target="_blank" />
 </MudAppBar>
 
@@ -92,6 +116,7 @@
         @*</MudPaper>*@
     </MudContainer>
 </MudMainContent>
+@*</MudLayout>*@
 
 @code{
     private async Task Logout()
@@ -137,7 +162,6 @@
     public ConnectionInfo? connectionInfo { get; set; }
 
     bool _drawerOpen = true;
-    bool _drawerOpen2 = false;
 
     public int ActiveTabKey = 0;
     private int TabKeyGen = 0;
@@ -161,7 +185,7 @@
     private Color TabColor(int key)
     {
         //string aaa = Colors.DeepOrange.Accent1;
-        return key == ActiveTabKey ? Color.Error : Color.Warning;
+        return key == ActiveTabKey ? Color.Error : Color.Dark;
     }
 
     private string TabClass(int key)
@@ -212,24 +236,6 @@
             TabSelect(ActiveTabKey);
         }
         TabCount = cmpDic.Count.ToString();
-
-        //if (tabKey != ActiveTabKey)
-        //{
-        //    cmpDic.Remove(tabKey);
-        //}
-        //else
-        //{
-        //    cmpDic.Remove(tabKey);
-        //    if (cmpDic.Count == 0)
-        //    {
-        //        ActiveTabKey = TabKeyGen;
-        //    }
-        //    else
-        //    {
-        //        ActiveTabKey = cmpDic.Keys.First();
-        //        TabSelect(ActiveTabKey);
-        //    }
-        //}
     }
 
     public int AddDynCmp(string tabText, Type type, Dictionary<string, object>? prms)
@@ -249,11 +255,6 @@
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
-    }
-
-    private void DrawerToggle2()
-    {
-        _drawerOpen2 = !_drawerOpen2;
     }
 
     public void Dispose()
