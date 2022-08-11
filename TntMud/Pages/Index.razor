@@ -166,11 +166,11 @@
 
     void RowClicked(DataGridRowClickEventArgs<YA> args)
     {
-            //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-            MTid = args.Item.MTid;
-            TTid = args.Item.TTid;
-            sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
-            visible = true;
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        MTid = args.Item.MTid;
+        TTid = args.Item.TTid;
+        sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        visible = true;
     }
 
     private class SMTP

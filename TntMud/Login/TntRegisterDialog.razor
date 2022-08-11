@@ -1,6 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inject ISnackbar Snackbar
 @inject AppState AppState
+@inject IDataAccess db
 
 <MudDialog>
     <TitleContent>
@@ -44,18 +45,27 @@
         CleanDelimiters = true,
     };
 
-    private void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmit(EditContext context)
     {
         success = true;
         StateHasChanged();
-    }
 
-    private void TryRegister()
-    {
-        // TryInsert to DB & Show result message
-        // call fb.TntRegister. Sonuca gore sonlandir. (Tanitici olarak Ayni eMail de baskasi olamaz)
-        Snackbar.Add("Onaylandığında size eMail gönderilecektir.", Severity.Success);
-        MudDialog?.Close(DialogResult.Ok(true));
+        ReturnModel rtrn = new();
+        rtrn = await db.StoreProc<ReturnModel, RegisterModel>("TT_NEW", model);
+
+        if (rtrn.Rsp == 0) {
+            Snackbar.Add(rtrn.Msg, Severity.Success, config =>
+                {
+                    config.RequireInteraction = true;
+                    config.ShowCloseIcon = true;
+                });
+
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add(rtrn.Msg, Severity.Warning);
+        }
     }
 
     private void Cancel()
@@ -69,15 +79,21 @@
         [Required (ErrorMessage ="Bu alan zorunludur")]
         [StringLength(40, ErrorMessage = "Max 40")]
         public string Name { get; set; }
-        
+
         [Required (ErrorMessage ="Bu alan zorunludur")]
         [EmailAddress (ErrorMessage ="Hata")]
         [StringLength(40, ErrorMessage = "Max 40")]
         public string eMail { get; set; }
-        
+
         [Required (ErrorMessage ="Bu alan zorunludur")]
         [Phone]
         [StringLength(20, ErrorMessage = "Hatali", MinimumLength = 10)]
         public string mTel { get; set; }
+    }
+
+    private class ReturnModel
+    {
+        public int Rsp { get; set; } 
+        public string Msg { get; set; }
     }
 }
