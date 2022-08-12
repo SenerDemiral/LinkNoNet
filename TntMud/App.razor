@@ -2,13 +2,14 @@
 @inject AppState AppState
 @inject ICircuitUserService UserService
 @implements IDisposable
+@*<PageTitle>Link#Net</PageTitle>*@
 
 <MudThemeProvider Theme="MyCustomTheme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 @*<MudLayout>*@
-<MudAppBar Elevation="0" Dense=true Fixed="true">
+<MudAppBar Elevation="2" Dense=true Fixed="true">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" 
         OnClick="@((e) => DrawerToggle())" />
     <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true" >
@@ -45,7 +46,7 @@
             @foreach (var d in cmpDic)
             {
                 <MudMenuItem @key="d.Key" Class="py-0">
-                    <MudButtonGroup Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
+                    <MudButtonGroup Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true" DisableElevation=false>
                         <MudButton  OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
                         <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => TabRemove(d.Key)" />
                     </MudButtonGroup>
@@ -108,15 +109,18 @@
             <CascadingValue Value=this>
                 @foreach (var d in cmpDic)
                 {
-                    <div @key="d.Key" class="@TabClass(d.Key)">
+                    @*<div @key="d.Key" class="@TabClass(d.Key)">*@
+                <div @key="d.Key" class="@(d.Key == ActiveTabKey ? "d-block" : "d-none")">
                         <DynamicComponent Type="@d.Value.CmpType" Parameters="d.Value.Params" />
                     </div>
                 }
             </CascadingValue>
         @*</MudPaper>*@
+        <MudText Align="Align.Center" Style="color:white; background-color: grey ">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>
     </MudContainer>
 </MudMainContent>
 @*</MudLayout>*@
+
 
 @code{
     private async Task Logout()
@@ -184,8 +188,8 @@
 
     private Color TabColor(int key)
     {
-        //string aaa = Colors.DeepOrange.Accent1;
-        return key == ActiveTabKey ? Color.Error : Color.Dark;
+        string aaa = Colors.DeepOrange.Accent1;
+        return key == ActiveTabKey ? Color.Error : Color.Info;
     }
 
     private string TabClass(int key)
