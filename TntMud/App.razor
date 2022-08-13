@@ -97,7 +97,7 @@
         else
         {
             <MudNavLink Icon="@Icons.Material.Filled.Logout" 
-                OnClick="@Logout">@AppState.UsrId @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString() 
+                OnClick="@Logout">@AppState.UsrMoniker @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString() 
             </MudNavLink>
         }
     </MudNavMenu>
@@ -197,9 +197,27 @@
         return key == ActiveTabKey ? "d-block" : "d-none";
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            DialogService.Show<OnEnter>();
+            ////Login.OnEnter oe = new();
+            //await oe.TryEnter();
+
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         //refresh = false;
+        int usrId = 0;
+        //var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
+        //if (toto.Success)
+        //{
+        //    Login.OnEnter oe = new();
+        //    await oe.TryEnter();
+        //}
+
         await AppState.OnEnter(connectionInfo?.IPAddress!);
         AppState.UsrChanged += App_UsrChanged;
         UserService.CircuitsChanged += App_UsrChanged;

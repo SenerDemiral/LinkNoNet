@@ -7,8 +7,10 @@ public class AppState
 {
     public string CrcId { get; set; } = string.Empty;
     public int UsrId { get; set; } = default;
-    public string UsrNme { get; set; } = string.Empty;
-    public string Ip { get; set; } = string.Empty;
+    public int UsrRefId { get; set; } = default;
+    public string UsrTyp { get; set; } = string.Empty;
+    public string UsrIp { get; set; } = string.Empty;
+    public string UsrMoniker { get; set; } = string.Empty;
 
     public event EventHandler? UsrChanged;
     void OnUsrChanged() => UsrChanged?.Invoke(this, EventArgs.Empty);
@@ -16,24 +18,26 @@ public class AppState
     private readonly ProtectedLocalStorage _protectedLocalStorage;
     private readonly CircuitHandler _circuitHandler;
     ICircuitUserService _userService;
+    DataLibrary.IDataAccess _db;
 
-    public AppState(ProtectedLocalStorage protectedLocalStorage, CircuitHandler circuitHandler, ICircuitUserService userService)
+    public AppState(ProtectedLocalStorage protectedLocalStorage, CircuitHandler circuitHandler, ICircuitUserService userService, DataLibrary.IDataAccess DB)
     {
         _protectedLocalStorage = protectedLocalStorage;
         _circuitHandler = circuitHandler!;
         _userService = userService!;
+        _db = DB;
     }
 
     public async Task OnEnter(string ip)
     {
         CircuitHandlerService handler = (CircuitHandlerService)_circuitHandler;
         CrcId = handler.CircuitId;
-        Ip = ip;
-        var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
-        if (toto.Success)
-        {
-            UsrId = toto.Value;
-        }
+        UsrIp = ip;
+        //var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
+        //if (toto.Success)
+        //{
+        //    UsrId = toto.Value;
+        //}
 
         // Check uid
         // Add to GlbState
@@ -52,6 +56,16 @@ public class AppState
 
         // Invoke listeners
         OnUsrChanged();
+    }
+
+    public async Task LoginOk(int usrId, string usrTyp, int usrRefId, string usrMoniker)
+    {
+        UsrId = usrId;
+        UsrTyp = usrTyp;
+        UsrRefId = usrRefId;
+        UsrMoniker = usrMoniker;
+        await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
+        _userService.Connect(CrcId, UsrId);
     }
 
     public async Task Login(string usrNme, string usrPwd)
@@ -73,6 +87,9 @@ public class AppState
     public async Task Logout()
     {
         UsrId = 0;
+        UsrTyp = "";
+        UsrRefId = 0;
+        UsrMoniker = "";
         await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
         // Set UsrId = 0
         // setLocal("uid")

@@ -1,6 +1,6 @@
 ﻿public interface ICircuitUserService
 {
-    ConcurrentDictionary<string, int> Circuits { get; }
+    //ConcurrentDictionary<string, int> Circuits { get; }
     int NoC { get; }
     int NoU { get; }
     int No0 { get; }

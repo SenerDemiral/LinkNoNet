@@ -1,0 +1,65 @@
+﻿@inject ISnackbar Snackbar
+@inject AppState AppState
+@inject IDataAccess db
+@inject ProtectedLocalStorage _protectedLocalStorage
+@implements IDisposable
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private InputModel Model { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TryEnter();
+        MudDialog.Close();
+    }
+
+    private async Task TryEnter()
+    {
+        var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
+        if (toto.Success)
+        {
+            AppState.UsrId = toto.Value;
+        }
+
+        if (AppState.UsrId != 0)
+        {
+            Model.UsrId = AppState.UsrId;
+            Model.Ip = AppState.UsrIp;
+            // SP input params db de tanimlandigi sirasiyla gelmeli.
+            var rtrn = await db.StoreProc<OutputModel, InputModel>("Usr_Enter(@UsrId, @Ip)", Model);
+
+            if (rtrn.Stu == 0)
+            {
+                Snackbar.Add(rtrn.Msg, Severity.Success);
+                await AppState.LoginOk(rtrn.UTid, rtrn.Typ, rtrn.RefId, rtrn.Moniker);
+            }
+            else
+            {
+                Snackbar.Add(rtrn.Msg, Severity.Error);
+            }
+        }
+        MudDialog.Close();
+    }
+
+    public void Dispose() {
+
+    }
+
+    private class InputModel
+    {
+        public int UsrId { get; set; }
+        public string? Ip { get; set; }
+    }
+
+    private class OutputModel
+    {
+        public int Stu { get; set; }
+        public int UTid { get; set; }
+        public string? Typ { get; set; }
+        public int RefId { get; set; }
+        public string? Moniker { get; set; }
+        public string? Msg { get; set; }
+    }
+}

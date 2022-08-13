@@ -71,6 +71,10 @@ namespace DataLibrary
         /// <typeparam name="U"></typeparam>
         /// <param name="storeProc"></param>
         /// <param name="parameters"></param>
+        /// SP input params db de tanimlandigi sirasiyla gelmeli. Her ikisi de calisiyor
+        /// "select * from Usr_Login(@LgnNme, @LgnPwd, @Ip)"
+        /// "execute procedure Usr_Login(@LgnNme, @LgnPwd, @Ip)"
+        /// https://www.tabsoverspaces.com/227021-firebird-net-provider-and-calling-stored-procedures-with-parameters
         /// <returns></returns>
         public async Task<T> StoreProc<T, U>(string storeProc, U parameters)
         {
@@ -79,7 +83,9 @@ namespace DataLibrary
             //var aaa = await connection.QueryAsync<T>(storeProc, parameters, commandType: CommandType.StoredProcedure).Sing
             //var aaa = await connection.QueryFirstOrDefault<T>(storeProc, parameters, commandType: CommandType.StoredProcedure);
             //var bbb = connection.Query<T>(storeProc, parameters, commandType: CommandType.StoredProcedure).SingleOrDefault();
-            return await cnct.QueryFirstOrDefaultAsync<T>(storeProc, parameters, commandType: CommandType.StoredProcedure);
+            //return await cnct.QueryFirstOrDefaultAsync<T>(storeProc, parameters, commandType: CommandType.StoredProcedure);
+            return await cnct.QueryFirstOrDefaultAsync<T>("execute procedure "+storeProc, parameters);
+            //return await cnct.QueryFirstOrDefaultAsync<T>("execute procedure Usr_Login(@LgnNme, @LgnPwd, @Ip)", parameters);
         }
 
         public async Task<dynamic> StoreProc2<T>(string storeProc, T parameters)

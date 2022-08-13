@@ -1,5 +1,6 @@
 ﻿@inject ISnackbar Snackbar
 @inject AppState AppState
+@inject IDataAccess db
 
 <MudDialog>
     <TitleContent>
@@ -8,8 +9,8 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField AutoFocus="true" @bind-Value="Model.UsrName" Label="UsrId" Variant="Variant.Text"></MudTextField>
-        <MudTextField @bind-Value="Model.UsrPwd" 
+        <MudTextField AutoFocus="true" @bind-Value="Model.LgnNme" Label="UsrId" Variant="Variant.Text"></MudTextField>
+        <MudTextField @bind-Value="Model.LgnPwd" 
             Label="Pwd" Variant="Variant.Text" InputType="@PasswordInput" 
             Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ToggleShowPwd" AdornmentAriaLabel="Show Password" />
     </DialogContent>
@@ -22,7 +23,7 @@
 @code{
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    private LoginModel Model { get; set; } = new();
+    private InputModel Model { get; set; } = new();
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -52,14 +53,19 @@
 
     private async Task TryLogin()
     {
-        await AppState.Login(Model.UsrName, Model.UsrPwd);
-        if (AppState.UsrId == 0)
-            Snackbar.Add("Başarısız", Severity.Error);
-        else
-        {
-            Snackbar.Add("Başarılı", Severity.Success);
+        Model.Ip = AppState.UsrIp;
+        // SP input params db de tanimlandigi sirasiyla gelmeli.
+        var rtrn = await db.StoreProc<OutputModel, InputModel>("Usr_Login(@LgnNme, @LgnPwd, @Ip)", Model);
+
+        if(rtrn.Stu == 0) {
+            Snackbar.Add(rtrn.Msg, Severity.Success);
             MudDialog.Close();
+            await AppState.LoginOk(rtrn.UTid, rtrn.Typ, rtrn.RefId, rtrn.Moniker);
         }
+        else {
+            Snackbar.Add(rtrn.Msg, Severity.Error);
+        }
+
     }
 
     private void Cancel()
@@ -67,9 +73,20 @@
         MudDialog.Cancel();
     }
 
-    private record LoginModel
+    private class InputModel
     {
-        public string UsrName { get; set; } = string.Empty;
-        public string UsrPwd { get; set; } = string.Empty;
+        public string? LgnNme { get; set; }
+        public string? LgnPwd { get; set; }
+        public string? Ip { get; set; }
+    }
+
+    private class OutputModel
+    {
+        public int Stu { get; set; }
+        public int UTid { get; set; }
+        public string? Typ { get; set; }
+        public int RefId { get; set; }
+        public string? Moniker { get; set; }
+        public string? Msg { get; set; }
     }
 }

@@ -17,7 +17,7 @@
     if (ip == "::1")
     {
         // var aaa = Dns.GetHostEntry(Dns.GetHostName());
-        ip = Dns.GetHostEntry(Dns.GetHostName()).AddressList[2].ToString();
+        ip = ""; // Dns.GetHostEntry(Dns.GetHostName()).AddressList[2].ToString();
     }
 
     var connectionInfo = new ConnectionInfo

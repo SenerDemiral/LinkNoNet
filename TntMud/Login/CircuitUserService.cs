@@ -2,8 +2,15 @@
 // Singleton
 public class CircuitUserService : ICircuitUserService
 {
-    public record _record (int UsrId, string IP);
-    public ConcurrentDictionary<string, _record> deneme { get; private set; }
+    public record _record2 (int UsrId, string IP);
+    public class _record
+    {
+        public int UsrId;
+        public string IP;
+    }
+
+    //public ConcurrentDictionary<string, _record> deneme { get; private set; }
+    public ConcurrentDictionary<string, _record> deneme { get; set; }
 
     //private ProtectedLocalStorage protectedLocalStorage;
 
@@ -73,7 +80,8 @@ public class CircuitUserService : ICircuitUserService
     public void Connect(string CircuitId, int UserId)
     {
         Circuits[CircuitId] = UserId;
-        deneme[CircuitId] = new _record(UserId, "");
+        //deneme[CircuitId] = new _record(UserId, "");
+        deneme[CircuitId] = new _record() { UsrId = UserId, IP = "" };
 
         OnCircuitsChanged();
     }
@@ -90,9 +98,10 @@ public class CircuitUserService : ICircuitUserService
     public void Disconnect(string CircuitId)
     {
         //int circuitRemoved;
-        if (Circuits.TryRemove(CircuitId, out int circuitRemoved))
+        //if (deneme.TryRemove(CircuitId, out int circuitRemoved))
+        if (deneme.TryRemove(CircuitId, out _record? circuitRemoved))    //(CircuitId))
         {
-            OnCircuitsChanged();
+                OnCircuitsChanged();
         }
     }
 
