@@ -58,30 +58,14 @@ public class AppState
         OnUsrChanged();
     }
 
-    public async Task LoginOk(int usrId, string usrTyp, int usrRefId, string usrMoniker)
+    public void LoginOk(int usrId, string usrTyp, int usrRefId, string usrMoniker)
     {
         UsrId = usrId;
         UsrTyp = usrTyp;
         UsrRefId = usrRefId;
         UsrMoniker = usrMoniker;
-        await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
+        //await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
         _userService.Connect(CrcId, UsrId);
-    }
-
-    public async Task Login(string usrNme, string usrPwd)
-    {
-        if(usrNme == usrPwd)
-            UsrId = Convert.ToInt32(usrNme);
-
-        await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
-
-        // Check Nme & Pwd 
-        // Set UsrId
-        // setLocal("uid")
-        // Add to GlbState
-        _userService.Connect(CrcId, UsrId);
-        // Invoke Listeners
-        //OnUsrChanged();
     }
 
     public async Task Logout()

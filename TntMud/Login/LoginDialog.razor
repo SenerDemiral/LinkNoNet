@@ -1,6 +1,7 @@
 ﻿@inject ISnackbar Snackbar
 @inject AppState AppState
 @inject IDataAccess db
+@inject ProtectedLocalStorage _protectedLocalStorage
 
 <MudDialog>
     <TitleContent>
@@ -28,14 +29,6 @@
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     
-    //@ref="FocusThis" Gerek kalmadi AutoFocus="true" kullan
-    //private MudTextField<string> FocusThis;
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    if(firstRender)
-    //        await FocusThis.FocusAsync();
-    //}
-
     void ToggleShowPwd()
     {
         @if (isShow)
@@ -60,12 +53,13 @@
         if(rtrn.Stu == 0) {
             Snackbar.Add(rtrn.Msg, Severity.Success);
             MudDialog.Close();
-            await AppState.LoginOk(rtrn.UTid, rtrn.Typ, rtrn.RefId, rtrn.Moniker);
+            await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, rtrn.UTid);
+
+            AppState.LoginOk(rtrn.UTid, rtrn.Typ!, rtrn.RefId, rtrn.Moniker);
         }
         else {
             Snackbar.Add(rtrn.Msg, Severity.Error);
         }
-
     }
 
     private void Cancel()

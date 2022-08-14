@@ -33,7 +33,7 @@
             if (rtrn.Stu == 0)
             {
                 Snackbar.Add(rtrn.Msg, Severity.Success);
-                await AppState.LoginOk(rtrn.UTid, rtrn.Typ, rtrn.RefId, rtrn.Moniker);
+                AppState.LoginOk(rtrn.UTid, rtrn.Typ, rtrn.RefId, rtrn.Moniker);
             }
             else
             {
