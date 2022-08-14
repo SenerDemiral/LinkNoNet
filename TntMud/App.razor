@@ -96,6 +96,9 @@
         }
         else
         {
+            @if(AppState.UsrTyp == "A") {
+                <MudNavLink OnClick="() => AddUT()">Users</MudNavLink>
+            }
             <MudNavLink Icon="@Icons.Material.Filled.Logout" 
                 OnClick="@Logout">@AppState.UsrMoniker @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString() 
             </MudNavLink>
@@ -109,8 +112,7 @@
             <CascadingValue Value=this>
                 @foreach (var d in cmpDic)
                 {
-                    @*<div @key="d.Key" class="@TabClass(d.Key)">*@
-                <div @key="d.Key" class="@(d.Key == ActiveTabKey ? "d-block" : "d-none")">
+                    <div @key="d.Key" class="@(d.Key == ActiveTabKey ? "d-block" : "d-none")">
                         <DynamicComponent Type="@d.Value.CmpType" Parameters="d.Value.Params" />
                     </div>
                 }
@@ -133,6 +135,14 @@
     public void AddIndex(bool refresh = false)
     {
         var i = AddDynCmp("Idx", typeof(Pages.Index), null);
+
+        if (refresh)
+            StateHasChanged();
+    }
+
+    public void AddUT(bool refresh = false)
+    {
+        var i = AddDynCmp("Usr", typeof(Pages.UtAdm), null);
 
         if (refresh)
             StateHasChanged();

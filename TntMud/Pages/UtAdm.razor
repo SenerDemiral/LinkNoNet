@@ -1,0 +1,116 @@
+﻿@inject IDataAccess db
+@inject IDialogService DialogService
+
+<style>
+    .selected {
+        background-color: #1E88E5 !important;
+    }
+
+        .selected > td {
+            color: white !important;
+        }
+
+            .selected > td .mud-input {
+                color: white !important;
+            }
+</style>
+
+<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>
+
+<MudDataGrid T="UT" Items="@data" @ref="mudDataGrid"
+             Hover="true" Dense="true" Groupable="true" RowClassFunc="@SelectedRowClassFunc"
+             Filterable="false" MultiSelection="false"
+             RowClick="@RowClicked" Striped="true">
+    <Columns>
+        <Column T="UT" Field="@nameof(UT.UTid)" Title="ID" Groupable="false" Filterable="false" />
+        <Column T="UT" Field="@nameof(UT.StuAd)" Title="Statu"/>
+        <Column T="UT" Field="@nameof(UT.Name)" Title="Ad" />
+        <Column T="UT" Field="@nameof(UT.Moniker)" Title="KisaAd" />
+        <Column T="UT" Field="@nameof(UT.Typ)" />
+        <Column T="UT" Field="@nameof(UT.RefId)" />
+    </Columns>
+</MudDataGrid>
+
+<MudDialog @bind-IsVisible="visible" Options="dialogOptions" DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 90vh ; overflow-y: scroll; padding-left: 0px;">
+            <MudTreeView T="string" ExpandOnClick="true" Dense="true">
+                <MudTreeViewItem Value="@("Applications")">
+                    <MudTreeViewItem Value="@("Terminal")" OnClick="Submit" Class="cursor-zoom-in" />
+                    <MudTreeViewItem Value="@("Terminal")" OnClick="Submit" />
+                </MudTreeViewItem>
+                <MudTreeViewItem Value="@("Documents")">
+                    <MudTreeViewItem Value="@("MudBlazor")">
+                        <MudTreeViewItem Value="@("Api")" />
+                        <MudTreeViewItem Value="@("Components")" />
+                        <MudTreeViewItem Value="@("Components2")" />
+                    </MudTreeViewItem>
+                </MudTreeViewItem>
+            </MudTreeView>
+        </MudContainer>
+    </DialogContent>
+
+</MudDialog>
+
+
+@code {
+    private IEnumerable<UT>? data; // = new List<Element>();
+    string Typ = "";
+    int RefId = 0;
+    string sty { get; set; }
+    private int selectedRowNumber = -1;
+    private MudDataGrid<UT>? mudDataGrid;
+    private bool visible;
+    private int rating;
+    private void OpenDialog() => visible = true;
+    void Submit() => visible = false;
+
+    private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private string SelectedRowClassFunc(UT element, int rowNumber)
+    {
+        //if (selectedRowNumber == rowNumber)
+        //{
+        //    selectedRowNumber = -1;
+        //    return string.Empty;
+        //}
+        if (mudDataGrid.SelectedItem != null && mudDataGrid.SelectedItem.Equals(element))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        // Deneme
+        string sql = $"select * from UT order by UTid";
+        data = await db.LoadData<UT, dynamic>(sql, new { });
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<UT> args)
+    {
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        Typ = args.Item.Typ;
+        RefId = args.Item.RefId;
+        sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        visible = true;
+    }
+
+    public class UT
+    {
+        public int UTid { get; set; }
+        public int Stu { get; set; }
+        public string StuAd { get; set; }
+        public string Moniker { get; set; }
+        public string Name { get; set; }
+        public string eMail { get; set; }
+        public string mTel { get; set; }
+        public string Typ { get; set; }
+        public int RefId { get; set; }
+    }
+
+}

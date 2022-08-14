@@ -17,11 +17,16 @@
 
 <MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>
 
-<MudDataGrid T="YA" Items="@data" @ref="mudDataGrid" 
-    Hover="true" Dense="true" Groupable="true" RowClassFunc="@SelectedRowClassFunc" 
-    Filterable="false" MultiSelection="false" 
-    RowClick="@RowClicked" Striped="true">
+<MudDataGrid T="YA" Items="@data" @ref="mudDataGrid" Virtualize="true" FixedHeader="true"
+        Hover="true" Dense="true" Groupable="true" RowClassFunc="@SelectedRowClassFunc"
+             Filterable="false" MultiSelection="false" Height="80vh"
+             RowClick="@RowClicked" Striped="true">
     <Columns>
+        <Column T="YA">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="pa-0" Disabled="false" OnClick="@(() => ShowBtnPress(context.Item))" />
+            </CellTemplate>
+        </Column>
         <Column T="YA" Field="@nameof(YA.YAid)" Title="ID" Groupable="false" Filterable="false" />
         <Column T="YA" Field="@nameof(YA.EXD)"  Groupable="false" >
             <CellTemplate>
@@ -50,50 +55,12 @@
             <MudTreeViewItem Value="@("Applications")">
                 <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"  Class="cursor-zoom-in"/>
                 <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
-                <MudTreeViewItem Value="@("Terminal")" OnClick="Submit"/>
                 </MudTreeViewItem>
             <MudTreeViewItem Value="@("Documents")">
                 <MudTreeViewItem Value="@("MudBlazor")">
                     <MudTreeViewItem Value="@("Api")" />
                     <MudTreeViewItem Value="@("Components")" />
                     <MudTreeViewItem Value="@("Components2")" />
-                    <MudTreeViewItem Value="@("Components3")" />
-                    <MudTreeViewItem Value="@("Components4")" />
-                    <MudTreeViewItem Value="@("Components5")" />
-                    <MudTreeViewItem Value="@("Components6")" />
                 </MudTreeViewItem>
             </MudTreeViewItem>
         </MudTreeView>
@@ -102,14 +69,6 @@
     
 </MudDialog>
 
-@code { 
-    private bool visible;
-    private int rating;
-    private void OpenDialog() => visible = true;
-    void Submit() => visible = false;
-
-    private DialogOptions dialogOptions = new() { NoHeader = true,  };
-}
 
 
 @*<MudTable Items="@data" T="YA" @ref="mudTable" Hover="true" Dense="true" Striped="true" Breakpoint="Breakpoint.Xs">
@@ -135,7 +94,19 @@
     int TTid = 0;
     string sty { get; set; }
     private int selectedRowNumber = -1;
-    private MudDataGrid<YA> mudDataGrid;
+    private MudDataGrid<YA>? mudDataGrid;
+    private bool visible;
+    private int rating;
+    private void OpenDialog() => visible = true;
+    void Submit() => visible = false;
+
+    private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private void ShowBtnPress(YA item)
+    {
+        mudDataGrid.SelectedItem = item;
+        
+    }
 
     private string SelectedRowClassFunc(YA element, int rowNumber)
     {
@@ -160,7 +131,7 @@
         string sql = $"select * from YA order by YAid desc";
         data = await db.LoadData<YA, dynamic>(sql, new { });
 
-        var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
     }
 
     void RowClicked(DataGridRowClickEventArgs<YA> args)
@@ -168,7 +139,8 @@
         //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
         MTid = args.Item.MTid;
         TTid = args.Item.TTid;
-        sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        
+        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
         visible = true;
     }
 
