@@ -1,0 +1,51 @@
+﻿@inject IDataAccess db
+
+<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">UsrActivity #@UTid @Title</MudText>
+
+<MudDataGrid T="UA" Items="@data" @ref="mudDataGrid" 
+             Breakpoint="Breakpoint.None" 
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"  
+             Virtualize="true"
+             Hover="true" Striped="true" Dense="true" 
+             Filterable="false" Groupable="true" MultiSelection="false">
+    <Columns>
+        <Column T="UA" Field="@nameof(UA.UAid)" Title="ID" Groupable="false" Filterable="false" />
+        <Column T="UA" Field="@nameof(UA.EXD)" Groupable="false">
+            <CellTemplate>
+                @context.Item.EXD.ToString("dd.MM.yy HH:mm:ss:fff")
+            </CellTemplate>
+        </Column>
+        <Column T="UA" Field="@nameof(UA.Typ)" />
+        <Column T="UA" Field="@nameof(UA.Stu)" />
+        <Column T="UA" Field="@nameof(UA.LgnNme)" />
+        <Column T="UA" Field="@nameof(UA.IP)" />
+    </Columns>
+</MudDataGrid>
+
+@code {
+    [CascadingParameter] App app { get; set; }
+    [Parameter] public int UTid { get; set; } = 0;
+    [Parameter] public string Title { get; set; } = "";
+
+    private int selectedRowNumber = -1;
+    private MudDataGrid<UA>? mudDataGrid;
+    private IEnumerable<UA>? data; // = new List<Element>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from UA where UTid = @UTid order by UAid";
+        data = await db.LoadData<UA, dynamic>(sql, new { UTid = UTid });
+    }
+
+    private class UA
+    {
+        public int UAid { get; set; }
+        public DateTime EXD { get; set; }
+        public int UTid { get; set; }
+        public string Typ { get; set; }
+        public int Stu { get; set; }
+        public string LgnNme { get; set; }
+        public string IP { get; set; }
+    }
+
+}

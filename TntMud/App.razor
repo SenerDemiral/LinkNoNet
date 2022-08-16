@@ -82,8 +82,8 @@
         <MudText Typo="Typo.h6">TntMud</MudText>
     </MudDrawerHeader>
     <MudNavMenu>
-        <MudNavLink OnClick="() => AddCounter()">Counter</MudNavLink>
-        <MudNavLink OnClick="() => AddIndex()">Index</MudNavLink>
+        <MudNavLink OnClick="@AddCounter">Counter</MudNavLink>
+        <MudNavLink OnClick="@AddIndex">Index</MudNavLink>
         <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
         @if (AppState.UsrId == 0)
         {
@@ -132,28 +132,19 @@
         ActiveTabKey = TabKeyGen;
     }
 
-    public void AddIndex(bool refresh = false)
+    public void AddIndex()
     {
         var i = AddDynCmp("Idx", typeof(Pages.Index), null);
-
-        if (refresh)
-            StateHasChanged();
     }
 
-    public void AddUT(bool refresh = false)
+    public void AddUT()
     {
         var i = AddDynCmp("Usr", typeof(Pages.UtAdm), null);
-
-        if (refresh)
-            StateHasChanged();
     }
 
-    public void AddCounter(bool refresh = false)
+    public void AddCounter()
     {
         var i = AddDynCmp("Ctr", typeof(Counter), null);
-        
-        if (refresh)
-            StateHasChanged();
     }
 
     public void AddFetchData(string? p1, string? p2, bool refresh = false)
@@ -270,7 +261,7 @@
         TabCount = cmpDic.Count.ToString();
     }
 
-    public int AddDynCmp(string tabText, Type type, Dictionary<string, object>? prms)
+    public int AddDynCmp(string tabText, Type type, Dictionary<string, object>? prms, bool refreshUI = false)
     {
         int i = TabKeyGen;
 
@@ -281,6 +272,10 @@
             _drawerOpen = false;
 
         TabCount = cmpDic.Count.ToString();
+
+        if(refreshUI)
+            StateHasChanged();
+
         return i;
     }
 

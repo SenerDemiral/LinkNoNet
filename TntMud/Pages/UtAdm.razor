@@ -6,24 +6,42 @@
         background-color: #1E88E5 !important;
     }
 
-        .selected > td {
-            color: white !important;
-        }
+    .selected > td {
+        color: white !important;
+    }
 
-            .selected > td .mud-input {
-                color: white !important;
-            }
+    .selected > td .mud-input {
+        color: white !important;
+    }
+
+    .mud-table-cell {
+        padding: 4px !important;
+    }
+
+    .mud-table-head > .mud-table-row > .mud-table-cell {
+       color: red;
+    }
 </style>
+
 
 <MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>
 
-<MudDataGrid T="UT" Items="@data" @ref="mudDataGrid"
-             Hover="true" Dense="true" Groupable="true" RowClassFunc="@SelectedRowClassFunc"
-             Filterable="false" MultiSelection="false"
-             RowClick="@RowClicked" Striped="true">
+<MudDataGrid T="UT" Items="@data" @ref="mudDataGrid" 
+             Breakpoint="Breakpoint.None" 
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"  
+             Virtualize="true"
+             Hover="true" Striped="true" Dense="true" Bordered="true"
+             Filterable="false" Groupable="true" MultiSelection="false" 
+             RowClassFunc="@SelectedRowClassFunc" 
+             RowClick="@RowClicked" >
     <Columns>
+        <Column T="UT" Title="Detay">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" OnClick="@(() => ContextMenuShow(context.Item))" />
+            </CellTemplate>
+        </Column>
         <Column T="UT" Field="@nameof(UT.UTid)" Title="ID" Groupable="false" Filterable="false" />
-        <Column T="UT" Field="@nameof(UT.StuAd)" Title="Statu"/>
+        <Column T="UT" Field="@nameof(UT.StuAd)" Title="Statu" />
         <Column T="UT" Field="@nameof(UT.Name)" Title="Ad" />
         <Column T="UT" Field="@nameof(UT.Moniker)" Title="KisaAd" />
         <Column T="UT" Field="@nameof(UT.Typ)" />
@@ -31,7 +49,7 @@
     </Columns>
 </MudDataGrid>
 
-<MudDialog @bind-IsVisible="visible" Options="dialogOptions" DisableSidePadding="true">
+@*<MudDialog @bind-IsVisible="visible" Options="dialogOptions" DisableSidePadding="true">
     <DialogContent>
         <MudContainer Style="max-height: 90vh ; overflow-y: scroll; padding-left: 0px;">
             <MudTreeView T="string" ExpandOnClick="true" Dense="true">
@@ -51,21 +69,51 @@
     </DialogContent>
 
 </MudDialog>
+*@
 
+<MudDialog @bind-IsVisible="inLineDialogVisible" Options="dialogOptions" DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh ; overflow-y: scroll">
+            <MudList Clickable="true" Dense="true">
+                <MudListItem Text="Activity" OnClick="AddUaAdm" />
+                <MudDivider />
+                <MudListItem Text="Mağaza" />
+                <MudListItem Text="Tanıtıcı" />
+            </MudList>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
 
 @code {
+    [CascadingParameter] App app { get; set; }
+
     private IEnumerable<UT>? data; // = new List<Element>();
     string Typ = "";
     int RefId = 0;
     string sty { get; set; }
     private int selectedRowNumber = -1;
     private MudDataGrid<UT>? mudDataGrid;
-    private bool visible;
+    private bool inLineDialogVisible;
     private int rating;
-    private void OpenDialog() => visible = true;
-    void Submit() => visible = false;
+    private void OpenDialog() => inLineDialogVisible = true;
+    void Submit() => inLineDialogVisible = false;
 
     private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private void AddUaAdm()
+    {
+        app.AddDynCmp("UsrAct", typeof(UaAdm), new(){
+            { "UTid", mudDataGrid.SelectedItem.UTid },
+            { "Title", mudDataGrid.SelectedItem.Moniker }
+        }, true);
+        inLineDialogVisible = false;
+    }
+
+    private void ContextMenuShow(UT item)
+    {
+        mudDataGrid.SelectedItem = item;
+        inLineDialogVisible = true;
+    }
 
     private string SelectedRowClassFunc(UT element, int rowNumber)
     {
@@ -94,13 +142,13 @@
     void RowClicked(DataGridRowClickEventArgs<UT> args)
     {
         //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-        Typ = args.Item.Typ;
-        RefId = args.Item.RefId;
-        sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
-        visible = true;
+        //Typ = args.Item.Typ;
+        //RefId = args.Item.RefId;
+        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        //inLineDialogVisible = true;
     }
 
-    public class UT
+    private class UT
     {
         public int UTid { get; set; }
         public int Stu { get; set; }
