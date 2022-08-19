@@ -1,0 +1,121 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inject ISnackbar Snackbar
+@inject AppState AppState
+@inject IDataAccess db
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Tanıtıcı olmak istiyorum</MudText>
+        <MudDivider />
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudTextField Label="İsim" AutoFocus="true"
+                          HelperText="Ad Soyad"
+                          @bind-Value="model.Yer"
+                          For="@(() => model.Yer)" />
+            <MudTextField Label="Email" Class="mt-3"
+                          @bind-Value="model.EBid"
+                          For="@(() => model.EBid)" />
+            <MudTextField Label="Tel" Class="mt-3"
+                          @bind-Value="model.BgnTS"
+                          For="@(() => model.BgnTS)"
+                          Mask="@mTelMask"
+                          HelperText="@mTelMask.Mask" />
+            <br />
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    public bool success { get; set; } = false;
+    private IEnumerable<EB>? brans;
+    private IEnumerable<YER>? yer;
+
+
+    private RegisterModel model { get; set; } = new();
+    public PatternMask mTelMask = new PatternMask("(###) ### ## ##")
+        {
+            MaskChars = new[] { new MaskChar('#', @"[0-9]") },
+            Placeholder = '_',
+            CleanDelimiters = true,
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        brans = await db.LoadData<EB, dynamic>("select * from EB", new { });
+        yer = await db.LoadData<YER, dynamic>("select * from EB", new { });
+        //Owner = AppState.UsrId == dUTid ? true : false;
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+
+        ReturnModel rtrn = new();
+        //rtrn = await db.StoreProc<ReturnModel, RegisterModel>("ET_Mdf(@d", model);
+
+        if (rtrn.Rsp == 0)
+        {
+            Snackbar.Add(rtrn.Msg, Severity.Success, config =>
+                {
+                    config.RequireInteraction = true;
+                    config.ShowCloseIcon = true;
+                });
+
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add(rtrn.Msg, Severity.Warning);
+        }
+    }
+
+    private void Cancel()
+    {
+        Snackbar.Add("İşlem iptal edildi", Severity.Warning);
+        MudDialog?.Cancel();
+    }
+
+    private class RegisterModel
+    {
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        public string Yer { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        public int EBid { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        public DateTime BgnTS { get; set; }
+        
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        public DateTime EndTS { get; set; }
+        
+        public string? Info { get; set; }
+    }
+
+    private class ReturnModel
+    {
+        public int Rsp { get; set; }
+        public string Msg { get; set; }
+    }
+
+    private class YER
+    {
+        public string Ad { get; set; }
+    }
+
+    private class EB
+    {
+        public int EBid { get; set; }
+        public string Ad { get; set; }
+        public string? Info { get; set; }
+    }
+}

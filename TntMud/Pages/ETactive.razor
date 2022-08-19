@@ -3,7 +3,9 @@
 @inject IDialogService DialogService
 
 <div class="d-flex justify-center flex-grow-1 gap-2 " >
+    <MudTooltip Text="Yeni Etkinlil Oluştur" Color="Color.Warning" Arrow="true" Placement="Placement.Right">
     <MudIconButton Class="flex-grow-0 py-0" Icon="@Icons.Material.Filled.Add" Color="Color.Success" OnClick="@InsRec" />
+    </MudTooltip>
     <MudText Class="flex-grow-1 d-flex justify-center" Style="background-color:black; color:white;">Etkinlikler</MudText>
 </div>
 
@@ -16,9 +18,14 @@
              RowClassFunc="@SelectedRowClassFunc"
              RowClick="@RowClicked">
     <Columns>
-        <Column T="ET" Title="Detay">
+        <Column T="ET" Title="Detay" CellStyle="text-align:center; width:50px;">
             <CellTemplate>
-                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" OnClick="@(() => ContextMenuShow(context.Item))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-2 py-0" Disabled="false" OnClick="@(() => ContextMenuShow(context.Item))" />
+            </CellTemplate>
+        </Column>
+        <Column T="ET" Field="@nameof(ET.kSay)" Title="KtlnSay" Groupable="false" CellStyle="text-align:center; width:50px;">
+            <CellTemplate>
+                <MudAvatar Size="Size.Small" Color="Color.Primary" Class="px-2 py-0" >@context.Item.kSay</MudAvatar>
             </CellTemplate>
         </Column>
         <Column T="ET" Field="@nameof(ET.ETid)" Title="ID" Groupable="false" Filterable="false" />
@@ -86,6 +93,7 @@
     {
         app.AddDynCmp("ET_EK", typeof(ET_EK), new(){
             { "ETid", mudDataGrid.SelectedItem.ETid },
+            { "dUTid", mudDataGrid.SelectedItem.dUTid },
             { "Mdfy", mudDataGrid.SelectedItem.Mdfy == 0 ? false : true },
             { "Title", $"{mudDataGrid.SelectedItem.dMoniker} {mudDataGrid.SelectedItem.EBAd} → Katılanlar" }
         }, true);
@@ -138,6 +146,7 @@
         public DateTime StuTS { get; set; }
         public string Info { get; set; }
         public DateTime InsTS { get; set; }
+        public int kSay { get; set; }
         public int Mdfy { get; set; }
     }
 }

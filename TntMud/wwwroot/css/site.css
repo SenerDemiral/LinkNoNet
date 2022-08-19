@@ -12,7 +12,11 @@
     }
 
 .mud-table-cell {
-    padding: 4px !important;
+    padding: 2px 4px 2px 4px !important;
+}
+
+.mud-table-cell > .mud{
+    padding: 2px 4px 2px 4px !important;
 }
 
 .mud-table-head > .mud-table-row > .mud-table-cell {

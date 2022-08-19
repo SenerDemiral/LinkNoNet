@@ -1,37 +1,51 @@
-﻿@inject AppState AppState
+﻿@inject ISnackbar Snackbar
+@inject AppState AppState
 @inject IDataAccess db
 @inject IDialogService DialogService
 
 @*<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">@Title</MudText>*@
 <div class="d-flex justify-center flex-grow-1 gap-2 ">
-    @if (Mdfy)
+    @if (Mdfy && AppState.UsrId != 0)
     {
-        <MudIconButton Class="flex-grow-0 py-0" Icon="@Icons.Material.Filled.Add" Color="Color.Success" OnClick="@InsRec" />
+        <MudButton Class="flex-grow-0 py-0" StartIcon="@Icons.Material.Filled._360" Variant="Variant.Filled" Size="Size.Small" Color="Color.Success"
+               OnClick="@TglKatilimciStu">Katıl/Vazgeç</MudButton>
     }
     <MudText Class="flex-grow-1 d-flex justify-center" Style="background-color:black; color:white;">@Title</MudText>
+    @if (Owner)
+    {
+        <MudButton Class="flex-grow-0 py-0" EndIcon="@Icons.Material.Filled._360" Variant="Variant.Filled" Size=" Size.Small" Color="Color.Error"
+               OnClick="@OpenStuDialog">Durum Değiştir</MudButton>
+    }
 </div>
 
 <MudDataGrid T="EK" Items="@data" @ref="mudDataGrid" 
              Breakpoint="Breakpoint.None"
-             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="true"
              Virtualize="true"
              Hover="true" Striped="true" Dense="true" Bordered="true"
-             Filterable="false" Groupable="true" MultiSelection="false"
+             Filterable="false" Groupable="true" MultiSelection="true"
              RowClassFunc="@SelectedRowClassFunc"
+             SelectedItemsChanged="@SelectedItemsChanged"
              RowClick="@RowClicked">
     <Columns>
-        <Column T="EK" Title="Detay">
+        @if (Owner)
+        {
+            <SelectColumn T="EK"/>
+        }
+        <Column T="EK" Title="Detay" CellStyle="text-align:center; width:50px;">
             <CellTemplate>
                 <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" OnClick="@(() => ContextMenuShow(context.Item))" />
             </CellTemplate>
         </Column>
         <Column T="EK" Field="@nameof(EK.EKid)" Title="ID" Groupable="false" Filterable="false" />
-        <Column T="EK" Field="@nameof(EK.dStuAd)" Title="DüzenlemeDurum" />
-        <Column T="EK" Field="@nameof(EK.dStuTS)" Title="DüzenlemeTrh" Groupable="false">
+        <Column T="EK" Field="@nameof(EK.dStuAd)" Title="DüzenlemeDurum" >
             <CellTemplate>
-                @context.Item.dStuTS.ToString("dd.MM.yy HH:mm")
+                <div style="display:flex; justify-content:space-between; align-items:baseline;" >
+                    <div>@context.Item.dStuAd</div> 
+                    <div style="font-size:xx-small">@context.Item.dStuTS.ToString("dd.MM.yy HH:mm")</div>
+                </div>
             </CellTemplate>
-        </Column>
+            </Column>
         <Column T="EK" Field="@nameof(EK.kMoniker)" Title="Katılımcı" />
         <Column T="EK" Field="@nameof(EK.kStuAd)" Title="KatılımDurum" />
         <Column T="EK" Field="@nameof(EK.kStuTS)" Title="KatılımTrh" Groupable="false">
@@ -42,7 +56,7 @@
     </Columns>
 </MudDataGrid>
 
-<MudDialog @bind-IsVisible="inLineDialogVisible" DisableSidePadding="true" Class="pa-2">
+<MudDialog @bind-IsVisible="contextDialogVisible" DisableSidePadding="true" Class="pa-2">
     <TitleContent>
         <MudText>@DialogTitle</MudText>
         <MudDivider />
@@ -57,32 +71,79 @@
     </DialogContent>
 </MudDialog>
 
+<MudDialog @bind-IsVisible="stuDialogVisible" DisableSidePadding="false" Options="stuDialogOptions">
+    <TitleContent>
+        <MudText>Durum Değiştir</MudText>
+        <MudDivider />
+    </TitleContent>
+    <DialogContent>
+        <MudContainer >
+            <MudSelect @bind-Value="dStuFr" style="width: 200px;" Label="Mevcut Durum" HelperText="Mevcut" Variant="Variant.Outlined" OpenIcon="@Icons.Material.Filled.LocalDrink" AdornmentColor="Color.Secondary">
+                @foreach (dStu item in Enum.GetValues(typeof(dStu)))
+                {
+                    <MudSelectItem Value="@item">@item</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect @bind-Value="dStuTo" Label="Olacağı Durum" HelperText="Olacak" Variant="Variant.Outlined" OpenIcon="@Icons.Material.Filled.LocalDrink" AdornmentColor="Color.Secondary">
+                @foreach (dStu item in Enum.GetValues(typeof(dStu)))
+                {
+                    <MudSelectItem Value="@item">@item</MudSelectItem>
+                }
+            </MudSelect>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="SubmitStuChange">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
 @code {
     [CascadingParameter] App app { get; set; }
     [Parameter] public int ETid { get; set; } = 0;
+    [Parameter] public int dUTid { get; set; } = 0;
     [Parameter] public bool Mdfy { get; set; } = false;
     [Parameter] public string Title { get; set; } = "";
 
     private IEnumerable<EK>? data;
     private MudDataGrid<EK>? mudDataGrid;
     private int selectedRowNumber = -1;
-    private bool inLineDialogVisible;
+    private bool contextDialogVisible;
+    private bool stuDialogVisible;
     private DialogOptions dialogOptions = new() { NoHeader = true, };
+    private DialogOptions stuDialogOptions = new() { MaxWidth = MaxWidth.Medium, CloseButton = true };
     private string DialogTitle = "";
+    private bool Owner = false;
+    private enum dStu {
+        Açık = 0,
+        Kabul = 1,
+        Red = -1,
+        Yasak = -9
+    }
+    private dStu dStuFr { get; set; } = dStu.Açık;
+    private dStu dStuTo { get; set; } = dStu.Kabul;
 
-    private void OpenDialog() => inLineDialogVisible = true;
-    void Submit() => inLineDialogVisible = false;
+    //private void OpenContextDialog() => contextDialogVisible = true;
+    void Submit() => contextDialogVisible = false;
+    private void OpenStuDialog() => stuDialogVisible = true;
 
     protected override async Task OnInitializedAsync()
     {
-        string sql = $"select * from ET_EK(@ETid)";
-        data = await db.LoadData<EK, dynamic>(sql, new { ETid = ETid });
+        await GetData();
+        Owner = AppState.UsrId == dUTid ? true : false;
 
         //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
     }
 
+    private async Task GetData() 
+    {
+        string sql = $"select * from ET_EK(@ETid)";
+        data = await db.LoadData<EK, dynamic>(sql, new { ETid = ETid });
+    }
+
     private void AddKatil()
     {
+        var aaa = (int)dStuTo;
         //app.AddDynCmp("ET_EK", typeof(ET_EK), new(){
         //    { "ETid", mudDataGrid.SelectedItem.EKid },
         //    { "Title", $"{mudDataGrid.SelectedItem.kMoniker}  Katılanlar" }
@@ -99,11 +160,35 @@
         //inLineDialogVisible = false;
     }
 
+    private async Task SubmitStuChange()
+    {
+        //EK_DUpd (EKid D_I, dStuFr D_I, dStuTo D_I)
+        string sp = $"EK_DUPD(@EKid, @dStuFr, @dStuTo)";
+        foreach (var item in mudDataGrid.SelectedItems)
+        {
+            _ = await db.StoreProc<dynamic, dynamic>(sp, new { EKid = item.EKid, dStuFr = dStuFr, dStuTo = dStuTo });
+        }
+        await GetData();
+        stuDialogVisible = false;
+    }
+
+    private async Task TglKatilimciStu()
+    {
+        string sp = $"EK_KTGL(@ETid, @kUTid)";
+        var rtrn = await db.StoreProc<dynamic, dynamic>(sp, new { ETid = ETid, kUTid = AppState.UsrId });
+        Snackbar.Add(rtrn.MSG, Severity.Success);
+        int EKid = rtrn.EKID;
+
+        await GetData();
+        var item = data.Single(ek => ek.EKid == EKid);
+        mudDataGrid.SelectedItem = item;
+    }
+
     private void ContextMenuShow(EK item)
     {
         mudDataGrid.SelectedItem = item;
         DialogTitle = item.kMoniker;
-        inLineDialogVisible = true;
+        contextDialogVisible = true;
     }
 
     private string SelectedRowClassFunc(EK element, int rowNumber)
@@ -125,12 +210,12 @@
         //inLineDialogVisible = true;
     }
 
-    private void InsRec()
+    void SelectedItemsChanged(HashSet<EK> items)
     {
-
+        
+        //selecteds.Insert(0, items.)
+        //_events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
     }
-
-
     private class EK
     {
         public int EKid { get; set; }
