@@ -1,0 +1,144 @@
+﻿@inject AppState AppState
+@inject IDataAccess db
+@inject IDialogService DialogService
+
+<div class="d-flex justify-center flex-grow-1 gap-2 " >
+    <MudIconButton Class="flex-grow-0 py-0" Icon="@Icons.Material.Filled.Add" Color="Color.Success" OnClick="@InsRec" />
+    <MudText Class="flex-grow-1 d-flex justify-center" Style="background-color:black; color:white;">Etkinlikler</MudText>
+</div>
+
+<MudDataGrid T="ET" Items="@data" @ref="mudDataGrid" 
+             Breakpoint="Breakpoint.None"
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             Virtualize="true"
+             Hover="true" Striped="true" Dense="true" Bordered="true"
+             Filterable="false" Groupable="true" MultiSelection="false"
+             RowClassFunc="@SelectedRowClassFunc"
+             RowClick="@RowClicked">
+    <Columns>
+        <Column T="ET" Title="Detay">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" OnClick="@(() => ContextMenuShow(context.Item))" />
+            </CellTemplate>
+        </Column>
+        <Column T="ET" Field="@nameof(ET.ETid)" Title="ID" Groupable="false" Filterable="false" />
+        <Column T="ET" Field="@nameof(ET.EXD)"  Title="EtkinlikTrh" Groupable="false">
+            <CellTemplate>
+                @context.Item.EXD.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
+        <Column T="ET" Field="@nameof(ET.BgnTS)" Title="KatılımBaş" Groupable="false">
+            <CellTemplate>
+                @context.Item.BgnTS.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
+        <Column T="ET" Field="@nameof(ET.EndTS)" Title="KatılımBit" Groupable="false">
+            <CellTemplate>
+                @context.Item.EndTS.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
+        <Column T="ET" Field="@nameof(ET.Yer)" />
+        <Column T="ET" Field="@nameof(ET.EBAd)" Title="Branş" />
+        <Column T="ET" Field="@nameof(ET.dMoniker)" Title="Düzenleyen" />
+        <Column T="ET" Field="@nameof(ET.StuAd)" Title="Durum" />
+        <Column T="ET" Field="@nameof(ET.StuTS)" Title="Güncelleme" Groupable="false">
+            <CellTemplate>
+                @context.Item.StuTS.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
+    </Columns>
+</MudDataGrid>
+
+<MudDialog @bind-IsVisible="inLineDialogVisible" Options="dialogOptions" DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh ; overflow-y: scroll">
+            <MudList Clickable="true" Dense="true">
+                <MudListItem Text="Katılımcılar" OnClick="AddEK" />
+                <MudDivider />
+                <MudListItem Text="Düzenledikleri" />
+                <MudListItem Text="Katıldıkları" />
+            </MudList>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] App app { get; set; }
+
+    private IEnumerable<ET>? data;
+    private MudDataGrid<ET>? mudDataGrid;
+    private int selectedRowNumber = -1;
+    private bool inLineDialogVisible;
+    private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private void OpenDialog() => inLineDialogVisible = true;
+    void Submit() => inLineDialogVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from ET_ACTIVE";
+        data = await db.LoadData<ET, dynamic>(sql, new { });
+
+        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+    }
+    
+    private void AddEK()
+    {
+        app.AddDynCmp("ET_EK", typeof(ET_EK), new(){
+            { "ETid", mudDataGrid.SelectedItem.ETid },
+            { "Mdfy", mudDataGrid.SelectedItem.Mdfy == 0 ? false : true },
+            { "Title", $"{mudDataGrid.SelectedItem.dMoniker} {mudDataGrid.SelectedItem.EBAd} → Katılanlar" }
+        }, true);
+        inLineDialogVisible = false;
+    }
+
+    private void ContextMenuShow(ET item)
+    {
+        mudDataGrid.SelectedItem = item;
+        inLineDialogVisible = true;
+    }
+
+    private string SelectedRowClassFunc(ET element, int rowNumber)
+    {
+        if (mudDataGrid.SelectedItem != null && mudDataGrid.SelectedItem.Equals(element))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        return string.Empty;
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<ET> args)
+    {
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        //Typ = args.Item.Typ;
+        //RefId = args.Item.RefId;
+        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        //inLineDialogVisible = true;
+    }
+
+    private void InsRec()
+    {
+
+    }
+
+    private class ET
+    {
+        public int ETid { get; set; }
+        public DateTime EXD { get; set; }
+        public DateTime BgnTS { get; set; }
+        public DateTime EndTS { get; set; }
+        public string Yer { get; set; }
+        public int EBid { get; set; }
+        public string EBAd { get; set; }
+        public int dUTid { get; set; }
+        public string dMoniker { get; set; }
+        public int Stu { get; set; }
+        public string StuAd { get; set; }
+        public DateTime StuTS { get; set; }
+        public string Info { get; set; }
+        public DateTime InsTS { get; set; }
+        public int Mdfy { get; set; }
+    }
+}
+

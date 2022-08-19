@@ -1,0 +1,148 @@
+﻿@inject AppState AppState
+@inject IDataAccess db
+@inject IDialogService DialogService
+
+@*<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">@Title</MudText>*@
+<div class="d-flex justify-center flex-grow-1 gap-2 ">
+    @if (Mdfy)
+    {
+        <MudIconButton Class="flex-grow-0 py-0" Icon="@Icons.Material.Filled.Add" Color="Color.Success" OnClick="@InsRec" />
+    }
+    <MudText Class="flex-grow-1 d-flex justify-center" Style="background-color:black; color:white;">@Title</MudText>
+</div>
+
+<MudDataGrid T="EK" Items="@data" @ref="mudDataGrid" 
+             Breakpoint="Breakpoint.None"
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             Virtualize="true"
+             Hover="true" Striped="true" Dense="true" Bordered="true"
+             Filterable="false" Groupable="true" MultiSelection="false"
+             RowClassFunc="@SelectedRowClassFunc"
+             RowClick="@RowClicked">
+    <Columns>
+        <Column T="EK" Title="Detay">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" OnClick="@(() => ContextMenuShow(context.Item))" />
+            </CellTemplate>
+        </Column>
+        <Column T="EK" Field="@nameof(EK.EKid)" Title="ID" Groupable="false" Filterable="false" />
+        <Column T="EK" Field="@nameof(EK.dStuAd)" Title="DüzenlemeDurum" />
+        <Column T="EK" Field="@nameof(EK.dStuTS)" Title="DüzenlemeTrh" Groupable="false">
+            <CellTemplate>
+                @context.Item.dStuTS.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
+        <Column T="EK" Field="@nameof(EK.kMoniker)" Title="Katılımcı" />
+        <Column T="EK" Field="@nameof(EK.kStuAd)" Title="KatılımDurum" />
+        <Column T="EK" Field="@nameof(EK.kStuTS)" Title="KatılımTrh" Groupable="false">
+            <CellTemplate>
+                @context.Item.kStuTS.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
+    </Columns>
+</MudDataGrid>
+
+<MudDialog @bind-IsVisible="inLineDialogVisible" DisableSidePadding="true" Class="pa-2">
+    <TitleContent>
+        <MudText>@DialogTitle</MudText>
+        <MudDivider />
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh ; overflow-y: scroll">
+            <MudList Clickable="true" Dense="true">
+                <MudListItem Text="Katıldıkları" OnClick="AddKatil" />
+                <MudListItem Text="Düzenledikleri" OnClick="AddDuzen" />
+            </MudList>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] App app { get; set; }
+    [Parameter] public int ETid { get; set; } = 0;
+    [Parameter] public bool Mdfy { get; set; } = false;
+    [Parameter] public string Title { get; set; } = "";
+
+    private IEnumerable<EK>? data;
+    private MudDataGrid<EK>? mudDataGrid;
+    private int selectedRowNumber = -1;
+    private bool inLineDialogVisible;
+    private DialogOptions dialogOptions = new() { NoHeader = true, };
+    private string DialogTitle = "";
+
+    private void OpenDialog() => inLineDialogVisible = true;
+    void Submit() => inLineDialogVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from ET_EK(@ETid)";
+        data = await db.LoadData<EK, dynamic>(sql, new { ETid = ETid });
+
+        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+    }
+
+    private void AddKatil()
+    {
+        //app.AddDynCmp("ET_EK", typeof(ET_EK), new(){
+        //    { "ETid", mudDataGrid.SelectedItem.EKid },
+        //    { "Title", $"{mudDataGrid.SelectedItem.kMoniker}  Katılanlar" }
+        //}, true);
+        //inLineDialogVisible = false;
+    }
+
+    private void AddDuzen()
+    {
+        //app.AddDynCmp("ET_EK", typeof(ET_EK), new(){
+        //    { "ETid", mudDataGrid.SelectedItem.EKid },
+        //    { "Title", $"{mudDataGrid.SelectedItem.kMoniker}  Katılanlar" }
+        //}, true);
+        //inLineDialogVisible = false;
+    }
+
+    private void ContextMenuShow(EK item)
+    {
+        mudDataGrid.SelectedItem = item;
+        DialogTitle = item.kMoniker;
+        inLineDialogVisible = true;
+    }
+
+    private string SelectedRowClassFunc(EK element, int rowNumber)
+    {
+        if (mudDataGrid.SelectedItem != null && mudDataGrid.SelectedItem.Equals(element))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        return string.Empty;
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<EK> args)
+    {
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        //Typ = args.Item.Typ;
+        //RefId = args.Item.RefId;
+        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        //inLineDialogVisible = true;
+    }
+
+    private void InsRec()
+    {
+
+    }
+
+
+    private class EK
+    {
+        public int EKid { get; set; }
+        public int kUTid { get; set; }
+        public string kMoniker { get; set; }
+        public int dUTid { get; set; }
+        public int dStu { get; set; }
+        public string dStuAd { get; set; }
+        public DateTime dStuTS { get; set; }
+        public int kStu { get; set; }
+        public string kStuAd { get; set; }
+        public DateTime kStuTS { get; set; }
+    }
+}
+

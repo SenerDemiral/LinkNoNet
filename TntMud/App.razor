@@ -82,6 +82,7 @@
         <MudText Typo="Typo.h6">TntMud</MudText>
     </MudDrawerHeader>
     <MudNavMenu>
+        <MudNavLink OnClick="@AddETactive">Etkinlikler</MudNavLink>
         <MudNavLink OnClick="@AddCounter">Counter</MudNavLink>
         <MudNavLink OnClick="@AddIndex">Index</MudNavLink>
         <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
@@ -131,12 +132,16 @@
         cmpDic.Clear();
         ActiveTabKey = TabKeyGen;
     }
+    
+    public void AddETactive()
+    {
+        var i = AddDynCmp("ET", typeof(Pages.ETactive), null);
+    }
 
     public void AddIndex()
     {
         var i = AddDynCmp("Idx", typeof(Pages.Index), null);
     }
-
     public void AddUT()
     {
         var i = AddDynCmp("Usr", typeof(Pages.UtAdm), null);

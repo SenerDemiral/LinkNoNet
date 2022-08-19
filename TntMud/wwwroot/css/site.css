@@ -1,0 +1,24 @@
+
+.selected {
+    background-color: #1E88E5 !important;
+}
+
+.selected > td {
+    color: white !important;
+}
+
+    .selected > td .mud-input {
+        color: white !important;
+    }
+
+.mud-table-cell {
+    padding: 4px !important;
+}
+
+.mud-table-head > .mud-table-row > .mud-table-cell {
+    color: red;
+}
+
+.mud-dialog-title {
+    padding-bottom: 0 !important;
+}
