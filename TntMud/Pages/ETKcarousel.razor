@@ -1,0 +1,160 @@
+﻿@inject AppState AppState
+@inject IDataAccess db
+
+<MudCarousel TData="object" Class="mud-width-full" Style="height:300px;"
+             ShowArrows="false" ShowBullets="true" AutoCycle="false" >
+     <MudCarouselItem  Color="@CarouselItemColor()">
+        <div class="d-flex justify-center" style="height:100%">
+            <MudCarousel ItemsSource="@data" @bind-SelectedIndex="selectedIndex" Class="mud-width-full" AutoCycle="false" ShowBullets="false">
+                <ItemTemplate>
+                    <div class="d-flex flex-column align-center justify-center mt-0" style="height:100%">
+                        <MudPaper Height="80%" Width="80%">
+                        <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@ButtonDisabled()">@ButtonText()</MudButton>                        <MudText>Düzenleyen: @context.dMoniker </MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Etkinlik: @context.EBAd @context.StuAd</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Tarih: @context.EXD.ToString("dd.MM.yy hh:mm")</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Yer: @context.Yer</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Katılım: @context.BgnTS.ToString("dd.MM.yy hh:mm") ↔ @context.EndTS.ToString("dd.MM.yy hh:mm")</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">isOwner: @context.isOwner, kStu: @context.kStu, kMdfbl: @context.iskMdfbl </MudText>
+                        </MudPaper>
+                    </div>
+                </ItemTemplate>
+            </MudCarousel>
+        </div>
+    </MudCarouselItem>
+    
+    <MudCarouselItem Color="@Color.Secondary">
+        <div class="d-flex flex-column justify-center align-center" style="height:90%">
+            <MudPaper Width="50%">
+            <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+                <MudText Align="@Align.Center" Class="mx-auto">aaaa</MudText>
+                <MudText Align="@Align.Center" Class="mx-auto">bbbbbbbbb</MudText>
+            </MudPaper>
+        </div>
+    </MudCarouselItem>
+</MudCarousel>
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Position="Position.Top" Centered="true" Color="@Color.Primary">
+    <MudTabPanel Text="Etkinlikler">
+        <MudCarousel ItemsSource="@data" @bind-SelectedIndex="selectedIndex" Class="mud-width-full" Style="height:300px;" AutoCycle="false" ShowBullets="false">
+            <ItemTemplate>
+                <div class="d-flex flex-column align-center justify-center mt-0" style="height:100%">
+                        <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@ButtonDisabled()">@ButtonText()</MudButton>                        <MudText>Düzenleyen: @context.dMoniker </MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Etkinlik: @context.EBAd @context.StuAd</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Tarih: @context.EXD.ToString("dd.MM.yy hh:mm")</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Yer: @context.Yer</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">Katılım: @context.BgnTS.ToString("dd.MM.yy hh:mm") ↔ @context.EndTS.ToString("dd.MM.yy hh:mm")</MudText>
+                        <MudText Align="@Align.Center" Class="mx-auto">isOwner: @context.isOwner, kStu: @context.kStu, kMdfbl: @context.iskMdfbl </MudText>
+                </div>
+            </ItemTemplate>
+        </MudCarousel>
+    </MudTabPanel>
+    <MudTabPanel Text="Katılımcılar">
+        <MudText>Content Two</MudText>
+    </MudTabPanel>
+</MudTabs>
+@*<MudCarousel Class="mud-width-full" ItemsSource="@data" Style="height:200px;" AutoCycle="false">
+    <ItemTemplate>
+        <div class="d-flex flex-column flex-column justify-center" style="height:100%">
+            <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+            <MudText Align="@Align.Center" Class="mx-auto">@context.ETid</MudText>
+        </div>
+    </ItemTemplate>
+</MudCarousel>
+*@
+<MudText>SelectedIndex: @selectedIndex @data.ElementAt(selectedIndex).EBAd</MudText>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">Primary</MudButton>
+
+
+@code {
+    [CascadingParameter] App app { get; set; }
+
+    private IEnumerable<ET>? data;
+    private int selectedIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from ET_ACTIVE2(@UTid)";
+        data = await db.LoadData<ET, dynamic>(sql, new { UTid = AppState.UsrId});
+
+        //var aaa = data.ToList();
+        //var bbb = aaa[0].ETid;
+        //var ccc = data.ElementAt(0);
+        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+    }
+
+    private Color CarouselItemColor() {
+        if (data.ElementAt(selectedIndex).iskMdfbl)
+            return Color.Primary;
+        return Color.Warning;
+    }
+
+    private string ButtonText() {
+        string txt = "";
+        var item = data.ElementAt(selectedIndex);
+        
+        kStus kStu = (kStus)item.kStu;
+
+        //if (item.isMdfbl) {
+            switch(kStu){
+                case kStus.Katılmadı:
+                    txt = "Katıl";
+                    break;
+                case kStus.Vazgeçti:
+                    txt = "Vazgeçmişsin! Hala katılabilirsin";
+                    break;
+                case kStus.Katıldı:
+                    txt = "Vazgeç";
+                    break;
+            }
+            //if (item.kStu == (int)kStu.Katılmadı)
+            //    txt = "Katıl";
+            //else if (item.kStu == (int)kStu.Vazgeçti)
+            //    txt = "Vazgeçmişsin! Hala katılabilirsin";
+            //else
+            //    txt = "Vazgeç";
+            //if (item.kStu == ET.kStu.Katilmadi)
+            //    txt = "Katıl";
+            //else if (item.kStu == -2)
+            //    txt = "Vazgeçmişsin! Hala katılabilirsin";
+            //else
+            //    txt = "Vazgeç";
+        //}
+        return txt;
+    }
+
+    private bool ButtonDisabled() {
+        if (data.ElementAt(selectedIndex).iskMdfbl)
+            return false;
+        return true;
+    }
+
+    private enum kStus { Katılmadı = 0, Katıldı = 1, Vazgeçti = -2 };
+
+    private class ET
+    {
+        public int ETid { get; set; }
+        public DateTime EXD { get; set; }
+        public DateTime BgnTS { get; set; }
+        public DateTime EndTS { get; set; }
+        public string Yer { get; set; }
+        public int EBid { get; set; }
+        public string EBAd { get; set; }
+        public int dUTid { get; set; }
+        public string dMoniker { get; set; }
+        public int Stu { get; set; }
+        public string StuAd { get; set; }
+        public DateTime StuTS { get; set; }
+        public string Info { get; set; }
+        public DateTime InsTS { get; set; }
+        
+        public int Ownr_ { get; set; }
+        public int kMdfb_ { get; set; }
+        public int kSay { get; set; }
+        public int kStu { get; set; }
+
+        public bool isOwner => Ownr_ == 1 ? true : false;
+        public bool iskMdfbl => kMdfb_ == 1 ? true : false;
+    }
+}

@@ -83,6 +83,7 @@
     </MudDrawerHeader>
     <MudNavMenu>
         <MudNavLink OnClick="@AddETactive">Etkinlikler</MudNavLink>
+        <MudNavLink OnClick="@AddETK">Etkinlikler Carousel</MudNavLink>
         <MudNavLink OnClick="@AddCounter">Counter</MudNavLink>
         <MudNavLink OnClick="@AddIndex">Index</MudNavLink>
         <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
@@ -136,6 +137,11 @@
     public void AddETactive()
     {
         var i = AddDynCmp("ET", typeof(Pages.ETactive), null);
+    }
+
+    public void AddETK()
+    {
+        var i = AddDynCmp("ETK", typeof(Pages.ETKcarousel), null);
     }
 
     public void AddIndex()
