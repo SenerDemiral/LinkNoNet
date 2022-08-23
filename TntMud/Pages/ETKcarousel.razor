@@ -1,22 +1,55 @@
 ﻿@inject AppState AppState
 @inject IDataAccess db
 
-<MudCarousel TData="object" Class="mud-width-full" Style="height:300px;"
+<MudCarousel TData="object" Style="height:500px;"
              ShowArrows="false" ShowBullets="true" AutoCycle="false" >
      <MudCarouselItem  Color="@CarouselItemColor()">
         <div class="d-flex justify-center" style="height:100%">
-            <MudCarousel ItemsSource="@data" @bind-SelectedIndex="selectedIndex" Class="mud-width-full" AutoCycle="false" ShowBullets="false">
+            <MudCarousel ItemsSource="@data" @bind-SelectedIndex="selectedIndex"  Class="mud-width-full" AutoCycle="false" ShowBullets="false">
                 <ItemTemplate>
-                    <div class="d-flex flex-column align-center justify-center mt-0" style="height:100%">
-                        <MudPaper Height="80%" Width="80%">
-                        <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@ButtonDisabled()">@ButtonText()</MudButton>                        <MudText>Düzenleyen: @context.dMoniker </MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Etkinlik: @context.EBAd @context.StuAd</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Tarih: @context.EXD.ToString("dd.MM.yy hh:mm")</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Yer: @context.Yer</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Katılım: @context.BgnTS.ToString("dd.MM.yy hh:mm") ↔ @context.EndTS.ToString("dd.MM.yy hh:mm")</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">isOwner: @context.isOwner, kStu: @context.kStu, kMdfbl: @context.iskMdfbl </MudText>
-                        </MudPaper>
+                    <div class="etGrid" style="height:100%">
+
+                        <MudButton Style="grid-area: 1 / 1 / 2 / 2" Variant="Variant.Filled" Color="Color.Secondary" Disabled="@ButtonDisabled()" OnClick="TglKatilimciStu">@ButtonText()</MudButton>
+
+                        <MudText Class="box" Style="grid-area: 2 / 1 / 3 / 2">
+                            @context.EBAd
+                            <div class="topleft">Etkinlik</div>
+                            <MudIcon Icon="@context.selectedEstuIcon" Color="Color.Inherit" Size="Size.Medium" Class="topright" />
+                        </MudText>
+
+                        <MudText Class="box" Style="grid-area: 3 / 1 / 4 / 2">
+                            @context.Yer
+                            <div class="topleft">Yer</div>
+                        </MudText>
+
+                        <MudText Class="box" Style="grid-area: 4 / 1 / 5 / 2">
+                            @context.EXD.ToString("dd.MM.yy hh:mm ddd")
+                            <div class="topleft">Etkinlik Tarihi</div>
+                        </MudText>
+
+                        <MudText Class="box" Style="grid-area: 5 / 1 / 6 / 2">
+                            @context.BgnTS.ToString("dd.MM.yy hh:mm ddd") - @context.EndTS.ToString("dd.MM.yy hh:mm ddd")
+                            <div class="topleft">Katılım Başlangıç - Bitiş</div>
+                        </MudText>
+
+
+                        <MudText Class="box" Style="grid-area: 6 / 1 / 7 / 2">
+                            @AppState.UsrMoniker
+                            <div class="topleft">Katılımcı</div>
+                            <MudIcon Class="topright" Icon="@context.selectedKstuIcon" Color="Color.Inherit" Size="Size.Large" />
+                        </MudText>
+                            
+                        <MudText Class="box" Style="grid-area: 7 / 1 / 8 / 2">
+                            @context.dMoniker [@context.deSay]
+                            <div class="topleft">Düzenleyen</div>
+                        </MudText>
+
+                        
+                        <MudText Class="box" Style="grid-area: 8 / 1 / 9 / 2">
+                            <div>
+                            adfafa sdf sfgrg htrhb hdfg dgdfghgh bfhhf bghfbh fbghdfghd bhfh fghbbh hfdhbh fghfbhbh bh
+                            </div>
+                        </MudText>
                     </div>
                 </ItemTemplate>
             </MudCarousel>
@@ -34,26 +67,7 @@
     </MudCarouselItem>
 </MudCarousel>
 
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Position="Position.Top" Centered="true" Color="@Color.Primary">
-    <MudTabPanel Text="Etkinlikler">
-        <MudCarousel ItemsSource="@data" @bind-SelectedIndex="selectedIndex" Class="mud-width-full" Style="height:300px;" AutoCycle="false" ShowBullets="false">
-            <ItemTemplate>
-                <div class="d-flex flex-column align-center justify-center mt-0" style="height:100%">
-                        <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@ButtonDisabled()">@ButtonText()</MudButton>                        <MudText>Düzenleyen: @context.dMoniker </MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Etkinlik: @context.EBAd @context.StuAd</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Tarih: @context.EXD.ToString("dd.MM.yy hh:mm")</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Yer: @context.Yer</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">Katılım: @context.BgnTS.ToString("dd.MM.yy hh:mm") ↔ @context.EndTS.ToString("dd.MM.yy hh:mm")</MudText>
-                        <MudText Align="@Align.Center" Class="mx-auto">isOwner: @context.isOwner, kStu: @context.kStu, kMdfbl: @context.iskMdfbl </MudText>
-                </div>
-            </ItemTemplate>
-        </MudCarousel>
-    </MudTabPanel>
-    <MudTabPanel Text="Katılımcılar">
-        <MudText>Content Two</MudText>
-    </MudTabPanel>
-</MudTabs>
+
 @*<MudCarousel Class="mud-width-full" ItemsSource="@data" Style="height:200px;" AutoCycle="false">
     <ItemTemplate>
         <div class="d-flex flex-column flex-column justify-center" style="height:100%">
@@ -66,12 +80,163 @@
 <MudText>SelectedIndex: @selectedIndex @data.ElementAt(selectedIndex).EBAd</MudText>
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">Primary</MudButton>
 
+@*<MudTextField Value="ReadOnly" Label="Read Only" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+<MudTextField Value="ReadOnly" Label="Read Only" ReadOnly="true" Variant="Variant.Outlined" />
+<MudTextField Value="ReadOnly" Label="Read Only" ReadOnly="true" Variant="Variant.Outlined" />
+*@
+@*<MudPaper Class="d-flex flex-row flex-grow-1 gap-4" Elevation="0">
+    <MudPaper Class="mud-theme-primary" Width="64px" Height="64px" />
+    <MudPaper Class="mud-theme-secondary" Width="64px" Height="64px" />
+    <MudPaper Class="mud-theme-secondary" Width="64px" Height="64px" />
+</MudPaper>
+*@
+@*<div class="d-flex flex-row flex-nowrap   gap-4 overflow-x-auto pa-2">
+    <MudPaper Class="flex-shrink-0 gap-4" Width="90vw" Height="200px" Elevation="4">
+        <MudTextField Value="ReadOnly" Label="Düzenleyen" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField Value="ReadOnly" Label="Yer" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense"/>
+        <MudTextField Value="ReadOnly" Label="Katılım Tarihi" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+    </MudPaper>
+    <MudPaper Class="flex-shrink-0" Width="90vw" Height="200px">
+        <MudTextField Value="ReadOnly" Label="11" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField Value="ReadOnly" Label="12" ReadOnly="true" Variant="Variant.Outlined" />
+    </MudPaper>
+    <MudPaper Class="flex-shrink-0" Width="90vw" Height="200px">
+        <MudTextField Value="ReadOnly" Label="11" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField Value="ReadOnly" Label="12" ReadOnly="true" Variant="Variant.Outlined" />
+    </MudPaper>
+    <MudPaper Class="flex-shrink-0" Width="90vw" Height="200px">
+        <MudTextField Class="mud-theme-primary" Value="ReadOnly" Label="01" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField Class="mud-theme-secondary" Value="ReadOnly" Label="02" ReadOnly="true" Variant="Variant.Outlined" />
+        <MudTextField Value="ReadOnly" Label="03" ReadOnly="true" Variant="Variant.Outlined" />
+    </MudPaper>
+    <MudPaper Class="flex-shrink-0" Width="90vw" Height="200px">
+        <MudTextField Value="ReadOnly" Label="11" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField Value="ReadOnly" Label="12" ReadOnly="true" Variant="Variant.Outlined" />
+    </MudPaper>
+    <MudPaper Class="flex-shrink-0" Width="90vw" Height="200px">
+        <MudTextField Class="mud-theme-primary" Value="ReadOnly" Label="01" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField Class="mud-theme-secondary" Value="ReadOnly" Label="02" ReadOnly="true" Variant="Variant.Outlined" />
+        <MudTextField Value="ReadOnly" Label="03" ReadOnly="true" Variant="Variant.Outlined" />
+    </MudPaper>
+    <MudPaper Class="flex-shrink-0" Width="90vw" Height="200px">
+        <MudTextField Value="ReadOnly" Label="11" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField Value="ReadOnly" Label="12" ReadOnly="true" Variant="Variant.Outlined" />
+    </MudPaper>
 
+</div>
+*@
+
+<br />
+<br />
+
+<div class="d-flex flex-row flex-nowrap gap-2">
+    <div style="margin-top: -7px">IN</div>
+    <MudProgressLinear Color="Color.Dark" Size="Size.Small" Value="100" Max="10" Style="width:55%"/>
+    <span>KS</span>
+    <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="3" Max="5" Style="width:28%" />
+    <div>KE</div>
+    <MudProgressLinear Color="Color.Secondary" Size="Size.Small" Max="3" Value="0" Style="width:16%" />
+    <div>EX</div>
+</div>
+<br />
+
+<div class="d-flex flex-row flex-nowrap gap-4 overflow-x-auto pa-2">
+    <div style="width:100%" class="flex-shrink-0">
+    <div class="etGrid" >
+        <div class="box etH">Header
+            <div class="topleft">Düzenleyen</div>
+        </div>
+        <div class="box etS">Sidebar</div>
+        <div class="box etC">Contetnt
+            <div class="topleft">Katılımcı</div>
+        </div>
+    </div>
+    </div>
+    <div style="width:100%" class="flex-shrink-0">
+        <div class="etGrid">
+            <div class="box etH">
+            Header
+            <div class="topleft">Düzenleyen</div>
+        </div>
+        <div class="box etS">Sidebar</div>
+        <div class="box etC">
+            Contetnt
+            <div class="topleft">Katılımcı</div>
+        </div>
+    </div>
+    </div>
+@*    <div class="etGrid flex-shrink-0" style="width:600px">
+        <div class="box etH">
+            Header
+            <div class="topleft">Düzenleyen</div>
+        </div>
+        <div class="box etS">Sidebar</div>
+        <div class="box etC">
+            Contetnt
+            <div class="topleft">Katılımcı</div>
+        </div>
+    </div>
+*@
+</div>
+
+<style>
+    .etGrid {
+        display: grid;
+        grid-gap: 4px;
+        grid-template-columns: minmax(300px, 500px);
+        /*grid-template-rows: 3em 3em;*/
+        /*grid-template-areas:            "etC1 etC2";*/
+        /*background-color: #fff;*/
+        /*color: #444;*/
+        justify-content: center;
+        align-content: center;
+        place-items: center stretch;
+        /*justify-items: stretch;*/
+    }
+
+    .box {
+        /*background-color: #444;*/
+        /*color: red;*/
+        border: 1px solid;
+        /*border-radius: 5px;*/
+        padding: 10px 4px 0 4px;
+        /*font-size: 150%;*/
+        display: inline-flex;
+        /*justify-content: center;*/
+        /*align-items: center;*/
+        position: relative;
+    }
+
+    .topleft {
+        position: absolute;
+        top: 0;
+        left: 4px;
+        font-size: 0.6em;
+        background-color: inherit;
+}
+
+    .topright {
+        position: absolute;
+        top: 0;
+        left: 85%;
+        background-color: inherit;
+    }
+</style>
 @code {
     [CascadingParameter] App app { get; set; }
 
     private IEnumerable<ET>? data;
-    private int selectedIndex = 0;
+
+    private int selectedIndex; 
+    //{
+    //    get { return name; }   // get method
+    //    set { name = value; }  // set method
+    //}
+    private string ReadOnly = "aaaaaaaaaaaaa";
+    //private string selectedIcon = @Icons.Filled.EventSeat;   //Icons.Custom.Brands.MudBlazor;
+    private void selectedIndexChanged(int si){
+        selectedIndex = si;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,7 +250,7 @@
     }
 
     private Color CarouselItemColor() {
-        if (data.ElementAt(selectedIndex).iskMdfbl)
+        if (data.ElementAt(selectedIndex).iskMdf)
             return Color.Primary;
         return Color.Warning;
     }
@@ -93,44 +258,58 @@
     private string ButtonText() {
         string txt = "";
         var item = data.ElementAt(selectedIndex);
-        
+
         kStus kStu = (kStus)item.kStu;
 
         //if (item.isMdfbl) {
-            switch(kStu){
-                case kStus.Katılmadı:
-                    txt = "Katıl";
-                    break;
-                case kStus.Vazgeçti:
-                    txt = "Vazgeçmişsin! Hala katılabilirsin";
-                    break;
-                case kStus.Katıldı:
-                    txt = "Vazgeç";
-                    break;
-            }
-            //if (item.kStu == (int)kStu.Katılmadı)
-            //    txt = "Katıl";
-            //else if (item.kStu == (int)kStu.Vazgeçti)
-            //    txt = "Vazgeçmişsin! Hala katılabilirsin";
-            //else
-            //    txt = "Vazgeç";
-            //if (item.kStu == ET.kStu.Katilmadi)
-            //    txt = "Katıl";
-            //else if (item.kStu == -2)
-            //    txt = "Vazgeçmişsin! Hala katılabilirsin";
-            //else
-            //    txt = "Vazgeç";
+        switch(kStu){
+            case kStus.Katılmadı:
+                txt = "Katıl";
+                break;
+            case kStus.Vazgeçti:
+                txt = "Vazgeçmişsin! Hala katılabilirsin";
+                break;
+            case kStus.Katıldı:
+                txt = "Vazgeç";
+                break;
+        }
+        //if (item.kStu == (int)kStu.Katılmadı)
+        //    txt = "Katıl";
+        //else if (item.kStu == (int)kStu.Vazgeçti)
+        //    txt = "Vazgeçmişsin! Hala katılabilirsin";
+        //else
+        //    txt = "Vazgeç";
+        //if (item.kStu == ET.kStu.Katilmadi)
+        //    txt = "Katıl";
+        //else if (item.kStu == -2)
+        //    txt = "Vazgeçmişsin! Hala katılabilirsin";
+        //else
+        //    txt = "Vazgeç";
         //}
         return txt;
     }
 
+    private async Task TglKatilimciStu()
+    {
+        string sp = $"EK_KTGL(@ETid, @kUTid)";
+        var item = data.ElementAt(selectedIndex);
+
+        var rtrn = await db.StoreProc<dynamic, dynamic>(sp, new { ETid = item.ETid, kUTid = AppState.UsrId });
+        item.kStu = rtrn.KSTU;
+    }
+
     private bool ButtonDisabled() {
-        if (data.ElementAt(selectedIndex).iskMdfbl)
+        if (data.ElementAt(selectedIndex).iskMdf)
             return false;
         return true;
     }
 
+    private void SelectedIndexChanged(){
+        var aaa = selectedIndex;
+    }
+
     private enum kStus { Katılmadı = 0, Katıldı = 1, Vazgeçti = -2 };
+    private enum eStus { İptal = -1, Başlamadı = 0, Başladı = 1, Bitti = 2 };
 
     private class ET
     {
@@ -148,13 +327,21 @@
         public DateTime StuTS { get; set; }
         public string Info { get; set; }
         public DateTime InsTS { get; set; }
-        
-        public int Ownr_ { get; set; }
-        public int kMdfb_ { get; set; }
-        public int kSay { get; set; }
-        public int kStu { get; set; }
+
+        public int Ownr_ { get; set; }  // UsrId duzenleyen mi
+        public int kMdf_ { get; set; }  // Usr Katilimci olarak @EK degisiklik yapabilir mi
+        public int kSay { get; set; }   // ET->EK.count
+        public int deSay { get; set; }   // ET->EK.count
+        public int eStu { get; set; }   // @EK Duzenleyenin durumu
+        public int dStu { get; set; }   // @EK Duzenleyenin durumu
+        public int kStu { get; set; }   // @EK Katilimcinin durumu
 
         public bool isOwner => Ownr_ == 1 ? true : false;
-        public bool iskMdfbl => kMdfb_ == 1 ? true : false;
+        public bool iskMdf => kMdf_ == 1 ? true : false;
+
+        //public string selectedEstuIcon => iskMdf ? @Icons.Filled.GppGood : @Icons.Filled.GppBad;//@Icons.Filled.DoDisturb;// @Icons.Filled.EventBusy;
+        public string selectedEstuIcon => eStu == -1 ? @Icons.Filled.HourglassDisabled : eStu == 0 ? @Icons.Filled.HourglassEmpty : eStu == 1 ? @Icons.Filled.HourglassTop : @Icons.Filled.HourglassFull;//@Icons.Filled.DoDisturb;// @Icons.Filled.EventBusy;
+        //public string selectedKstuIcon => kStu == 0 ? @Icons.Filled.Close : kStu == 1 ? @Icons.Filled.Check : @Icons.Filled.CallMissed;
+        public string selectedKstuIcon => kStu == 0 ? @Icons.Filled.GppBad : kStu == 1 ? @Icons.Filled.GppGood : @Icons.Filled.GppMaybe;
     }
 }
