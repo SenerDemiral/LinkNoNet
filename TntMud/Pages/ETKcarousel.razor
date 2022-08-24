@@ -14,7 +14,8 @@
                         <MudText Class="box" Style="grid-area: 2 / 1 / 3 / 2">
                             @context.EBAd
                             <div class="topleft">Etkinlik</div>
-                            <MudIcon Icon="@context.selectedEstuIcon" Color="Color.Inherit" Size="Size.Medium" Class="topright" />
+                            <div class="ml-auto">@((eStus)context.eStu) </div>
+                            <MudIcon Icon="@context.selectedEstuIcon" Color="Color.Inherit" Size="Size.Medium" />
                         </MudText>
 
                         <MudText Class="box" Style="grid-area: 3 / 1 / 4 / 2">
@@ -35,8 +36,9 @@
 
                         <MudText Class="box" Style="grid-area: 6 / 1 / 7 / 2">
                             @AppState.UsrMoniker
-                            <div class="topleft">Katılımcı</div>
-                            <MudIcon Class="topright" Icon="@context.selectedKstuIcon" Color="Color.Inherit" Size="Size.Large" />
+                            <div class="topleft">Katılımcı </div>
+                            <div class="ml-auto">@((kStus)context.kStu) </div>
+                            <MudIcon Size="Size.Medium" Icon="@context.selectedKstuIcon" Color="Color.Inherit" />
                         </MudText>
                             
                         <MudText Class="box" Style="grid-area: 7 / 1 / 8 / 2">
@@ -215,9 +217,15 @@
         background-color: inherit;
 }
 
-    .topright {
+    .toprightMedium {
         position: absolute;
-        top: 0;
+        top: 5px;
+        left: 85%;
+        background-color: inherit;
+    }
+    .toprightLarge {
+        position: absolute;
+        top: 5px;
         left: 85%;
         background-color: inherit;
     }
@@ -263,13 +271,13 @@
 
         //if (item.isMdfbl) {
         switch(kStu){
-            case kStus.Katılmadı:
+            case kStus.Katılmadın:
                 txt = "Katıl";
                 break;
-            case kStus.Vazgeçti:
+            case kStus.Vazgeçtin:
                 txt = "Vazgeçmişsin! Hala katılabilirsin";
                 break;
-            case kStus.Katıldı:
+            case kStus.Katılırım:
                 txt = "Vazgeç";
                 break;
         }
@@ -308,8 +316,8 @@
         var aaa = selectedIndex;
     }
 
-    private enum kStus { Katılmadı = 0, Katıldı = 1, Vazgeçti = -2 };
-    private enum eStus { İptal = -1, Başlamadı = 0, Başladı = 1, Bitti = 2 };
+    private enum kStus { Katılmadın = 0, Katılırım = 1, Seçildin = 2, Seçilmedin = -3, Vazgeçtin = -2 };
+    private enum eStus { İptal = -1, KatılımBaşlamadı = 0, KatılımBaşladı = 1, KatılımBitti = 2 };
 
     private class ET
     {
@@ -339,9 +347,22 @@
         public bool isOwner => Ownr_ == 1 ? true : false;
         public bool iskMdf => kMdf_ == 1 ? true : false;
 
-        //public string selectedEstuIcon => iskMdf ? @Icons.Filled.GppGood : @Icons.Filled.GppBad;//@Icons.Filled.DoDisturb;// @Icons.Filled.EventBusy;
-        public string selectedEstuIcon => eStu == -1 ? @Icons.Filled.HourglassDisabled : eStu == 0 ? @Icons.Filled.HourglassEmpty : eStu == 1 ? @Icons.Filled.HourglassTop : @Icons.Filled.HourglassFull;//@Icons.Filled.DoDisturb;// @Icons.Filled.EventBusy;
-        //public string selectedKstuIcon => kStu == 0 ? @Icons.Filled.Close : kStu == 1 ? @Icons.Filled.Check : @Icons.Filled.CallMissed;
-        public string selectedKstuIcon => kStu == 0 ? @Icons.Filled.GppBad : kStu == 1 ? @Icons.Filled.GppGood : @Icons.Filled.GppMaybe;
+        public string selectedKstuIcon => (kStus)kStu switch
+        {
+            kStus.Katılmadın => Icons.Filled.GppBad,
+            kStus.Katılırım => Icons.Filled.GppGood,
+            kStus.Vazgeçtin => Icons.Filled.GppMaybe,
+            kStus.Seçildin => Icons.Filled.SentimentVerySatisfied,
+            kStus.Seçilmedin => Icons.Filled.SentimentVeryDissatisfied,
+            _ => ""
+        };
+        public string selectedEstuIcon => (eStus)eStu switch
+        {
+            eStus.İptal => Icons.Filled.HourglassDisabled,
+            eStus.KatılımBaşlamadı => Icons.Filled.HourglassEmpty,
+            eStus.KatılımBaşladı => Icons.Filled.HourglassTop,
+            eStus.KatılımBitti => Icons.Filled.HourglassFull,
+            _ => ""
+        };
     }
 }
