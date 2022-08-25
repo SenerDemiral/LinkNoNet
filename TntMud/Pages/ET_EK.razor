@@ -97,17 +97,6 @@
     </DialogActions>
 </MudDialog>
 
-<MudCarousel Class="mud-width-full" ItemsSource="@data" Style="height:200px;" AutoCycle="false">
-    <ItemTemplate>
-        <div class="d-flex flex-column flex-column justify-center" style="height:100%">
-            <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
-            <MudText  Class="mx-auto">@context.EKid</MudText>
-            <MudText  Class="mx-auto">@context.kMoniker @context.kStuAd</MudText>
-            <MudText  Class="mx-auto">@@@context.kStuTS.ToShortDateString()</MudText>
-        </div>
-    </ItemTemplate>
-</MudCarousel>
-
 
 @code {
     [CascadingParameter] App app { get; set; }

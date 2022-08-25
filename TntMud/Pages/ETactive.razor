@@ -47,7 +47,7 @@
         <Column T="ET" Field="@nameof(ET.Yer)" />
         <Column T="ET" Field="@nameof(ET.EBAd)" Title="Branş" />
         <Column T="ET" Field="@nameof(ET.dMoniker)" Title="Düzenleyen" />
-        <Column T="ET" Field="@nameof(ET.StuAd)" Title="Durum" />
+        <Column T="ET" Field="@nameof(ET.tStu)" Title="Durum" />
         <Column T="ET" Field="@nameof(ET.StuTS)" Title="Güncelleme" Groupable="false">
             <CellTemplate>
                 @context.Item.StuTS.ToString("dd.MM.yy HH:mm")
@@ -69,15 +69,6 @@
     </DialogContent>
 </MudDialog>
 
-<MudCarousel Class="mud-width-full" ItemsSource="@data" Style="height:200px;" AutoCycle="false">
-    <ItemTemplate>
-        <div class="d-flex flex-column flex-column justify-center" style="height:100%">
-            <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
-            <MudText Align="@Align.Center" Class="mx-auto">@context.ETid</MudText>
-        </div>
-    </ItemTemplate>
-</MudCarousel>
-
 @code {
     [CascadingParameter] App app { get; set; }
 
@@ -92,8 +83,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string sql = $"select * from ET_ACTIVE";
-        data = await db.LoadData<ET, dynamic>(sql, new { });
+        //string sql = $"select * from ET_ACTIVE";
+        //data = await db.LoadData<ET, dynamic>(sql, new { });
+        string sql = $"select * from ET_ACTIVE2(@UTid)";
+        data = await db.LoadData<ET, dynamic>(sql, new { UTid = AppState.UsrId });
 
         //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
     }
@@ -103,7 +96,7 @@
         app.AddDynCmp("ET_EK", typeof(ET_EK), new(){
             { "ETid", mudDataGrid.SelectedItem.ETid },
             { "dUTid", mudDataGrid.SelectedItem.dUTid },
-            { "Mdfy", mudDataGrid.SelectedItem.Mdfy == 0 ? false : true },
+            { "Mdfy", mudDataGrid.SelectedItem.iskMdf },
             { "Title", $"{mudDataGrid.SelectedItem.dMoniker} {mudDataGrid.SelectedItem.EBAd} → Katılanlar" }
         }, true);
         inLineDialogVisible = false;
@@ -150,13 +143,38 @@
         public string EBAd { get; set; }
         public int dUTid { get; set; }
         public string dMoniker { get; set; }
-        public int Stu { get; set; }
-        public string StuAd { get; set; }
         public DateTime StuTS { get; set; }
         public string Info { get; set; }
         public DateTime InsTS { get; set; }
-        public int kSay { get; set; }
-        public int Mdfy { get; set; }
+
+        public int Ownr_ { get; set; }  // UsrId duzenleyen mi
+        public int kMdf_ { get; set; }  // Usr Katilimci olarak @EK degisiklik yapabilir mi
+        public int kSay { get; set; }   // ET->EK.count
+        public int deSay { get; set; }   // ET->EK.count
+        public int tStu { get; set; }   // @ET Duzenleyenin durumu
+        public int dStu { get; set; }   // @EK Duzenleyenin durumu
+        public int kStu { get; set; }   // @EK Katilimcinin durumu
+
+        public bool isOwner => Ownr_ == 1 ? true : false;
+        public bool iskMdf => kMdf_ == 1 ? true : false;
+
+        public string selectedKstuIcon => (Constants.kStus)kStu switch
+        {
+            Constants.kStus.Katılmadın => Icons.Filled.GppBad,
+            Constants.kStus.Katılırım => Icons.Filled.GppGood,
+            Constants.kStus.Vazgeçtim => Icons.Filled.GppMaybe,
+            Constants.kStus.Seçildin => Icons.Filled.SentimentVerySatisfied,
+            Constants.kStus.Seçilmedin => Icons.Filled.SentimentVeryDissatisfied,
+            _ => ""
+        };
+        public string selectedTstuIcon => (Constants.tStus)tStu switch
+        {
+            Constants.tStus.İptal => Icons.Filled.HourglassDisabled,
+            Constants.tStus.KatılımBaşlamadı => Icons.Filled.HourglassEmpty,
+            Constants.tStus.KatılımSürüyor => Icons.Filled.HourglassTop,
+            Constants.tStus.KatılımBitti => Icons.Filled.HourglassFull,
+            _ => ""
+        };
     }
 }
 

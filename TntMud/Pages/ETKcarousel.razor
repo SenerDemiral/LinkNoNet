@@ -9,11 +9,13 @@
                 <ItemTemplate>
                     <div class="etGrid" style="height:100%">
 
-                        <MudButton  Variant="Variant.Filled" Color="Color.Primary" Disabled="@ButtonDisabled()" OnClick="TglKatilimciStu">@ButtonText()</MudButton>
+                        <MudButton Disabled="@ButtonDisabled()" OnClick="TglKatilimciStu" Variant="Variant.Filled" Color="Color.Primary">
+                            @ButtonText()
+                        </MudButton>
 
                         <MudText Class="box" >
-                            <div class="topleft">Etkinlik</div>
-                            @context.EBAd
+                            <div class="topleft">Etkinlik #@context.ETid</div>
+                            @context.EBAd [@context.kSay kişi]
                             <span class="ml-auto mt-n1">@((Constants.tStus)context.tStu)&nbsp;</span>
                             <MudIcon Class="mt-n1" Icon="@context.selectedTstuIcon" Color="Color.Inherit" Size="Size.Medium" />
                         </MudText>
@@ -155,6 +157,9 @@
 
         Constants.kStus kStu = (Constants.kStus)item.kStu;
 
+        if (!item.iskMdf)
+            return "!!!"; 
+
         //if (item.isMdfbl) {
         switch(kStu){
             case Constants.kStus.Katılmadın:
@@ -165,6 +170,9 @@
                 break;
             case Constants.kStus.Katılırım:
                 txt = "Vazgeç";
+                break;
+            default:
+                txt = kStu.ToString();
                 break;
         }
         //if (item.kStu == (int)kStu.Katılmadı)
@@ -185,11 +193,13 @@
 
     private async Task TglKatilimciStu()
     {
-        string sp = $"EK_KTGL(@ETid, @kUTid)";
         var item = data.ElementAt(selectedIndex);
 
+        string sp = $"EK_KTGL(@ETid, @kUTid)";
         var rtrn = await db.StoreProc<dynamic, dynamic>(sp, new { ETid = item.ETid, kUTid = AppState.UsrId });
+        
         item.kStu = rtrn.KSTU;
+        item.kSay = rtrn.KSAY;
     }
 
     private bool ButtonDisabled() {
@@ -201,10 +211,6 @@
     private void SelectedIndexChanged(){
         var aaa = selectedIndex;
     }
-
-    //private enum dStus { Açık = 0, Kabul = 1, Red = -2 };
-    //private enum kStus { Katılmadın = 0, Katılırım = 1, Vazgeçtim = -1, Seçildin = 2, Seçilmedin = -2 };
-    //private enum tStus { İptal = -1, KatılımBaşlamadı = 0, KatılımSürüyor = 1, KatılımBitti = 2, Kapandı = 3, Arşiv = 9 };
 
     private class ET
     {
