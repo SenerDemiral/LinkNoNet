@@ -14,10 +14,40 @@ using Microsoft.Extensions.Configuration;
 
 namespace DataLibrary
 {
+    public delegate void etEventHandler(object sender, etEventArgs e);
+    public delegate void ekEventHandler(object sender, etEventArgs e);
+    public delegate void emEventHandler(object sender, etEventArgs e);
+
+    public class etEventArgs : EventArgs
+    {
+        public int ETid { get; set; }
+    }
 
     public class FBDataAccess : IDataAccess
     {
         string cnctStr = "";
+        public event etEventHandler etChanged;
+        public event ekEventHandler ekChanged;
+        public event emEventHandler emChanged;
+
+        public void OnEtChanged(int etId)
+        {
+            var args = new etEventArgs();
+            args.ETid = etId;
+            etChanged?.Invoke(this, args);
+        }
+        public void OnEkChanged(int etId)
+        {
+            var args = new etEventArgs();
+            args.ETid = etId;
+            ekChanged?.Invoke(this, args);
+        }
+        public void OnEmChanged(int etId)
+        {
+            var args = new etEventArgs();
+            args.ETid = etId;
+            emChanged?.Invoke(this, args);
+        }
 
         //private readonly IConfiguration _config;
 

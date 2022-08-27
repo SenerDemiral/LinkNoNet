@@ -1,11 +1,13 @@
 ﻿@inject AppState AppState
 @inject IDataAccess db
 
-<MudCarousel TData="object" Style="height:500px;"
-             ShowArrows="false" ShowBullets="true" AutoCycle="false" >
-     <MudCarouselItem  Color="@CarouselItemColor()">
+<MudCarousel TData="object" Style="height: calc(100vh - 88px)" SelectedIndexChanged="@MasterIndexChanged"
+             ShowArrows="false" ShowBullets="true" AutoCycle="false">
+     
+    <MudCarouselItem  Color="@CarouselItemColor()">
         <div class="d-flex justify-center" style="height:100%">
-            <MudCarousel ItemsSource="@data" @bind-SelectedIndex="selectedIndex"  Class="mud-width-full" AutoCycle="false" ShowBullets="false">
+            <MudCarousel ItemsSource="@dataET" @bind-SelectedIndex="ETselectedIndex"  Class="mud-width-full"
+                         AutoCycle="false" ShowBullets="false" >
                 <ItemTemplate>
                     <div class="etGrid" style="height:100%">
 
@@ -13,14 +15,14 @@
                             @ButtonText()
                         </MudButton>
 
-                        <MudText Class="box" >
+                        <MudText Class="etBox" >
                             <div class="topleft">Etkinlik #@context.ETid</div>
                             @context.EBAd [@context.kSay kişi]
                             <span class="ml-auto mt-n1">@((Constants.tStus)context.tStu)&nbsp;</span>
                             <MudIcon Class="mt-n1" Icon="@context.selectedTstuIcon" Color="Color.Inherit" Size="Size.Medium" />
                         </MudText>
 
-                        <MudText Class="box" >
+                        <MudText Class="etBox" >
                             @context.Yer  
                             <div class="topleft">Yer</div>
                             <div class="ml-auto">@context.EXD.ToString("dd.MM.yy hh:mm ddd")</div>
@@ -28,28 +30,26 @@
                         </MudText>
 
 
-                        <MudText Class="box" >
+                        <MudText Class="etBox" >
                             @context.BgnTS.ToString("dd.MM.yy hh:mm ddd")
                             <div class="ml-auto">@context.EndTS.ToString("dd.MM.yy hh:mm ddd")</div>
                             <div class="topleft">Katılım Başlangıç</div>
                             <div class="topright">Katılım Bitiş</div>
                         </MudText>
 
-
-                        <MudText Class="box" >
+                        <MudText Class="etBox" >
                             @AppState.UsrMoniker
                             <div class="topleft">Katılımcı </div>
                             <div class="ml-auto mt-n1">@((Constants.kStus)context.kStu)&nbsp;</div>
                             <MudIcon Class="mt-n1" Size="Size.Medium" Icon="@context.selectedKstuIcon" Color="Color.Inherit" />
                         </MudText>
                             
-                        <MudText Class="box" >
+                        <MudText Class="etBox" >
                             @context.dMoniker [@context.deSay]
                             <div class="topleft">Düzenleyen</div>
                         </MudText>
 
-                        
-                        <MudText Class="box" >
+                        <MudText Class="etBox" >
                             <textarea rows="3"  disabled style="width: 100%; color: inherit; background-color: inherit; resize: vertical;">@context.Info</textarea>
                             <div class="topleft">Bilgi</div>
                         </MudText>
@@ -59,17 +59,44 @@
         </div>
     </MudCarouselItem>
     
-    <MudCarouselItem Color="@Color.Secondary">
-        <div class="d-flex flex-column justify-center align-center" style="height:90%">
-            <MudPaper Width="50%">
-            <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
-                <MudText Align="@Align.Center" Class="mx-auto">aaaa</MudText>
-                <MudText Align="@Align.Center" Class="mx-auto">bbbbbbbbb</MudText>
-            </MudPaper>
+    <MudCarouselItem Color="@Color.Tertiary">
+        <div style="width:100%; height:100%; display:grid; justify-items:center; align-content:center; gap: 4px;">
+            <MudTable Items="@dataEK" Hover="true" Breakpoint="Breakpoint.Sm" HorizontalScrollbar="true">
+                <HeaderContent>
+                    <MudTh>#</MudTh>
+                    <MudTh>Katılımcı</MudTh>
+                    <MudTh>Durum</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="#">@context.EKid</MudTd>
+                    <MudTd DataLabel="Katılımcı">@context.kMoniker</MudTd>
+                    <MudTd DataLabel="Durum">@context.kStuAd</MudTd>
+                </RowTemplate>
+            </MudTable>
         </div>
+</MudCarouselItem>
+
+    <MudCarouselItem Color="@Color.Secondary">
+        <div style="height:86%; overflow:auto">
+            <div class="d-flex flex-column align-center gap-1 py-1 " >
+                @foreach (var item in dataEM)
+                {
+                    <div class="emGrid">
+                        <button type="button" class="emButton emBox emCpt">@item.Caption</button>
+                        <div class="emBox emEXD" style="text-align:end">@item.EXD.ToString("dd.MM.yy hh:mm ddd")</div>
+                        <textarea class="emBox emMsg" disabled style="resize: none;">@item.Msg</textarea>
+                    </div>
+                }
+            <div class="relative d-flex flex-grow-1 flex-wrap justify-center align-center gap-1">
+            <button class="emButton">Genel</button>
+            <input type="text" name="lname">
+            <button class="emButton">Ozel</button>
+            </div>
+        </div>
+    </div>
     </MudCarouselItem>
 </MudCarousel>
-
+<MudSwitch  CheckedChanged="@((bool x) => SwitchChanged(x))" Color="Color.Success" UnCheckedColor="Color.Error" Label="@SwitchText"/>
 
 @*<MudText>SelectedIndex: @selectedIndex @data.ElementAt(selectedIndex).EBAd</MudText>
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">Primary</MudButton>
@@ -86,7 +113,7 @@
         align-content: center;
     }
 
-    .box {
+    .etBox {
         background-color: #444;
         color: white;
         /*border: 1px solid;*/
@@ -96,6 +123,54 @@
         display: inline-flex;
         position: relative;
     }
+
+@*<div style="height:100%; display:grid; grid-template-columns: minmax(300px, 600px); justify-content:center; align-content:start; gap: 4px; overflow: auto; padding: 4px 0;">*@
+    .emBox {
+        background-color: #444;
+        color: white;
+        /*border: 1px solid;*/
+        border-radius: var(--mud-default-borderradius);
+        padding: 4px;
+    }
+    .emButton {
+  background-color: grey; /* Green */
+  border: 1px solid white;
+  /*color: black;*/
+  /*padding: 15px 32px;*/
+  text-align: left;
+  text-decoration: none;
+  display: inline-block;
+  /*font-size: 16px;*/
+}
+    .emCpt {
+        grid-area: emCpt;
+        color:aquamarine;
+    }
+    .emEXD {
+        grid-area: emEXD;
+        font-size: 80%;
+    }
+    .emMsg {
+        grid-area: emMsg;
+    }
+
+    .emGrid {
+        display: grid;
+        grid-gap: 1px;
+        grid-template-columns: 180px 120px;
+        /*grid-template-rows: auto;*/
+        /*background-color: #fff;*/
+        /*color: #444;*/
+
+        grid-template-areas: 
+            "emCpt emEXD"
+            "emMsg emMsg";
+        justify-content: center;
+        align-content: start;
+        /*padding: 4px 0;*/
+        /*overflow: auto; */
+    }
+
 
     .topleft {
         position: absolute;
@@ -120,23 +195,52 @@
 @code {
     [CascadingParameter] App app { get; set; }
 
-    private IEnumerable<ET>? data;
+    private IEnumerable<ET>? dataET;
+    private IEnumerable<EK>? dataEK;
+    private IEnumerable<EM>? dataEM;
+    public string TextValue { get; set; }
 
-    private int selectedIndex; 
+    public bool Basic_Switch1 { get; set; } = false;
+    public string SwitchText = "Private";
+
+    public void SwitchChanged(bool val){
+        Basic_Switch1 = val;
+        if (val)
+            SwitchText = "Public";
+        else
+            SwitchText = "Private";
+
+    }
+    private int ETselectedIndex; 
     //{
     //    get { return name; }   // get method
     //    set { name = value; }  // set method
     //}
     private string ReadOnly = "aaaaaaaaaaaaa";
     //private string selectedIcon = @Icons.Filled.EventSeat;   //Icons.Custom.Brands.MudBlazor;
-    private void selectedIndexChanged(int si){
-        selectedIndex = si;
+    private void ETselectedIndexChanged(int si){
+        ETselectedIndex = si;
+    }
+
+    private async Task MasterIndexChanged(int si)
+    {
+        if(si == 1) // Katilimcilar
+        {
+            await LoadDataEK();
+        }
+        else if (si == 2) // Mesajlar
+        {
+            await LoadDataEM();
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        string sql = $"select * from ET_ACTIVE2(@UTid)";
-        data = await db.LoadData<ET, dynamic>(sql, new { UTid = AppState.UsrId});
+        await LoadDataET();
+
+        db.etChanged += etChanged;  // deneme
+        db.ekChanged += ekChanged;  // deneme
+        db.emChanged += emChanged;  // deneme
 
         //var aaa = data.ToList();
         //var bbb = aaa[0].ETid;
@@ -144,16 +248,67 @@
         //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
     }
 
+    private async Task LoadDataET()
+    {
+        string sql = $"select * from ET_ACTIVE2(@UTid)";
+        dataET = await db.LoadData<ET, dynamic>(sql, new { UTid = AppState.UsrId});
+    }
+    private async Task LoadDataEK()
+    {
+        int etId = dataET.ElementAt(ETselectedIndex).ETid;
+        string sql = $"select * from ET_EK(@ETid)";
+        dataEK = await db.LoadData<EK, dynamic>(sql, new { ETid = etId });
+    }
+    private async Task LoadDataEM()
+    {
+        int etId = dataET.ElementAt(ETselectedIndex).ETid;
+        string sql = $"select * from ET_EM_GET(@ETid, @UsrId)";
+        dataEM = await db.LoadData<EM, dynamic>(sql, new { ETid = etId, UsrId = AppState.UsrId });
+    }
+
+    private void etChanged(object sender, etEventArgs e)  // deneme
+    {
+        LoadDataET().Wait();
+        //InvokeAsync(StateHasChanged);
+    }
+
+    private void ekChanged(object sender, etEventArgs e)  // deneme
+    {
+        if(e.ETid == dataET.ElementAt(ETselectedIndex).ETid)
+        {
+            LoadDataEK().Wait();
+        }
+        //InvokeAsync(StateHasChanged);
+    }
+    private void emChanged(object sender, etEventArgs e)  // deneme
+    {
+        LoadDataEM().Wait();
+        //InvokeAsync(StateHasChanged);
+    }
+
+    private async Task TglKatilimciStu()
+    {
+        var item = dataET.ElementAt(ETselectedIndex);
+
+        string sp = $"EK_KTGL(@ETid, @kUTid)";
+        var rtrn = await db.StoreProc<dynamic, dynamic>(sp, new { ETid = item.ETid, kUTid = AppState.UsrId });
+
+        db.OnEtChanged(item.ETid);
+        //item.kStu = rtrn.KSTU;
+        //item.kSay = rtrn.KSAY;
+    }
+
+
     private Color CarouselItemColor() {
         return Color.Surface;
-        if (data.ElementAt(selectedIndex).iskMdf)
+        if (dataET.ElementAt(ETselectedIndex).iskMdf)
             return Color.Primary;
         return Color.Warning;
     }
 
     private string ButtonText() {
         string txt = "";
-        var item = data.ElementAt(selectedIndex);
+        var item = dataET.ElementAt(ETselectedIndex);
 
         Constants.kStus kStu = (Constants.kStus)item.kStu;
 
@@ -191,25 +346,14 @@
         return txt;
     }
 
-    private async Task TglKatilimciStu()
-    {
-        var item = data.ElementAt(selectedIndex);
-
-        string sp = $"EK_KTGL(@ETid, @kUTid)";
-        var rtrn = await db.StoreProc<dynamic, dynamic>(sp, new { ETid = item.ETid, kUTid = AppState.UsrId });
-        
-        item.kStu = rtrn.KSTU;
-        item.kSay = rtrn.KSAY;
-    }
-
     private bool ButtonDisabled() {
-        if (data.ElementAt(selectedIndex).iskMdf)
+        if (dataET.ElementAt(ETselectedIndex).iskMdf)
             return false;
         return true;
     }
 
     private void SelectedIndexChanged(){
-        var aaa = selectedIndex;
+        var aaa = ETselectedIndex;
     }
 
     private class ET
@@ -255,5 +399,27 @@
             Constants.tStus.KatılımBitti => Icons.Filled.HourglassFull,
             _ => ""
         };
+    }
+
+    private class EK
+    {
+        public int EKid { get; set; }
+        public int dStu { get; set; }
+        public string dStuAd { get; set; }
+        public int kUTid { get; set; }
+        public string kMoniker { get; set; }
+        public int kStu { get; set; }
+        public string kStuAd { get; set; }
+    }
+    private class EM
+    {
+        public int EMid { get; set; }
+        public DateTime EXD { get; set; }
+        public int UTid { get; set; }
+        public string UTmoniker { get; set; }
+        public int Typ { get; set; }
+        public string Msg { get; set; }
+        public string Caption { get; set; }
+
     }
 }

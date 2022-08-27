@@ -7,6 +7,12 @@ namespace DataLibrary
 {
     public interface IDataAccess
     {
+        void OnEtChanged(int etId);
+        event etEventHandler etChanged;
+        void OnEkChanged(int etId);
+        event ekEventHandler ekChanged;
+        void OnEmChanged(int etId);
+        event emEventHandler emChanged;
         Task<T> LoadRec<T, U>(string sql, U parameters);
         Task<IEnumerable<T>> LoadData<T, U>(string sql, U parameters);
         Task<T> StoreProc<T, U>(string storeProc, U parameters);

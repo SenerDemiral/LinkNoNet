@@ -85,12 +85,24 @@
     {
         //string sql = $"select * from ET_ACTIVE";
         //data = await db.LoadData<ET, dynamic>(sql, new { });
-        string sql = $"select * from ET_ACTIVE2(@UTid)";
-        data = await db.LoadData<ET, dynamic>(sql, new { UTid = AppState.UsrId });
+
+        await LoadData();
 
         //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+        db.etChanged += etChanged;  // deneme
     }
-    
+
+    private async Task LoadData(){
+        string sql = $"select * from ET_ACTIVE2(@UTid)";
+        data = await db.LoadData<ET, dynamic>(sql, new { UTid = AppState.UsrId });
+    }
+
+    private void etChanged(object sender, etEventArgs e)  // deneme
+    {
+        LoadData();
+        //InvokeAsync(StateHasChanged);
+    }
+
     private void AddEK()
     {
         app.AddDynCmp("ET_EK", typeof(ET_EK), new(){
@@ -106,6 +118,8 @@
     {
         mudDataGrid.SelectedItem = item;
         inLineDialogVisible = true;
+
+        db.OnEtChanged(55);     // Deneme
     }
 
     private string SelectedRowClassFunc(ET element, int rowNumber)
