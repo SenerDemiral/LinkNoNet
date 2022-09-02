@@ -1,0 +1,269 @@
+﻿@using FluentValidation
+@inject ISnackbar Snackbar
+@inject AppState AppState
+@inject IDataAccess db
+
+<MudDialog  >
+    <TitleContent>
+        <MudText Typo="Typo.h6">Yeni Etkinlik</MudText>
+        <MudDivider />
+    </TitleContent>
+    <DialogContent>
+        <MudForm Class="wrapper" Model="@model" @ref="form" Validation="@(validator.ValidateValue)" ValidationDelay="0">
+            <MudSelect Class="tur" @bind-Value="model.EBid" Label="Türü" For="@(() => model.EBid)" Dense="true" Margin="Margin.Dense">
+                @foreach (var item in dataEB)
+                {
+                    <MudSelectItem Value="@item.EBid">@item.Ad</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudSelect Class="yer" @bind-Value="model.Yer" Label="Yeri" For="@(() => model.Yer)" Dense="true" Margin="Margin.Dense">
+                        @foreach (var item in dataYER)
+                        {
+                            <MudSelectItem Value="@item.Ad">@item.Ad</MudSelectItem>
+                        }
+                    </MudSelect>
+
+            <MudDatePicker Class="exd" Label="Tarihi" Editable="true"
+                        @bind-Date="model.EXD"
+                        For="@(() => model.EXD)"
+                        Mask="@(new PatternMask("00.00.00 00:00"))"
+                        DateFormat="dd.MM.yy HH:mm" Margin="Margin.Dense" />
+
+            <MudDatePicker Class="bgn" Label="Katılım başlangıç tarihi" Editable="true"
+                           @bind-Date="model.BgnTS"
+                                   For="@(() => model.BgnTS)" 
+                                   Mask="@(new PatternMask("00.00.00 00:00"))"
+                                   DateFormat="dd.MM.yy HH:mm" Margin="Margin.Dense" />
+
+            <MudDatePicker Class="end" Label="Katılım bitiş tarihi" Editable="true"
+                                   @bind-Date="model.EndTS"
+                                   For="@(() => model.EndTS)"
+                                   Mask="@(new PatternMask("00.00.00 00:00"))"
+                                   DateFormat="dd.MM.yy HH:mm" Margin="Margin.Dense" />
+
+            <MudNumericField Class="kmin" Label="Min katılımcı sayısı" Variant="Variant.Text" Margin="Margin.Dense" Min="1"
+                                     @bind-Value="model.kMin"
+                                     For="@(() => model.kMin)" />
+
+            <MudNumericField Class="kmax" Label="Max katılımcı sayısı" Variant="Variant.Text" Margin="Margin.Dense" Min="1"
+                                     @bind-Value="model.kMax"
+                                     For="@(() => model.kMax)" />
+
+            <MudTextField Class="info" Label="Bilgi" Variant="Variant.Text" Lines="3" Margin="Margin.Dense"
+                              @bind-Text="model.Info"
+                              For="@(() => model.Info)" />
+        </MudForm>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Kaydet</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    private IEnumerable<YER>? dataYER; // = new List<Element>();
+    private IEnumerable<EB>? dataEB; // = new List<Element>();
+                                     //DateTime? date1 = DateTime.Today;
+                                     //TimeSpan? exdTime = DateTime.Now.TimeOfDay; //new TimeSpan()
+    public string[] SelectedCities { get; set; } = new[] { "bal", "sea" };
+    MudForm? form;
+    ET model = new ET();
+    ETinsFluentValidator validator = new();
+    private Drink enumValue { get; set; } = Drink.HotWater;
+    public enum Drink { Tea, SparklingWater, SoftDrink, Cider, Beer, Wine, Moonshine, Wodka, Cola, GreeTea, FruitJuice, Lemonade, HotWater, SpringWater, IceWater, }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            //var aaa = form;
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form!.Validate();
+
+        if (form.IsValid)
+        {
+            model.UsrId = AppState.UsrId;
+            var rtrn = await db.StoreProc<dynamic, ET>("ET_NEW(@UsrId, @Yer, @EBid, @EXD, @BgnTS, @EndTS, @kMin, @kMax, @Info)", model);
+            if (rtrn.EBID != 0)
+            {
+                Snackbar.Add("Kayıt yapıdı", MudBlazor.Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+        }
+    }
+
+    public class ETinsFluentValidator : AbstractValidator<ET>
+    {
+        public ETinsFluentValidator()
+        {
+            RuleFor(x => x.Yer).NotEmpty().WithMessage("Boş olamaz");
+
+            RuleFor(x => x.EBid).NotEmpty();
+
+            RuleFor(x => x.EXD).NotNull().WithMessage("Boş olamaz");
+            RuleFor(x => x.EXD).GreaterThanOrEqualTo(DateTime.Today.AddDays(1)).WithMessage("Yarından önce olamaz");
+
+            //RuleFor(x => x.).NotEmpty();
+
+            RuleFor(x => x.BgnTS).NotEmpty().WithMessage("Boş olamaz");
+            RuleFor(x => x.BgnTS).LessThan(y => y.EXD).WithMessage("Etkinlik tarihinden önce olmalı");
+
+            RuleFor(x => x.EndTS).NotEmpty().WithMessage("Boş olamaz");
+            RuleFor(x => x.EndTS).LessThan(y => y.EXD).WithMessage("Etkinlik tarihinden önce olmalı");
+            RuleFor(x => x.EndTS).GreaterThan(y => y.BgnTS).WithMessage("Katılım başlangıcından sonra olmalı");
+            //RuleFor(x => x.EndTS).NotEmpty();
+            RuleFor(x => x.kMax).GreaterThanOrEqualTo(y => y.kMin).WithMessage("Min dan küçük olamaz");
+            RuleFor(x => x.Info).MaximumLength(500).WithMessage("Max 500 karakter");
+
+        }
+
+        private async Task<bool> IsUniqueAsync(string email)
+        {
+            // Simulates a long running http call
+            await Task.Delay(2000);
+            return email.ToLower() != "test@test.com";
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<ET>.CreateWithOptions((ET)model, x => x.IncludeProperties(propertyName)));
+            if (result.IsValid)
+                return Array.Empty<string>();
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        dataYER = await db.LoadData<YER, dynamic>($"select * from YER order by AD", new { });
+        dataEB = await db.LoadData<EB, dynamic>($"select * from EB order by AD", new { });
+    }
+
+    public class YER
+    {
+        public string? Ad { get; set; }
+    }
+
+    public class EB
+    {
+        public int EBid { get; set; }
+        public string? Ad { get; set; }
+    }
+
+    public class ET
+    {
+        public int UsrId { get; set; }
+        public string? Yer { get; set; } = "Bodrum";
+        public int EBid { get; set; } = 1;
+        public DateTime? EXD { get; set; } = DateTime.Today.AddDays(1);
+        public DateTime? BgnTS { get; set; }
+        public DateTime? EndTS { get; set; }
+        public int kMin { get; set; } = 1;
+        public int kMax { get; set; } = 100;
+        public string? Info { get; set; } = "";
+
+        //public TimeSpan? exdTime { get; set; } = DateTime.Now.TimeOfDay;
+        //public TimeSpan _exdTime;
+
+        //public TimeSpan exdTime {
+        //    get => _exdTime; //EXD.Value.TimeOfDay; 
+        //    set
+        //    {
+        //        _exdTime = value;
+        //        //EXD.Value.Add(_exdTime);
+
+        //    }
+        //}
+        //public ET(){
+        //    exdTime = EXD.Value.TimeOfDay;
+        //}
+
+    }
+
+}
+
+<style>
+    .tur {
+		grid-area: tur;
+	}
+	.yer {
+		grid-area: yer;
+	}
+	.exd {
+		grid-area: exd;
+	}
+	.bgn {
+		grid-area: bgn;
+	}
+	.end {
+		grid-area: end;
+	}
+	.kmin {
+		grid-area: kmin;
+	}
+	.kmax {
+		grid-area: kmax;
+	}
+	.info {
+		grid-area: info;
+	}
+
+	.wrapper {
+		background-color: #fff;
+		color: #444;
+	}
+
+    .wrapper {
+        display: grid;
+        grid-gap: 4px;
+        grid-template-areas:
+        "tur"
+        "yer"
+        "exd"
+        "bgn"
+        "end"
+        "kmin"
+        "kmax"
+        "info";
+        margin: auto;
+    }
+
+    @@media only screen and (min-width: 500px)  {
+        .wrapper {
+	        grid-template-columns: auto auto;
+	        grid-template-areas:
+            "tur  yer"
+	        "exd  ..."
+	        "bgn  end"
+	        "kmin kmax"
+            "info info";
+        }
+    }
+
+	@@media only screen and (min-width: 600px)   {
+		.wrapper {
+            grid-gap: 5px;
+		        grid-template-columns: 200px 200px auto;
+		        grid-template-areas:
+                "tur  yer  exd"
+		        "bgn  end  info"
+		        "kmin kmax info";
+            max-width: 600px;
+		}
+	}
+
+.box {
+  /*background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 100%; */
+}
+
+</style>

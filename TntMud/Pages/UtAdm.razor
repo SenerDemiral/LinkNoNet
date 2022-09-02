@@ -24,7 +24,10 @@
 </style>
 
 
-<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>
+@*<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>*@
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Usersd</MudText>
+</div>
 
 <MudDataGrid T="UT" Items="@data" @ref="mudDataGrid" 
              Breakpoint="Breakpoint.None" 

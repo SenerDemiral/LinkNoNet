@@ -77,15 +77,19 @@
 </MudAppBar>
 
 
-<MudDrawer Open="_drawerOpen" Elevation="1" Variant="@DrawerVariant.Persistent" DisableOverlay="true">
+<MudDrawer Open="_drawerOpen" Elevation="1" Variant="@DrawerVariant.Persistent" DisableOverlay="false" Anchor="Anchor.Left">
     <MudDrawerHeader>
         <MudText Typo="Typo.h6">TntMud</MudText>
     </MudDrawerHeader>
-    <MudNavMenu>
+    <MudNavMenu Dense="true">
         <MudNavLink OnClick="@AddETactive">Etkinlikler</MudNavLink>
         <MudNavLink OnClick="@AddETK">Etkinlikler Carousel</MudNavLink>
         <MudNavLink OnClick="@AddCounter">Counter</MudNavLink>
         <MudNavLink OnClick="@AddIndex">Index</MudNavLink>
+
+                    <MudNavLink Icon="@Icons.Material.Filled.Login"
+                    OnClick="@(() => DialogService.Show<ETinsDialog>("aaa", options: new DialogOptions(){MaxWidth = MaxWidth.Small, FullWidth = true}))">ETins</MudNavLink>
+
         <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
         @if (AppState.UsrId == 0)
         {
@@ -105,11 +109,13 @@
                 OnClick="@Logout">@AppState.UsrMoniker @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString() 
             </MudNavLink>
         }
+        <MudDivider Class="my-2" />
+        <MudText Class="px-4 mud-text-secondary" Typo="Typo.body2">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>
     </MudNavMenu>
 </MudDrawer>
 
 <MudMainContent>
-    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-2">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" >
         @*<MudPaper Class="pa-2">*@
             <CascadingValue Value=this>
                 @foreach (var d in cmpDic)
@@ -120,8 +126,8 @@
                 }
             </CascadingValue>
         @*</MudPaper>*@
-        <MudText Align="Align.Center" Style="color:white; background-color: grey ">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>
     </MudContainer>
+    @*<MudText Align="Align.Center" Style="color:white; background-color: grey ">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>*@
 </MudMainContent>
 @*</MudLayout>*@
 

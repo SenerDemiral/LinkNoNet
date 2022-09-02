@@ -1,8 +1,13 @@
 ﻿@inject IDataAccess db
 
-<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">UsrActivity #@UTid @Title</MudText>
+@*<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">UsrActivity: @Title#@UTid</MudText>*@
+@*<MudText Class="d-flex justify-center mud-text-secondary">UsrActivity: @Title#@UTid</MudText>*@
+@*<MudText Align="Align.Center" Color="Color.Primary">UsrActivity: @Title#@UTid</MudText>*@
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">UsrActivity: @Title#@UTid</MudText>
+</div>
 
-<MudDataGrid T="UA" Items="@data" @ref="mudDataGrid" 
+<MudDataGrid T="UA" Items="@data" @ref="mudDataGrid"
              Breakpoint="Breakpoint.None" 
              FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"  
              Virtualize="true"
@@ -20,6 +25,9 @@
         <Column T="UA" Field="@nameof(UA.LgnNme)" />
         <Column T="UA" Field="@nameof(UA.IP)" />
     </Columns>
+    <PagerContent >
+        <MudDataGridPager T="UA" />
+    </PagerContent>
 </MudDataGrid>
 
 @code {

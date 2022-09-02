@@ -88,7 +88,7 @@ namespace DataLibrary
             stopWatch.Start();  
             using IDbConnection cnct = new FbConnection(cnctStr);
             //return await cnct.QueryAsync<T>(sql, parameters);
-            var aaa = await cnct.QueryAsync<T>(sql, parameters);
+            var aaa = await cnct.QueryAsync<T>(sql, parameters).ConfigureAwait(false);
             stopWatch.Stop();
             Console.WriteLine(stopWatch.ElapsedMilliseconds.ToString());
             return aaa;

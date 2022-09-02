@@ -26,3 +26,94 @@
 .mud-dialog-title {
     padding-bottom: 0 !important;
 }
+
+.etGrid {
+    display: grid;
+    grid-gap: 4px;
+    grid-template-columns: minmax(300px, 500px);
+    /*background-color: #fff;*/
+    /*color: #444;*/
+    justify-content: center;
+    align-content: center;
+}
+
+.etBox {
+    background-color: #444;
+    color: white;
+    /*border: 1px solid;*/
+    border-radius: var(--mud-default-borderradius);
+    padding: 10px 4px 0 4px;
+    /*font-size: 150%;*/
+    display: inline-flex;
+    position: relative;
+}
+
+.emBox {
+    background-color: #444;
+    color: white;
+    /*border: 1px solid;*/
+    border-radius: var(--mud-default-borderradius);
+    padding: 4px;
+}
+
+.emButton {
+    background-color: grey; /* Green */
+    border: 1px solid white;
+    /*color: black;*/
+    /*padding: 15px 32px;*/
+    text-align: left;
+    text-decoration: none;
+    display: inline-block;
+    /*font-size: 16px;*/
+}
+
+.emCpt {
+    grid-area: emCpt;
+    color: aquamarine;
+}
+
+.emEXD {
+    grid-area: emEXD;
+    font-size: 80%;
+}
+
+.emMsg {
+    grid-area: emMsg;
+}
+
+.emGrid {
+    display: grid;
+    grid-gap: 1px;
+    grid-template-columns: 180px 120px;
+    /*grid-template-rows: auto;*/
+    /*background-color: #fff;*/
+    /*color: #444;*/
+
+    grid-template-areas:
+        "emCpt emEXD"
+        "emMsg emMsg";
+    justify-content: center;
+    align-content: start;
+    /*padding: 4px 0;*/
+    /*overflow: auto; */
+}
+
+
+.topleft {
+    position: absolute;
+    top: 0;
+    left: 4px;
+    font-size: 0.7rem;
+    color: aqua;
+    background-color: inherit;
+}
+
+.topright {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    font-size: 0.7rem;
+    color: aqua;
+    background-color: inherit;
+}
+

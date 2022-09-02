@@ -17,7 +17,8 @@
     {
         <MudNavLink Icon="@Icons.Material.Filled.Logout"  @onclick="LogoutUser">@AppState.UsrId @UserService.NoC.ToString()/@UserService.NoU.ToString()/@UserService.No0.ToString() </MudNavLink>
     }
-    </MudNavMenu>
+    <MudNavLink Icon="@Icons.Material.Filled.Login">Version</MudNavLink>
+</MudNavMenu>
 
 @code{
     protected override void OnInitialized()
