@@ -87,8 +87,10 @@
         <MudNavLink OnClick="@AddCounter">Counter</MudNavLink>
         <MudNavLink OnClick="@AddIndex">Index</MudNavLink>
 
-                    <MudNavLink Icon="@Icons.Material.Filled.Login"
-                    OnClick="@(() => DialogService.Show<ETinsDialog>("aaa", options: new DialogOptions(){MaxWidth = MaxWidth.Small, FullWidth = true}))">ETins</MudNavLink>
+<MudNavLink Icon="@Icons.Material.Filled.Login"
+OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
+
+</MudNavLink>
 
         <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
         @if (AppState.UsrId == 0)

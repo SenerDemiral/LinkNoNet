@@ -9,6 +9,7 @@
         <MudDivider />
     </TitleContent>
     <DialogContent>
+        <MudContainer Style="max-height: 50vh; overflow: auto">
         <MudForm Class="wrapper" Model="@model" @ref="form" Validation="@(validator.ValidateValue)" ValidationDelay="0">
             <MudSelect Class="tur" @bind-Value="model.EBid" Label="Türü" For="@(() => model.EBid)" Dense="true" Margin="Margin.Dense">
                 @foreach (var item in dataEB)
@@ -50,10 +51,11 @@
                                      @bind-Value="model.kMax"
                                      For="@(() => model.kMax)" />
 
-            <MudTextField Class="info" Label="Bilgi" Variant="Variant.Text" Lines="3" Margin="Margin.Dense"
+            <MudTextField Class="info" Label="Bilgi" Variant="Variant.Text" Lines="2" Margin="Margin.Dense"
                               @bind-Text="model.Info"
                               For="@(() => model.Info)" />
         </MudForm>
+        </MudContainer>
     </DialogContent>
 
     <DialogActions>
@@ -234,7 +236,7 @@
         margin: auto;
     }
 
-    @@media only screen and (min-width: 500px)  {
+    @@media only screen and (orientation: landscape) {
         .wrapper {
 	        grid-template-columns: auto auto;
 	        grid-template-areas:
@@ -244,19 +246,10 @@
 	        "kmin kmax"
             "info info";
         }
+        
     }
 
-	@@media only screen and (min-width: 600px)   {
-		.wrapper {
-            grid-gap: 5px;
-		        grid-template-columns: 200px 200px auto;
-		        grid-template-areas:
-                "tur  yer  exd"
-		        "bgn  end  info"
-		        "kmin kmax info";
-            max-width: 600px;
-		}
-	}
+	
 
 .box {
   /*background-color: #444;
