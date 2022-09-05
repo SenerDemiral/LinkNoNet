@@ -8,11 +8,13 @@ namespace RepeatingTask;
 public class GetFirstToken
 {
     private readonly IHttpClientFactory _httpClient;
+    private readonly IDataAccess db;
     public TokenModel Token { get; set; }
 
-    public GetFirstToken(IHttpClientFactory httpClientFactory)
+    public GetFirstToken(IHttpClientFactory httpClientFactory, IDataAccess dataAccess)
     {
         _httpClient = httpClientFactory!;
+        db = dataAccess;
     }
 
     /*
@@ -32,18 +34,21 @@ public class GetFirstToken
     "refresh_token": "NjczY2E2NzZiNDJjZWI5NTE2YjZhNTlhYTJmOTQ5MjljN2MwNmUxM2MzODc5YTE4OGVjMDdlYTBiMzY1MWI1Mw"
     }
      */
-    public async Task OnGet(int mgzId, string mgzUri, string client_id, string client_secret, string code)
+    public async Task OnGet(int mgzId, string code)
     {
+        string sql = $"select MTid, Uri, Client_Id, Client_Secret from MT where MTid = @MTid";
+        var mgz = await db.LoadRec<MgzSecrets, dynamic>(sql, new { MTid = mgzId });
+
         var queryParams = new Dictionary<string, string>()
         {
             {"grant_type", "authorization_code"},
-            {"client_id",   client_id },
-            {"client_secret", client_secret },
+            {"client_id",   mgz.Client_Id },
+            {"client_secret", mgz.Client_Secret },
             {"code", code },
             {"redirect_uri", $"http://api.linkno.net/auth/{mgzId}" }, 
         };
 
-        string uri = QueryHelpers.AddQueryString($"{mgzUri}/oauth/v2/token", queryParams!);
+        string uri = QueryHelpers.AddQueryString($"{mgz.Uri}/oauth/v2/token", queryParams!);
 
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -56,8 +61,15 @@ public class GetFirstToken
 
             Token = await JsonSerializer.DeserializeAsync<TokenModel>(contentStream);
 
-            // Save Token
-            // Log
+            string usql = "update MT set access_token = @Access_Token, refresh_token = @Refresh_Token where MTid = @MTid";
+            if(await db.SaveData(usql, Token))
+            {
+                // Basarili
+            }
+            else
+            {
+                // Basarisiz
+            }
         }
         else
         {

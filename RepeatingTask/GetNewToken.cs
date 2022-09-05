@@ -8,24 +8,31 @@ namespace RepeatingTask;
 public class GetNewToken
 {
     private readonly IHttpClientFactory _httpClient;
-    public TokenModel Token { get; set; }
+    private readonly IDataAccess db;
 
-    public GetNewToken(IHttpClientFactory httpClientFactory)
+    public GetNewToken(IHttpClientFactory httpClientFactory, IDataAccess dataAccess)
     {
         _httpClient = httpClientFactory!;
+        db = dataAccess;
     }
 
-    public async Task OnGet(int mgzId, string mgzUri, string client_id, string client_secret, string refresh_token)
+    public async Task OnGetIfExpired(int mgzId)
     {
+        string sql = $"select MTid, Expires_At, Uri, Client_Id, Client_Secret, Refresh_Token from MT where MTid = @MTid";
+        var mgz = await db.LoadRec<MgzSecrets, dynamic>(sql, new { MTid = mgzId });
+        
+        if(mgz.Expires_At > DateTime.Now)   // Expire olmamis
+            return;
+
         var queryParams = new Dictionary<string, string>()
         {
             {"grant_type", "refresh_token"},
-            {"client_id",   client_id },
-            {"client_secret", client_secret },
-            {"refresh_token", refresh_token },
+            {"client_id",   mgz.Client_Id },
+            {"client_secret", mgz.Client_Secret },
+            {"refresh_token", mgz.Refresh_Token },
         };
 
-        string uri = QueryHelpers.AddQueryString($"{mgzUri}/oauth/v2/token", queryParams!);
+        string uri = QueryHelpers.AddQueryString($"{mgz.Uri}/oauth/v2/token", queryParams!);
 
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -36,10 +43,17 @@ public class GetNewToken
         {
             using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
 
-            Token = await JsonSerializer.DeserializeAsync<TokenModel>(contentStream);
+            var Token = await JsonSerializer.DeserializeAsync<TokenModel>(contentStream);
 
-            // Save Token to db
-            // Log
+            string usql = "update MT set access_token = @Access_Token, refresh_token = @Refresh_Token where MTid = @MTid";
+            if (await db.SaveData(usql, Token))
+            {
+                // Basarili
+            }
+            else
+            {
+                // Basarisiz
+            }
         }
         else
         {

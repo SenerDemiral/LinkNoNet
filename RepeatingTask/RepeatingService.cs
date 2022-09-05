@@ -15,8 +15,8 @@ public class RepeatingService: BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stopingToken)
     {
         // DoWorkAsync icine koy, simdilik burda
-        await _basicModel.OnGet();  // Ornek
-        await _getOrders.OnGet(accessToken: "", mgzId: 5, mgzUri: "", startUpdatedAt: DateTime.Now.AddDays(-1), endUpdatedAt: DateTime.Now);  // Kayitli aktif her Magaza icin yap
+       //await _basicModel.OnGet();  // Ornek
+       // await _getOrders.OnGet(accessToken: "", mgzId: 5, mgzUri: "", startUpdatedAt: DateTime.Now.AddDays(-1), endUpdatedAt: DateTime.Now);  // Kayitli aktif her Magaza icin yap
 
         while (await _timer.WaitForNextTickAsync(stopingToken) && !stopingToken.IsCancellationRequested)
         {
