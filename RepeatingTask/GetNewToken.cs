@@ -38,7 +38,7 @@ public class GetNewToken
 
             Token = await JsonSerializer.DeserializeAsync<TokenModel>(contentStream);
 
-            // Save Token
+            // Save Token to db
             // Log
         }
         else
