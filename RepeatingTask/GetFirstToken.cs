@@ -61,14 +61,15 @@ public class GetFirstToken
 
             Token = await JsonSerializer.DeserializeAsync<TokenModel>(contentStream);
 
+            Token.MTid = mgzId;
             string usql = "update MT set access_token = @Access_Token, refresh_token = @Refresh_Token where MTid = @MTid";
             if(await db.SaveData(usql, Token))
             {
-                // Basarili
+                Console.WriteLine("Saved");
             }
             else
             {
-                // Basarisiz
+                Console.WriteLine("Basarisiz");
             }
         }
         else
