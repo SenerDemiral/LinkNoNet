@@ -57,7 +57,7 @@ public class FBDataAccess : IDataAccess
         //return await cnct.QueryAsync<T>(sql, parameters);
         var aaa = await cnct.QueryAsync<T>(sql, parameters).ConfigureAwait(false);
         stopWatch.Stop();
-        Console.WriteLine(stopWatch.ElapsedMilliseconds.ToString());
+        Console.WriteLine($"fbLoadData:{stopWatch.ElapsedMilliseconds}");
         return aaa;
     }
 

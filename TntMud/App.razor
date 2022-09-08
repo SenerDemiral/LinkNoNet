@@ -1,6 +1,8 @@
-﻿@inject IDialogService DialogService
+﻿@using System.Diagnostics
+@inject IDialogService DialogService
 @inject AppState AppState
 @inject ICircuitUserService UserService
+@inject IDataSet dataSet
 @implements IDisposable
 @*<PageTitle>Link#Net</PageTitle>*@
 
@@ -130,6 +132,7 @@ OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
         @*</MudPaper>*@
     </MudContainer>
     @*<MudText Align="Align.Center" Style="color:white; background-color: grey ">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>*@
+    <img src="/imgs/sener.jpg?width=300&quality=75" />
 </MudMainContent>
 @*</MudLayout>*@
 
@@ -247,6 +250,12 @@ OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
         //TabSelect(0);
         //await Task.CompletedTask;
         //var selectedType = Type.GetType($"TntMud.Pages.{cmpDic[0].Text}");
+
+        //Stopwatch sw = Stopwatch.StartNew();
+        var aaa = await dataSet.UTsetSrch("16,34,5,21", "");
+        var bbb = await dataSet.UTsetSrch("21", "16,5");
+        //sw.Stop();
+        //Console.WriteLine($"Elapsed ms: {sw.ElapsedMilliseconds}");
     }
 
     private void App_UsrChanged(object sender, EventArgs e)

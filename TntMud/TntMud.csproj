@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.2.1" />
     <PackageReference Include="MudBlazor" Version="6.0.15" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>

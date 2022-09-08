@@ -4,6 +4,8 @@ global using TntMud.Login;
 using DataLibrary;
 using Microsoft.AspNetCore.HttpOverrides;
 using MudBlazor.Services;
+using SixLabors.ImageSharp.Web.DependencyInjection;
+using TntMud;
 //using Microsoft.AspNetCore.SignalR.Protocols.MessagePack
 using TntMud.Data;
 
@@ -12,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddImageSharp();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -23,6 +26,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
 
 builder.Services.AddSingleton<IDataAccess, FBDataAccess>();
+builder.Services.AddSingleton<IDataSet, DataSet>();
 
 builder.Services.AddScoped<AppState>();
 builder.Services.AddSingleton<ICircuitUserService, CircuitUserService>();
@@ -42,6 +46,7 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+app.UseImageSharp();
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -58,4 +58,10 @@ app.Run();
 //  RedirectUri:    http://api.linkno.net/auth/34
 //  clientId:       
 //  clientSecret:   
-//  BrowserLink:    https://perse.myideasoft.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=savlore21&redirect_uri=http://api.linkno.net/auth/25
+//  BrowserLink:    https://perse.myideasoft.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=perse21&redirect_uri=http://api.linkno.net/auth/25
+
+//  MedLab MTid=35
+//  RedirectUri:    https://api.linkno.net/auth/35
+//  clientId:       
+//  clientSecret:   
+//  BrowserLink:    https://medlab.myideasoft.com/admin/user/auth?client_id=30wapite3s4kkoko0kw8k4o88wo0k0wo80o4cwwkk444ggo4kw&response_type=code&state=medlab35&redirect_uri=http://api.linkno.net/auth/35
