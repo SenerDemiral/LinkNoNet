@@ -37,56 +37,70 @@ public class DataSet : IDataSet
     public async Task<List<UT>> UTsetSrch(string fndAnd, string fndOr)
     {
         var utSet = await UTset();
-
+        int i;
         Stopwatch sw = Stopwatch.StartNew();
         List<UT> output = new List<UT>();
 
-        int NOF;                // NumberOfFound 
+        int NOF; // NumberOfFound 
+
+        //--SEARCH AND------------Token larin hepsi itm da olmali
         string[] fsa = fndAnd.Split(',', 50, StringSplitOptions.RemoveEmptyEntries);
-        int NOS = fsa.Length;   // NumberOfSearch
-        ushort[] fndAryAnd = new ushort[NOS];
-        bool fndInAnd = fndAryAnd.Length == 0 ? false : true;
+        fsa = fsa.Distinct().ToArray(); // Duplicate olmasin
 
-        string[] fso = fndOr.Split(',', 50, StringSplitOptions.RemoveEmptyEntries);
-        ushort[] fndAryOr = new ushort[fso.Length];
-        bool fndInOr = fndAryOr.Length == 0 ? false : true;
-
-        int i = 0;
+        ushort[] fndAryAnd = new ushort[fsa.Length];
+        bool hasAndToken = fndAryAnd.Length == 0 ? false : true;
+        int NOS = fsa.Length;   // Bulunmasi gereken NumberOfSearchToken
+        
+        i = 0;
         foreach (string str in fsa)
             fndAryAnd[i++] = ushort.Parse(str);
+        Array.Sort(fndAryAnd);
+
+        //--SEARCH OR------------Token larin bir tanesi itm da olmali
+        string[] fso = fndOr.Split(',', 50, StringSplitOptions.RemoveEmptyEntries);
+        fso = fso.Distinct().ToArray(); // Duplicate olmasin
+
+        ushort[] fndAryOr = new ushort[fso.Length];
+        bool hasOrToken = fndAryOr.Length == 0 ? false : true;
+
         i = 0;
         foreach (string str in fso)
             fndAryOr[i++] = ushort.Parse(str);
+        Array.Sort(fndAryOr);
+        //--------------
 
-        // AND search
-        bool OKA = false, OKO = false;
+        bool isAndTokensFound, isOrTokenFound;
+        int ILAL;   // ItemLblAryLength
         foreach (var itm in utSet)
         {
-            NOF = 0;
-            OKA = false;
-            OKO = false;
+            NOF = 0;        // Bulunan AndToken sayisi
+            isAndTokensFound = false;
+            isOrTokenFound = false;
+            ILAL = itm.LblAry.Length;   // Simdilik kullanilmiyor
 
-            OKA = !fndInAnd;
-            if (fndInAnd)
+            isAndTokensFound = !hasAndToken;
+            // FndAry token count > itm.LblAry token count -> hic arama. Bosver 
+            if (hasAndToken)
             {
                 foreach (int s in itm.LblAry)
                 {
                     foreach (int f in fndAryAnd)
                     {
                         if (s == f)
-                        {
                             NOF++;
-                        }
                     }
-                    if (NOF == NOS)
-                        OKA = true;
+                    if (NOF == NOS) // Bulunmasi gereken sayiya ulasildi
+                    {
+                        isAndTokensFound = true;
+                        break;  // digerlerine bakmaya gerek yok
+                    }
                 }
             }
-            if (OKA) // And bulundu Or dakilerden birtanesini daha bul
+            if (isAndTokensFound) // And bulundu Or dakilerden birtanesini daha bul
             {
-                OKO = !fndInOr;
+                isOrTokenFound = !hasOrToken;
 
-                if (fndInOr)
+                if (hasOrToken)
                 {
                     foreach (int s in itm.LblAry)
                     {
@@ -94,17 +108,17 @@ public class DataSet : IDataSet
                         {
                             if (s == f)
                             {
-                                OKO = true;
+                                isOrTokenFound = true; // Birinin bulunmasi yeterli
                                 break;
                             }
                         }
-                        if (OKO)
+                        if (isOrTokenFound)
                             break;
                     }
                 }
             }
 
-            if (OKA && OKO)
+            if (isAndTokensFound && isOrTokenFound)
             {
                 output.Add(itm);
                 //itm.fndAnd = true;
@@ -113,10 +127,8 @@ public class DataSet : IDataSet
         sw.Stop();
         Console.WriteLine($"UTsetSrch: {sw.ElapsedMilliseconds}ms {sw.ElapsedTicks}tick fndAnd:{fndAnd}");
 
-
         return output;
     }
-
 }
 
 public interface IDataSet
