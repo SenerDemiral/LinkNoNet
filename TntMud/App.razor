@@ -132,7 +132,11 @@ OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
         @*</MudPaper>*@
     </MudContainer>
     @*<MudText Align="Align.Center" Style="color:white; background-color: grey ">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>*@
-    <img src="/imgs/sener.jpg?width=300&quality=75" />
+    
+    <div style="display:flex; justify-content:center">
+        <img src="/imgs/can512x512.jpg?width=300&quality=50" />
+    </div>
+
 </MudMainContent>
 @*</MudLayout>*@
 
@@ -252,8 +256,8 @@ OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
         //var selectedType = Type.GetType($"TntMud.Pages.{cmpDic[0].Text}");
 
         //Stopwatch sw = Stopwatch.StartNew();
-        var aaa = await dataSet.UTsetSrch("16,39,5,21", "88,99");
-        var bbb = await dataSet.UTsetSrch("21", "16,5");
+        //var aaa = await dataSet.UTsetSrch("16,39,5,21", "");
+        //var bbb = await dataSet.UTsetSrch("", "16,5");
         //sw.Stop();
         //Console.WriteLine($"Elapsed ms: {sw.ElapsedMilliseconds}");
     }

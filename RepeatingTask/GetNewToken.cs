@@ -20,44 +20,48 @@ public class GetNewToken
     {
         string sql = $"select MTid, Expires_At, Uri, Client_Id, Client_Secret, Refresh_Token from MT where MTid = @MTid";
         var mgz = await db.LoadRec<MgzSecrets, dynamic>(sql, new { MTid = mgzId });
-        
-        if(mgz.Expires_At > DateTime.Now)   // Expire olmamis
-            return;
 
-        var queryParams = new Dictionary<string, string>()
+        if (mgz is not null)
         {
-            {"grant_type", "refresh_token"},
-            {"client_id",   mgz.Client_Id },
-            {"client_secret", mgz.Client_Secret },
-            {"refresh_token", mgz.Refresh_Token },
-        };
+            if (mgz.Expires_At > DateTime.Now)   // Expire olmamis
+                return;
 
-        string uri = QueryHelpers.AddQueryString($"{mgz.Uri}/oauth/v2/token", queryParams!);
-
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-
-        var httpClient = _httpClient.CreateClient();
-        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-
-        if (httpResponseMessage.IsSuccessStatusCode)
-        {
-            using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-
-            var Token = await JsonSerializer.DeserializeAsync<TokenModel>(contentStream);
-
-            string usql = "update MT set access_token = @Access_Token, refresh_token = @Refresh_Token where MTid = @MTid";
-            if (await db.SaveData(usql, Token))
+            var queryParams = new Dictionary<string, string>()
             {
-                // Basarili
+                {"grant_type", "refresh_token"},
+                {"client_id",   mgz.Client_Id },
+                {"client_secret", mgz.Client_Secret },
+                {"refresh_token", mgz.Refresh_Token },
+            };
+
+            string uri = QueryHelpers.AddQueryString($"{mgz.Uri}/oauth/v2/token", queryParams!);
+
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+
+            var httpClient = _httpClient.CreateClient();
+            var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+
+                var Token = await JsonSerializer.DeserializeAsync<TokenModel>(contentStream);
+
+                Token.MTid = mgzId;
+                string usql = "update MT set access_token = @Access_Token, refresh_token = @Refresh_Token where MTid = @MTid";
+                if (await db.SaveData(usql, Token))
+                {
+                    // Basarili
+                }
+                else
+                {
+                    // Basarisiz
+                }
             }
             else
             {
-                // Basarisiz
+                // Log
             }
-        }
-        else
-        {
-            // Log
         }
     }
 }

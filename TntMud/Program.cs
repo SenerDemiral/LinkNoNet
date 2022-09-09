@@ -14,6 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+    //.AddHubOptions(options => {
+    //    options.MaximumReceiveMessageSize = 65_536;  // Default 32KB: 32_768
+    //});
+
 builder.Services.AddImageSharp();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>

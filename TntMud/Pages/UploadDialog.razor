@@ -13,11 +13,7 @@
     <button type="submit">Upload Selected File(s)</button>
 </form>
 
-
-
 @code {
-    [CascadingParameter] App app { get; set; }
-
     string Message = "No file(s) selected";
     IReadOnlyList<IBrowserFile> selectedFiles;
     //IBrowserFile selectedFile;
@@ -34,16 +30,19 @@
     {
         foreach (var file in selectedFiles)
         {
-            if (file.Size > 512_000)
-                Message = $"{file.Name} is too big";
-            else
-            {
-                await using FileStream fs = new($"{env.WebRootPath}\\imgs\\{file.Name}", FileMode.Create);
-                await file.OpenReadStream().CopyToAsync(fs);
-                Message = $"{selectedFiles.Count} file(s) uploaded on server";
-            }
+            //Stream stream = file.OpenReadStream();
+            //var path = $"{env.WebRootPath}\\{file.Name}";
+            //FileStream fs = File.Create(path);
+            //await stream.CopyToAsync(fs);
+            //stream.Close();
+            //fs.Close();
+
+            //=== yukaridaki ile asagidaki ayni
+            await using FileStream fs = new($"{env.WebRootPath}\\imgs\\{file.Name}", FileMode.Create);
+            await file.OpenReadStream().CopyToAsync(fs);
+
         }
+        Message = $"{selectedFiles.Count} file(s) uploaded on server";
         this.StateHasChanged();
     }
-
 }

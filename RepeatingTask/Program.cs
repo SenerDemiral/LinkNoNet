@@ -24,6 +24,18 @@ var app = builder.Build();
 // Idesoft code bildirmek icin redirect_uri ile bildirdigimiz burayi cagirir
 // Burasi da code kullanarak ilk Token lari alip DB ye kaydeder
 
+app.MapGet("/auth/getNewToken/{mgzId:int}", async (int mgzId) =>
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var getNewTokenService = scope.ServiceProvider.GetRequiredService<GetNewToken>();
+
+        await getNewTokenService.OnGetIfExpired(mgzId);
+    }
+
+    return $"OK.{mgzId}";
+});
+
 app.MapGet("/auth/{mgzId:int}", async (int mgzId, string state, string? code, string? error, string? error_description) =>
 {
     if(error != null)
@@ -46,22 +58,17 @@ app.MapGet("/auth/{mgzId:int}", async (int mgzId, string state, string? code, st
 
 app.Run();
 
-//  Savlore MTid=21
+//  Savlore         MTid=21
 //  RedirectUri:    http://api.linkno.net/auth/21
-//  ClientId        7_nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8 API bolumunde bunu gosteriyor! Bu degil asagidaki
 //  clientId:       nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8
-//  clientSecret:   53yiopr0fxwcc0kocow0oc448woggkwgg8go0o4ocos4wsgkgc
-//  BrowserLink:    https://savlore.myideasoft.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=savlore21&redirect_uri=http://api.linkno.net/auth/21
 //  BrowserLink:    https://www.savlore.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=savlore21&redirect_uri=http://api.linkno.net/auth/21
 
-//  Perse MTid=25
+//  Perse           MTid=34
 //  RedirectUri:    http://api.linkno.net/auth/34
 //  clientId:       
-//  clientSecret:   
-//  BrowserLink:    https://perse.myideasoft.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=perse21&redirect_uri=http://api.linkno.net/auth/25
+//  BrowserLink:    https://perse.myideasoft.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=perse34&redirect_uri=http://api.linkno.net/auth/34
 
-//  MedLab MTid=35
+//  MedLab          MTid=35 demo
 //  RedirectUri:    https://api.linkno.net/auth/35
-//  clientId:       
-//  clientSecret:   
+//  clientId:       30wapite3s4kkoko0kw8k4o88wo0k0wo80o4cwwkk444ggo4kw
 //  BrowserLink:    https://medlab.myideasoft.com/admin/user/auth?client_id=30wapite3s4kkoko0kw8k4o88wo0k0wo80o4cwwkk444ggo4kw&response_type=code&state=medlab35&redirect_uri=http://api.linkno.net/auth/35

@@ -65,12 +65,14 @@ public class DataSet : IDataSet
 
         i = 0;
         foreach (string str in fso)
-            fndAryOr[i++] = ushort.Parse(str);
+            fndAryOr[i++] = ushort.Parse(str); 
         Array.Sort(fndAryOr);
         //--------------
 
-        bool isAndTokensFound, isOrTokenFound;
+        bool isAndTokensFound;
+        bool isOrTokenFound;
         int ILAL;   // ItemLblAryLength
+
         foreach (var itm in utSet)
         {
             NOF = 0;        // Bulunan AndToken sayisi

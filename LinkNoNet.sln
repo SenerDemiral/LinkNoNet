@@ -22,9 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLibrary", "DataLibrary\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test3", "Test3\Test3.csproj", "{C90A3B01-FC01-4346-9C3C-3F72242E3F82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetFirstToken", "GetFirstToken\GetFirstToken.csproj", "{E190DB67-5E9F-4432-A8BF-63CF28AAC27F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetFirstToken", "GetFirstToken\GetFirstToken.csproj", "{E190DB67-5E9F-4432-A8BF-63CF28AAC27F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepeatingTask", "RepeatingTask\RepeatingTask.csproj", "{1FE13D26-3084-4F0A-8D14-CF5804EAEBED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepeatingTask", "RepeatingTask\RepeatingTask.csproj", "{1FE13D26-3084-4F0A-8D14-CF5804EAEBED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

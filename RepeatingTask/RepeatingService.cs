@@ -3,13 +3,15 @@
 public class RepeatingService: BackgroundService
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(60));
+    private readonly IDataAccess db;
     private readonly BasicModel _basicModel;    // Ornek
     private readonly GetOrders _getOrders;
-    
-    public RepeatingService(BasicModel basicModel, GetOrders getOrders)
+
+    public RepeatingService(BasicModel basicModel, IDataAccess dataAccess, GetOrders getOrders)
     {
         _basicModel = basicModel; // Ornek
         _getOrders = getOrders;
+        db = dataAccess;
     }
     
     protected override async Task ExecuteAsync(CancellationToken stopingToken)
