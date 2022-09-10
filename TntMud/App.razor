@@ -89,10 +89,13 @@
         <MudNavLink OnClick="@AddCounter">Counter</MudNavLink>
         <MudNavLink OnClick="@AddIndex">Index</MudNavLink>
 
-<MudNavLink Icon="@Icons.Material.Filled.Login"
-OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
+            <MudNavLink Icon="@Icons.Filled.AppRegistration" 
+                OnClick="@(() => DialogService.Show<UploadDialog>())">Upload
+            </MudNavLink>
 
-</MudNavLink>
+    <MudNavLink Icon="@Icons.Material.Filled.Login"
+        OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
+    </MudNavLink>
 
         <MudNavLink OnClick="() => AddFetchData(null, DateTime.Now.ToString())">FetchData</MudNavLink>
         @if (AppState.UsrId == 0)
@@ -134,7 +137,8 @@ OnClick="@(() => DialogService.Show<ETinsDialog>())">ETins
     @*<MudText Align="Align.Center" Style="color:white; background-color: grey ">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>*@
     
     <div style="display:flex; justify-content:center">
-        <img src="/imgs/can512x512.jpg?width=300&quality=50" />
+        <img src="/uploads/tennis.jpg?width=300&quality=50" />
+        <img src="/images/can512x512.jpg?width=200&quality=50" />
     </div>
 
 </MudMainContent>

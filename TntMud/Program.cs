@@ -3,6 +3,7 @@ global using System.Collections.Concurrent;
 global using TntMud.Login;
 using DataLibrary;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using TntMud;
@@ -51,8 +52,12 @@ if (!app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 
 app.UseImageSharp();
-app.UseStaticFiles();
-
+app.UseStaticFiles(); // Serve files from wwwroot
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//    FileProvider = new PhysicalFileProvider(
+//        Path.Combine(builder.Environment.ContentRootPath, "uploads"))
+//});
 app.UseRouting();
 
 app.MapBlazorHub();
