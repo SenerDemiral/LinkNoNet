@@ -1,49 +1,70 @@
 ﻿@page "/adm/ut"
+@inject AppState AppState
 @inject IDataAccess db
 @inject IDialogService DialogService
 
 
 @*<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>*@
 <div class="mud-theme-dark">
-    <MudText Align="Align.Center" Typo="Typo.body2">Usersd</MudText>
+    <MudText Align="Align.Center" Typo="Typo.body2">Users</MudText>
 </div>
 
 <MudDataGrid T="UT" Items="@data" @ref="mudDataGrid" 
              Breakpoint="Breakpoint.None" 
              FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"  
-             Virtualize="false"
+             Virtualize="true" 
              Hover="true" Striped="true" Dense="true" Bordered="true"
-             Filterable="false" Groupable="true" MultiSelection="false" 
+             Filterable="false" 
+             FilterMode="DataGridFilterMode.ColumnFilterMenu" 
+             Groupable="false" 
+             MultiSelection="false"
              RowClassFunc="@SelectedRowClassFunc" 
-             RowClick="@RowClicked" >
+             RowClick="@RowClicked" RowStyleFunc="@_rowStyleFunc">
     <Columns>
-        <Column T="UT" Title="Detay">
+        <Column T="UT" Title="Detay" Filterable="false">
             <CellTemplate>
                 <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" 
                 OnClick="@(() => ContextMenuShow(context.Item))" />
             </CellTemplate>
         </Column>
-        <Column T="UT" Field="@nameof(UT.UTid)" Title="ID" Groupable="false" Filterable="false" />
-        <Column T="UT" Field="@nameof(UT.StuAd)" Title="Statu" />
+        <Column T="UT" Field="@nameof(UT.UTid)" Title="ID" />
+        <Column T="UT" Field="@nameof(UT.StuEnum)" Title="Statu" Groupable="true" >
+            <GroupTemplate>
+                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
+            </GroupTemplate>
+        </Column>
         <Column T="UT" Field="@nameof(UT.Name)" Title="Ad" />
-        <Column T="UT" Field="@nameof(UT.NN)" Title="KısaAd" />
-        <Column T="UT" Field="@nameof(UT.Typ)" />
+        <Column T="UT" Field="@nameof(UT.NN)" Title="Lakap" />
+        <Column T="UT" Field="@nameof(UT.TypAd)" Title="Typ" Groupable="true">
+            <GroupTemplate>
+                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
+            </GroupTemplate>
+        </Column>
         <Column T="UT" Field="@nameof(UT.RefId)" />
+        <Column T="UT" Field="@nameof(UT.UpdTS)">
+            <CellTemplate>
+                @context.Item.UpdTS.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
     </Columns>
+@*    <PagerContent>
+        <MudDataGridPager T="UT" />
+    </PagerContent>
+*@
 </MudDataGrid>
 
-<MudDialog @bind-IsVisible="inLineDialogVisible" Options="dialogOptions" DisableSidePadding="true">
+<MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
     <DialogContent>
-        <MudContainer Style="max-height: 80vh ; overflow-y: scroll">
+        @*<MudContainer Style="max-height: 80vh ; overflow-y: scroll">*@
             <MudList Clickable="true" Dense="true">
-                <MudListItem Text="Activity" Disabled="@isActivityDisabled" OnClick="AddUaAdm" />
+                <MudListItem Text="Activity" Disabled="@isActivityDisabled" OnClick="Activity" />
                 <MudDivider />
                 <MudListItem Text="Mağaza" Disabled="@isMagazaDisabled"/>
                 <MudListItem Text="Tanıtıcı" Disabled="@isTaniticiDisabled" />
                 <MudDivider />
-                <MudListItem Text="Onayla" Disabled="@isOnaylaDisabled" />
+            <MudListItem Text="Onayla" Disabled="@isOnaylaDisabled" OnClick="Onayla" />
             </MudList>
-        </MudContainer>
+        @*</MudContainer>*@
     </DialogContent>
 </MudDialog>
 
@@ -56,10 +77,8 @@
     string sty { get; set; }
     private int selectedRowNumber = -1;
     private MudDataGrid<UT>? mudDataGrid;
-    private bool inLineDialogVisible;
+    private bool contextMenuVisible;
     private int rating;
-    private void OpenDialog() => inLineDialogVisible = true;
-    void Submit() => inLineDialogVisible = false;
 
     private bool isActivityDisabled = true;
     private bool isMagazaDisabled = true;
@@ -68,7 +87,18 @@
 
     private DialogOptions dialogOptions = new() { NoHeader = true, };
 
-    private async Task AddUaAdm()
+    private Func<UT, int, string> _rowStyleFunc => (x, i) =>
+    {
+        string style = "";
+        if (x.Typ == "A")
+            style += "background-color:#8CED8C";
+        if (x.Typ == "M")
+            style += "background-color:#E5BDE5";
+
+        return style;
+    };
+
+    private async Task Activity()
     {
         //app.AddDynCmp("UsrAct", typeof(UaAdm), new(){
         //    { "UTid", mudDataGrid.SelectedItem.UTid },
@@ -81,18 +111,30 @@
             ["Title"] = mudDataGrid.SelectedItem.NN,
         };
 
-        var result = await DialogService.Show<Ua>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
+        var result = await DialogService.Show<UaDialog>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
 
-        inLineDialogVisible = false;
+        contextMenuVisible = false;
+    }
 
+    private void Onayla()
+    {
+        string sp = $"TT_ONAYLA(@Who, @UTid)";
+        var rtrn = db.StoreProc<ttOnaylaOut, dynamic>(sp, new { Who = AppState.UsrId, UTid = mudDataGrid.SelectedItem.UTid });
+        mudDataGrid.SelectedItem.Stu = rtrn.NewStu;
+        
+        contextMenuVisible = false;
     }
 
     private void ContextMenuShow(UT item)
     {
         mudDataGrid.SelectedItem = item;
+
         isActivityDisabled = false;
+        isMagazaDisabled = item.Typ == "M" ? false : true;
+        isTaniticiDisabled = item.Typ == "T" ? false : true;
         isOnaylaDisabled = item.Stu == -1 ? false : true;
-        inLineDialogVisible = true;
+
+        contextMenuVisible = true;
     }
 
     private string SelectedRowClassFunc(UT element, int rowNumber)
@@ -126,20 +168,38 @@
         //RefId = args.Item.RefId;
         //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
         //inLineDialogVisible = true;
+
     }
 
     private sealed class UT
     {
         public int UTid { get; set; }
+        public string? Typ { get; set; }
         public int Stu { get; set; }
-        public string StuAd { get; set; }
-        public string Moniker { get; set; }
-        public string NN { get; set; }
-        public string Name { get; set; }
-        public string eMail { get; set; }
-        public string mTel { get; set; }
-        public string Typ { get; set; }
+        public string? StuAd { get; set; }
+        public string? Moniker { get; set; }
+        public string? NN { get; set; }
+        public string? Name { get; set; }
+        public string? eMail { get; set; }
+        public string? mTel { get; set; }
         public int RefId { get; set; }
+        public DateTime UpdTS { get; }
+
+        public Constants.ttStus StuEnum => (Constants.ttStus)Stu;
+        public string TypAd => Typ switch
+        {
+            "A" => "Admin",
+            "M" => "Mağaza",
+            "T" => "Tanıtıcı",
+            _ => "?"
+        };
+    }
+
+    private sealed class ttOnaylaOut {
+        public int NewStu { get; set; }
+        public string? eMail { get; set; }
+        public string? eBody { get; set; }
+        public string? eSubject { get; set; }
     }
 
 }

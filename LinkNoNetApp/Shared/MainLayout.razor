@@ -1,15 +1,26 @@
 ﻿@inherits LayoutComponentBase
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
 
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="0">
+    <MudAppBar Elevation="0" Dense="true" >
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
+        @if (AppState.UsrId == 0)
+        {
+            <MudFab StartIcon="@Icons.Material.Filled.Logout" Label="Login" Color="Color.Error" Size="Size.Small" OnClick="@(() => DialogService.Show<LoginDialog>())" />
+        }
+        else
+        {
+            <MudTooltip Text="Güvenli Çıkış">
+            <MudFab EndIcon="@Icons.Material.Filled.Logout" Label="@AppState.UsrMoniker" Color="Color.Error" Size="Size.Small" OnClick="Logout" />
+            </MudTooltip>
+        }
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -18,7 +29,7 @@
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-1 pt-1">
             @Body
         </MudContainer>
     </MudMainContent>
@@ -30,5 +41,10 @@
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task Logout()
+    {
+        await AppState.Logout();
     }
 }

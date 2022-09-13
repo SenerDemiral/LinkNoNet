@@ -22,6 +22,8 @@
         <MudNavLink Href="tnt/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">TntHome</MudNavLink>
     }
 
+   @* <MudDivider Class="my-2" />
+
     @if(AppState.UsrId == 0)
     {
         <MudNavLink Icon="@Icons.Material.Filled.Login" OnClick="@(() => DialogService.Show<LoginDialog>())">Login</MudNavLink>
@@ -29,7 +31,7 @@
     else
     {
         <MudNavLink Icon="@Icons.Material.Filled.Logout" OnClick="Logout">@AppState.UsrMoniker</MudNavLink>
-    }
+    }*@
 
     <MudDivider Class="my-2" />
     <MudText Class="px-4 mud-text-secondary" Typo="Typo.body2">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>
