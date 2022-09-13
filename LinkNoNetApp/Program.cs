@@ -1,6 +1,7 @@
 using DataLibrary;
 using LinkNoNetApp;
 using LinkNoNetApp.Data;
+using LinkNoNetApp.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor.Services;
@@ -12,6 +13,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
+builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IDataAccess, FBDataAccess>();
 builder.Services.AddScoped<AppState>();
 

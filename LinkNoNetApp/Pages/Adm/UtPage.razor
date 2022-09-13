@@ -2,8 +2,13 @@
 @inject AppState AppState
 @inject IDataAccess db
 @inject IDialogService DialogService
+@inject IEmailService EmailService
 
-
+<style>
+    .mud-table-cell {
+        padding: 4px !important;
+    }
+</style>
 @*<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>*@
 <div class="mud-theme-dark">
     <MudText Align="Align.Center" Typo="Typo.body2">Users</MudText>
@@ -18,7 +23,7 @@
              FilterMode="DataGridFilterMode.ColumnFilterMenu" 
              Groupable="false" 
              MultiSelection="false"
-             RowClassFunc="@SelectedRowClassFunc" 
+             RowClassFunc="@SelectedRowClassFunc" RowClass="py-0"
              RowClick="@RowClicked" RowStyleFunc="@_rowStyleFunc">
     <Columns>
         <Column T="UT" Title="Detay" Filterable="false">
@@ -116,13 +121,17 @@
         contextMenuVisible = false;
     }
 
-    private void Onayla()
+    private async Task Onayla()
     {
-        string sp = $"TT_ONAYLA(@Who, @UTid)";
-        var rtrn = db.StoreProc<ttOnaylaOut, dynamic>(sp, new { Who = AppState.UsrId, UTid = mudDataGrid.SelectedItem.UTid });
-        mudDataGrid.SelectedItem.Stu = rtrn.NewStu;
-        
+        //string sp = $"TT_ONAYLA(@Who, @UTid)";
+        //var rtrn = db.StoreProc<ttOnaylaOut, dynamic>(sp, new { Who = AppState.UsrId, UTid = mudDataGrid.SelectedItem.UTid });
+        //mudDataGrid.SelectedItem.Stu = rtrn.NewStu;
+
         contextMenuVisible = false;
+
+        await EmailService.SendEmailAsync("sener.demiral@gmail.com", "Deneme", "<h1>DENEME</h1>").ConfigureAwait(false);
+
+
     }
 
     private void ContextMenuShow(UT item)
