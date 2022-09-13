@@ -133,7 +133,7 @@
         string sql = $"select * from YA order by YAid desc";
         data = await db.LoadData<YA, dynamic>(sql, new { });
 
-        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+        //var aaa = await db.StoreProcAsync<SMTP, dynamic>("APP_SMTP", new { });
     }
 
     void RowClicked(DataGridRowClickEventArgs<YA> args)

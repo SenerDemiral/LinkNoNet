@@ -1,0 +1,65 @@
+﻿@inject AppState AppState
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+<MudNavMenu Dense="true">
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    
+    <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
+    <MudNavLink Href="fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Fetch data</MudNavLink>
+    
+    @if (AppState.UsrTyp == "A")
+    {
+        <MudNavLink Href="adm/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">AdmHome</MudNavLink>
+        <MudNavLink Href="adm/ut" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">User</MudNavLink>
+    }
+    @if (AppState.UsrTyp == "M")
+    {
+        <MudNavLink Href="mgz/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">MgzHome</MudNavLink>
+    }
+    @if (AppState.UsrTyp == "T")
+    {
+        <MudNavLink Href="tnt/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">TntHome</MudNavLink>
+    }
+
+    @if(AppState.UsrId == 0)
+    {
+        <MudNavLink Icon="@Icons.Material.Filled.Login" OnClick="@(() => DialogService.Show<LoginDialog>())">Login</MudNavLink>
+    }
+    else
+    {
+        <MudNavLink Icon="@Icons.Material.Filled.Logout" OnClick="Logout">@AppState.UsrMoniker</MudNavLink>
+    }
+
+    <MudDivider Class="my-2" />
+    <MudText Class="px-4 mud-text-secondary" Typo="Typo.body2">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>
+    @*<MudText Class="px-4 mud-text-secondary" Typo="Typo.body2">Şener Demiral</MudText>*@
+</MudNavMenu>
+
+@code
+{
+    private async Task Logout()
+    {
+        await AppState.Logout();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppState.UsrChanged += App_UsrChanged;
+    }
+
+    private void App_UsrChanged(object sender, EventArgs e)
+    {
+        switch (AppState.UsrTyp){
+            case "A": NavigationManager.NavigateTo("adm/home"); break;
+            case "M": NavigationManager.NavigateTo("mgz/home"); break;
+            case "T": NavigationManager.NavigateTo("tnt/home"); break;
+            default: NavigationManager.NavigateTo("/"); break;
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+
+
+}

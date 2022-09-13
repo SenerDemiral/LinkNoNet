@@ -1,0 +1,145 @@
+﻿@page "/adm/ut"
+@inject IDataAccess db
+@inject IDialogService DialogService
+
+
+@*<MudText Class="d-flex justify-center" Style="@($"color:{Colors.LightGreen.Accent3}; background:{Colors.BlueGrey.Darken4};")">Index #yty63365</MudText>*@
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Usersd</MudText>
+</div>
+
+<MudDataGrid T="UT" Items="@data" @ref="mudDataGrid" 
+             Breakpoint="Breakpoint.None" 
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"  
+             Virtualize="false"
+             Hover="true" Striped="true" Dense="true" Bordered="true"
+             Filterable="false" Groupable="true" MultiSelection="false" 
+             RowClassFunc="@SelectedRowClassFunc" 
+             RowClick="@RowClicked" >
+    <Columns>
+        <Column T="UT" Title="Detay">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" 
+                OnClick="@(() => ContextMenuShow(context.Item))" />
+            </CellTemplate>
+        </Column>
+        <Column T="UT" Field="@nameof(UT.UTid)" Title="ID" Groupable="false" Filterable="false" />
+        <Column T="UT" Field="@nameof(UT.StuAd)" Title="Statu" />
+        <Column T="UT" Field="@nameof(UT.Name)" Title="Ad" />
+        <Column T="UT" Field="@nameof(UT.NN)" Title="KısaAd" />
+        <Column T="UT" Field="@nameof(UT.Typ)" />
+        <Column T="UT" Field="@nameof(UT.RefId)" />
+    </Columns>
+</MudDataGrid>
+
+<MudDialog @bind-IsVisible="inLineDialogVisible" Options="dialogOptions" DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh ; overflow-y: scroll">
+            <MudList Clickable="true" Dense="true">
+                <MudListItem Text="Activity" Disabled="@isActivityDisabled" OnClick="AddUaAdm" />
+                <MudDivider />
+                <MudListItem Text="Mağaza" Disabled="@isMagazaDisabled"/>
+                <MudListItem Text="Tanıtıcı" Disabled="@isTaniticiDisabled" />
+                <MudDivider />
+                <MudListItem Text="Onayla" Disabled="@isOnaylaDisabled" />
+            </MudList>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    //[CascadingParameter] App app { get; set; }
+
+    private IEnumerable<UT>? data; // = new List<Element>();
+    string Typ = "";
+    int RefId = 0;
+    string sty { get; set; }
+    private int selectedRowNumber = -1;
+    private MudDataGrid<UT>? mudDataGrid;
+    private bool inLineDialogVisible;
+    private int rating;
+    private void OpenDialog() => inLineDialogVisible = true;
+    void Submit() => inLineDialogVisible = false;
+
+    private bool isActivityDisabled = true;
+    private bool isMagazaDisabled = true;
+    private bool isTaniticiDisabled = true;
+    private bool isOnaylaDisabled = true;
+
+    private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private async Task AddUaAdm()
+    {
+        //app.AddDynCmp("UsrAct", typeof(UaAdm), new(){
+        //    { "UTid", mudDataGrid.SelectedItem.UTid },
+        //    { "Title", mudDataGrid.SelectedItem.Moniker }
+        //}, true);
+
+        var parameters = new DialogParameters 
+        { 
+            ["UTid"] = mudDataGrid.SelectedItem.UTid,
+            ["Title"] = mudDataGrid.SelectedItem.NN,
+        };
+
+        var result = await DialogService.Show<Ua>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
+
+        inLineDialogVisible = false;
+
+    }
+
+    private void ContextMenuShow(UT item)
+    {
+        mudDataGrid.SelectedItem = item;
+        isActivityDisabled = false;
+        isOnaylaDisabled = item.Stu == -1 ? false : true;
+        inLineDialogVisible = true;
+    }
+
+    private string SelectedRowClassFunc(UT element, int rowNumber)
+    {
+        //if (selectedRowNumber == rowNumber)
+        //{
+        //    selectedRowNumber = -1;
+        //    return string.Empty;
+        //}
+        if (mudDataGrid.SelectedItem != null && mudDataGrid.SelectedItem.Equals(element))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        // Deneme
+        string sql = $"select * from UT order by UTid";
+        data = await db.LoadData<UT, dynamic>(sql, new { });
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<UT> args)
+    {
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        //Typ = args.Item.Typ;
+        //RefId = args.Item.RefId;
+        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        //inLineDialogVisible = true;
+    }
+
+    private sealed class UT
+    {
+        public int UTid { get; set; }
+        public int Stu { get; set; }
+        public string StuAd { get; set; }
+        public string Moniker { get; set; }
+        public string NN { get; set; }
+        public string Name { get; set; }
+        public string eMail { get; set; }
+        public string mTel { get; set; }
+        public string Typ { get; set; }
+        public int RefId { get; set; }
+    }
+
+}

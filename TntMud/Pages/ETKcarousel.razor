@@ -171,7 +171,7 @@
         //var aaa = data.ToList();
         //var bbb = aaa[0].ETid;
         //var ccc = data.ElementAt(0);
-        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+        //var aaa = await db.StoreProcAsync<SMTP, dynamic>("APP_SMTP", new { });
     }
 
     private async Task LoadDataET()
@@ -218,7 +218,7 @@
         var item = dataET.ElementAt(ETselectedIndex);
 
         string sp = $"EK_KTGL(@ETid, @kUTid)";
-        var rtrn = await db.StoreProc<dynamic, dynamic>(sp, new { ETid = item.ETid, kUTid = AppState.UsrId });
+        var rtrn = await db.StoreProcAsync<dynamic, dynamic>(sp, new { ETid = item.ETid, kUTid = AppState.UsrId });
 
         db.OnEtChanged(item.ETid);
         //item.kStu = rtrn.KSTU;

@@ -1,0 +1,20 @@
+﻿@page "/tnt/home"
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+<PageTitle>Tanıtıcı</PageTitle>
+
+<h3>Tanıtıcı Home</h3>
+
+@code {
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (AppState.UsrTyp != "T")
+        {
+            NavigationManager.NavigateTo("/");
+            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+        }
+        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+
+
+}

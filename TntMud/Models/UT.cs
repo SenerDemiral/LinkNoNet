@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 [Table("UT")]
-public class UT
+public sealed class UT
 {
     [Key]
     public int UtID { get; set; }

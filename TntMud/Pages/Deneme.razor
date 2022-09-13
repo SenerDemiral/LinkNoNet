@@ -141,12 +141,17 @@
         return key == ActiveTabKey ? "d-block" : "d-none";
     }
 
+    protected override void OnInitialized()
+    {
+        AppState.OnEnter(connectionInfo?.IPAddress!);
+        AppState.UsrChanged += App_UsrChanged;
+        UserService.CircuitsChanged += App_UsrChanged;
+
+        base.OnInitialized();
+    }
     protected override async Task OnInitializedAsync()
     {
         //refresh = false;
-        await AppState.OnEnter(connectionInfo?.IPAddress!);
-        AppState.UsrChanged += App_UsrChanged;
-        UserService.CircuitsChanged += App_UsrChanged;
 
         //refresh = true;
 
@@ -228,7 +233,7 @@
         UserService.CircuitsChanged -= App_UsrChanged;
     }
 
-    public class DynCmp
+    public sealed class DynCmp
     {
         public string TabText { get; set; } = "";
         public Type? CmpType { get; set; }

@@ -106,7 +106,7 @@ namespace DataLibrary
         /// "execute procedure Usr_Login(@LgnNme, @LgnPwd, @Ip)"
         /// https://www.tabsoverspaces.com/227021-firebird-net-provider-and-calling-stored-procedures-with-parameters
         /// <returns></returns>
-        public async Task<T> StoreProc<T, U>(string storeProc, U parameters)
+        public async Task<T> StoreProcAsync<T, U>(string storeProc, U parameters)
         {
             // var params = new { UserName = username, Password = password };
             using IDbConnection cnct = new FbConnection(cnctStr);
@@ -117,12 +117,17 @@ namespace DataLibrary
             return await cnct.QueryFirstOrDefaultAsync<T>("execute procedure "+storeProc, parameters);
             //return await cnct.QueryFirstOrDefaultAsync<T>("execute procedure Usr_Login(@LgnNme, @LgnPwd, @Ip)", parameters);
         }
+        public T StoreProc<T, U>(string storeProc, U parameters)
+        {
+            using IDbConnection cnct = new FbConnection(cnctStr);
+            return cnct.QueryFirstOrDefault<T>("execute procedure " + storeProc, parameters);
+        }
 
         public async Task<dynamic> StoreProc2<T>(string storeProc, T parameters)
         {
             // anonymous object
             // var paras = new { UserName = username, Password = password };
-            // FB StoreProc u Table olarak gordugu icin CommandType == StoredProcedure olmasina gerekyok
+            // FB StoreProcAsync u Table olarak gordugu icin CommandType == StoredProcedure olmasina gerekyok
             using IDbConnection cnct = new FbConnection(cnctStr);
             //var aaa = await connection.QueryAsync<T>(storeProc, parameters, commandType: CommandType.StoredProcedure).Sing
 

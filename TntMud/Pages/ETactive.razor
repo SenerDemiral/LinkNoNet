@@ -88,7 +88,7 @@
 
         await LoadData();
 
-        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+        //var aaa = await db.StoreProcAsync<SMTP, dynamic>("APP_SMTP", new { });
         db.etChanged += etChanged;  // deneme
     }
 

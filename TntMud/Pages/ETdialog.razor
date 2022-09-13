@@ -60,7 +60,7 @@
         StateHasChanged();
 
         ReturnModel rtrn = new();
-        //rtrn = await db.StoreProc<ReturnModel, RegisterModel>("ET_Mdf(@d", model);
+        //rtrn = await db.StoreProcAsync<ReturnModel, RegisterModel>("ET_Mdf(@d", model);
 
         if (rtrn.Rsp == 0)
         {

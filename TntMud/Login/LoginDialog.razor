@@ -48,7 +48,7 @@
     {
         Model.Ip = AppState.UsrIp;
         // SP input params db de tanimlandigi sirasiyla gelmeli.
-        var rtrn = await db.StoreProc<OutputModel, InputModel>("Usr_Login(@LgnNme, @LgnPwd, @Ip)", Model);
+        var rtrn = await db.StoreProcAsync<OutputModel, InputModel>("Usr_Login(@LgnNme, @LgnPwd, @Ip)", Model);
 
         if(rtrn.Stu == 0) {
             Snackbar.Add(rtrn.Msg, Severity.Success);

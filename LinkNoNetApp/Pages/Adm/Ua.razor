@@ -1,0 +1,57 @@
+﻿@inject IDataAccess db
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh; overflow-y: scroll">
+            <MudTable Items="@data" Hover="true" Dense="true" Bordered="true" Striped="true">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<UA, object>(x=>x.EXD)">EXD</MudTableSortLabel></MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Statu</MudTh>
+                    <MudTh>Login</MudTh>
+                    <MudTh>IP</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="ID">@context.UAid</MudTd>
+                    <MudTd DataLabel="EXD">@context.EXD</MudTd>
+                    <MudTd DataLabel="Type">@context.Typ</MudTd>
+                    <MudTd DataLabel="Statu">@context.Stu</MudTd>
+                    <MudTd DataLabel="Login">@context.LgnNme</MudTd>
+                    <MudTd DataLabel="IP">@context.IP</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    //[CascadingParameter] App app { get; set; }
+    [Parameter] public int UTid { get; set; } = 0;
+    [Parameter] public string Title { get; set; } = "";
+
+    private int selectedRowNumber = -1;
+    private MudDataGrid<UA>? mudDataGrid;
+    private IEnumerable<UA>? data; // = new List<Element>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from UA where UTid = @UTid order by UAid";
+        data = await db.LoadData<UA, dynamic>(sql, new { UTid = UTid });
+    }
+
+    private sealed class UA
+    {
+        public int UAid { get; set; }
+        public DateTime EXD { get; set; }
+        public int UTid { get; set; }
+        public string Typ { get; set; }
+        public int Stu { get; set; }
+        public string LgnNme { get; set; }
+        public string IP { get; set; }
+    }
+
+}

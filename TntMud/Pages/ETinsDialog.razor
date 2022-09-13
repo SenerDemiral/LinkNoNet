@@ -91,7 +91,7 @@
         if (form.IsValid)
         {
             model.UsrId = AppState.UsrId;
-            var rtrn = await db.StoreProc<dynamic, ET>("ET_NEW(@UsrId, @Yer, @EBid, @EXD, @BgnTS, @EndTS, @kMin, @kMax, @Info)", model);
+            var rtrn = await db.StoreProcAsync<dynamic, ET>("ET_NEW(@UsrId, @Yer, @EBid, @EXD, @BgnTS, @EndTS, @kMin, @kMax, @Info)", model);
             if (rtrn.EBID != 0)
             {
                 Snackbar.Add("Kayıt yapıdı", MudBlazor.Severity.Success);
@@ -100,7 +100,7 @@
         }
     }
 
-    public class ETinsFluentValidator : AbstractValidator<ET>
+    public sealed class ETinsFluentValidator : AbstractValidator<ET>
     {
         public ETinsFluentValidator()
         {
@@ -147,18 +147,18 @@
         dataEB = await db.LoadData<EB, dynamic>($"select * from EB order by AD", new { });
     }
 
-    public class YER
+    public sealed class YER
     {
         public string? Ad { get; set; }
     }
 
-    public class EB
+    public sealed class EB
     {
         public int EBid { get; set; }
         public string? Ad { get; set; }
     }
 
-    public class ET
+    public sealed class ET
     {
         public int UsrId { get; set; }
         public string? Yer { get; set; } = "Bodrum";

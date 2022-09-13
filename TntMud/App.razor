@@ -2,7 +2,11 @@
 @inject IDialogService DialogService
 @inject AppState AppState
 @inject ICircuitUserService UserService
-@inject IDataSet dataSet
+@inject ProtectedLocalStorage _protectedLocalStorage
+@*@inject IDataSet dataSet*@
+@inject IDataAccess db
+@inject ISnackbar Snackbar
+
 @implements IDisposable
 @*<PageTitle>Link#Net</PageTitle>*@
 
@@ -16,19 +20,7 @@
         OnClick="@((e) => DrawerToggle())" />
     <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true" >
         <div class="d-flex gap-2 overflow-x-auto ">
- @*           @foreach (var d in cmpDic)
-            {
-                string cls = d.Key == ActiveTabKey ? ActiveTabClass : InActiveTabClass;
-                <MudButtonGroup @key="d.Key" Class="@cls" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
-                    <MudButton Class="px-1" Style="color: inherit;" OnClick="() => TabSelect(d.Key)">
-                        @d.Value.TabText
-                    </MudButton>
-                    <MudIconButton Class="px-1" Style="color: inherit;" Icon="@Icons.Material.Filled.Close"
-                            OnClick="() => TabRemove(d.Key)" />
-                </MudButtonGroup>
-            }   
-        </div>*@
-           @foreach (var d in cmpDic)
+            @foreach (var d in cmpDic)
             {
                 <MudButtonGroup @key="d.Key" Color="@TabColor(d.Key)" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
                     <MudButton Class="px-1"  OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
@@ -57,24 +49,6 @@
         </ChildContent>
     </MudMenu>
 
-@*    <MudMenu FullWidth="false" Label="Open Menu" Dense="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
-        <ActivatorContent>
-            <MudAvatar Color="Color.Warning" Size="Size.Medium">@TabCount</MudAvatar>
-        </ActivatorContent>
-        <ChildContent>
-            @foreach (var d in cmpDic)
-            {
-                string cls = d.Key == ActiveTabKey ? ActiveTabClass : InActiveTabClass;
-                <MudMenuItem @key="d.Key" Class="py-0">
-                    <MudButtonGroup Class="@cls" Variant="Variant.Filled" Size="Size.Small" OverrideStyles="true">
-                        <MudButton Class="px-1" Style="color: inherit;" OnClick="() => TabSelect(d.Key)">@d.Value.TabText</MudButton>
-                        <MudIconButton Class="px-1" Style="color: inherit;" Icon="@Icons.Material.Filled.Close" OnClick="() => TabRemove(d.Key)" />
-                    </MudButtonGroup>
-                </MudMenuItem>
-            }
-        </ChildContent>
-    </MudMenu>
-*@
     <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/SenerDemiral" Target="_blank" />
 </MudAppBar>
 
@@ -84,6 +58,10 @@
         <MudText Typo="Typo.h6">TntMud</MudText>
     </MudDrawerHeader>
     <MudNavMenu Dense="true">
+        @if (AppState.UsrId == 0)
+        {
+            <MudNavLink OnClick="@AddHome">Home</MudNavLink>
+        }
         <MudNavLink OnClick="@AddETactive">Etkinlikler</MudNavLink>
         <MudNavLink OnClick="@AddETK">Etkinlikler Carousel</MudNavLink>
         <MudNavLink OnClick="@AddCounter">Counter</MudNavLink>
@@ -122,9 +100,9 @@
 </MudDrawer>
 
 <MudMainContent>
-    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" >
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="px-0">
         @*<MudPaper Class="pa-2">*@
-            <CascadingValue Value=this>
+        <CascadingValue Value=this>
                 @foreach (var d in cmpDic)
                 {
                     <div @key="d.Key" class="@(d.Key == ActiveTabKey ? "d-block" : "d-none")">
@@ -136,10 +114,10 @@
     </MudContainer>
     @*<MudText Align="Align.Center" Style="color:white; background-color: grey ">Link#Net © @DateTime.Today.Year v&#8203;@Constants.PublishVersion</MudText>*@
     
-    <div style="display:flex; justify-content:center">
+    @*<div style="display:flex; justify-content:center">
         <img src="/uploads/tennis.jpg?width=300&quality=50" />
         <img src="/images/can512x512.jpg?width=200&quality=50" />
-    </div>
+    </div>*@
 
 </MudMainContent>
 @*</MudLayout>*@
@@ -152,7 +130,13 @@
         cmpDic.Clear();
         ActiveTabKey = TabKeyGen;
     }
-    
+
+    public void AddHome()
+    {
+        //await Task.Delay(10);
+        var i = AddDynCmp("Home", typeof(Pages.Home), null);
+    }
+
     public void AddETactive()
     {
         var i = AddDynCmp("ET", typeof(Pages.ETactive), null);
@@ -232,26 +216,87 @@
     {
         if(firstRender)
         {
-            DialogService.Show<OnEnter>();
+            //DialogService.Show<OnEnter>();
+
             ////Login.OnEnter oe = new();
             //await oe.TryEnter();
 
         }
     }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        //InvokeAsync(TryUsrEnter);
+        //AppState.OnEnter(connectionInfo?.IPAddress!);
+        //await TryUsrEnter();
+
+        await base.SetParametersAsync(parameters);   // -> OnInitialized  -> OnInitializedAsync
+
+        await TryUsrEnter();
+
+        //AppState.OnEnter(connectionInfo?.IPAddress!);
+        //AppState.UsrChanged += App_UsrChanged;
+        //UserService.CircuitsChanged += App_UsrChanged;
+
+    }
+
+    protected override void OnInitialized()
+    {
+        //InvokeAsync(TryUsrEnter);
+        //base.OnInitialized();
+
+        AppState.OnEnter(connectionInfo?.IPAddress!);
+        AppState.UsrChanged += App_UsrChanged;
+        UserService.CircuitsChanged += App_UsrChanged;
+
+    }
+
+    protected async Task TryUsrEnter()
+    {
+        // Task.CompletedTask property is important when you need to give a caller 
+        // a dummy Task (that doesn't return a value/result) that's already completed.
+        //await Task.CompletedTask.ConfigureAwait(false);
+
+        var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
+        //AppState.OnEnter(connectionInfo?.IPAddress!);
+        if (toto.Success)
+            AppState.UsrId = toto.Value;
+
+        if (AppState.UsrId != 0)
+        {
+            InputModel Model = new();
+            Model.UsrId = AppState.UsrId;
+            Model.Ip = AppState.UsrIp;
+            var rtrn = db.StoreProc<OutputModel, InputModel>("Usr_Enter(@UsrId, @Ip)", Model);
+
+            if (rtrn.Stu == 0)
+            {
+                Snackbar.Add(rtrn.Msg, Severity.Success);
+                AppState.LoginOk(rtrn.UTid, rtrn.Typ, rtrn.RefId, rtrn.Moniker);
+            }
+            else
+            {
+                Snackbar.Add(rtrn.Msg, Severity.Error);
+            }
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         //refresh = false;
-        int usrId = 0;
         //var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
+
         //if (toto.Success)
         //{
         //    Login.OnEnter oe = new();
         //    await oe.TryEnter();
         //}
 
-        await AppState.OnEnter(connectionInfo?.IPAddress!);
-        AppState.UsrChanged += App_UsrChanged;
-        UserService.CircuitsChanged += App_UsrChanged;
+
+        //AppState.UsrChanged += App_UsrChanged;
+        //UserService.CircuitsChanged += App_UsrChanged;
+
+        //AddHome();
 
         //refresh = true;
 
@@ -270,6 +315,7 @@
     {
         //UserRemovedMessage = $"{e.UserId} disconnected";
         InvokeAsync(StateHasChanged);
+        //ShouldRender = false;
     }
 
     public void TabSelect(int selectTabKey)
@@ -326,10 +372,26 @@
         UserService.CircuitsChanged -= App_UsrChanged;
     }
 
-    public class DynCmp
+    public sealed class DynCmp
     {
         public string TabText { get; set; } = "";
         public Type? CmpType { get; set; }
         public Dictionary<string, object>? Params { get; set; }
+    }
+
+    private sealed class InputModel
+    {
+        public int UsrId { get; set; }
+        public string? Ip { get; set; }
+    }
+
+    private sealed class OutputModel
+    {
+        public int Stu { get; set; }
+        public int UTid { get; set; }
+        public string? Typ { get; set; }
+        public int RefId { get; set; }
+        public string? Moniker { get; set; }
+        public string? Msg { get; set; }
     }
 }

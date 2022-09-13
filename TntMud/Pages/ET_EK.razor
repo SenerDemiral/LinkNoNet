@@ -132,7 +132,7 @@
         await GetData();
         Owner = AppState.UsrId == dUTid ? true : false;
 
-        //var aaa = await db.StoreProc<SMTP, dynamic>("APP_SMTP", new { });
+        //var aaa = await db.StoreProcAsync<SMTP, dynamic>("APP_SMTP", new { });
     }
 
     private async Task GetData() 
@@ -166,7 +166,7 @@
         string sp = $"EK_DUPD(@EKid, @dStuFr, @dStuTo)";
         foreach (var item in mudDataGrid.SelectedItems)
         {
-            _ = await db.StoreProc<dynamic, dynamic>(sp, new { EKid = item.EKid, dStuFr = dStuFr, dStuTo = dStuTo });
+            _ = await db.StoreProcAsync<dynamic, dynamic>(sp, new { EKid = item.EKid, dStuFr = dStuFr, dStuTo = dStuTo });
         }
         await GetData();
         stuDialogVisible = false;
@@ -175,7 +175,7 @@
     private async Task TglKatilimciStu()
     {
         string sp = $"EK_KTGL(@ETid, @kUTid)";
-        var rtrn = await db.StoreProc<dynamic, dynamic>(sp, new { ETid = ETid, kUTid = AppState.UsrId });
+        var rtrn = await db.StoreProcAsync<dynamic, dynamic>(sp, new { ETid = ETid, kUTid = AppState.UsrId });
         Snackbar.Add(rtrn.MSG, Severity.Success);
         int EKid = rtrn.EKID;
 

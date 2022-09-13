@@ -5,7 +5,7 @@ using TntMud.Models;
 
 namespace TntMud;
 
-public class DataSet : IDataSet
+public sealed class DataSet : IDataSet
 {
     private readonly IMemoryCache cache;
     private readonly IDataAccess db;

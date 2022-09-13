@@ -15,7 +15,8 @@ namespace DataLibrary
         event emEventHandler emChanged;
         Task<T> LoadRec<T, U>(string sql, U parameters);
         Task<IEnumerable<T>> LoadData<T, U>(string sql, U parameters);
-        Task<T> StoreProc<T, U>(string storeProc, U parameters);
+        T StoreProc<T, U>(string storeProc, U parameters);
+        Task<T> StoreProcAsync<T, U>(string storeProc, U parameters);
         //Task<dynamic> StoreProc2<T>(string storeProc, T parameters);
         Task<bool> SaveData<T>(string sql, T parameters);
         Task<T> InsertRec<T>(IDictionary<string, object> newValue) where T : new();

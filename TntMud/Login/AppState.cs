@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace TntMud.Login;
 // Scoped
-public class AppState
+public sealed class AppState
 {
     public string CrcId { get; set; } = string.Empty;
     public int UsrId { get; set; } = default;
@@ -28,7 +28,7 @@ public class AppState
         _db = DB;
     }
 
-    public async Task OnEnter(string ip)
+    public void OnEnter(string ip)
     {
         CircuitHandlerService handler = (CircuitHandlerService)_circuitHandler;
         CrcId = handler.CircuitId;

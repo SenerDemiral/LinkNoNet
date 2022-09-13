@@ -1,5 +1,5 @@
 ﻿// Scoped
-public class CircuitHandlerService : CircuitHandler
+public sealed class CircuitHandlerService : CircuitHandler
 {
     public string CircuitId { get; private set; }
 

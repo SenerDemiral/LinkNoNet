@@ -1,4 +1,4 @@
-﻿public class UserRemovedEventArgs : EventArgs
+﻿public sealed class UserRemovedEventArgs : EventArgs
 {
     public string UserId { get; set; } = string.Empty;
 }

@@ -1,0 +1,54 @@
+﻿@page "/"
+@inject IDialogService DialogService
+
+<style>
+    .wrapper {
+        display: grid;
+        grid-template-columns: 40px auto;
+        align-items: center;
+    }
+</style>
+
+<div class="d-flex flex-column align-center">
+    <MudPaper Class="pa-1 ma-2" Elevation="3">
+        <div class="wrapper">
+            <MudText Style="grid-column: 1 / 3" Color="Color.Error" Typo="Typo.h6">Anlaşmalı olduğumuz mağazaları tanıtıp sen de kazanmak ister misin?</MudText>
+            <MudDivider Style="grid-column: 1 / 3; margin: 8px 0;" />
+            <MudChip>1</MudChip>
+            <MudText><b>Tanıtıcı ol</b><MudIconButton Icon="@Icons.Material.Filled.AppRegistration" OnClick="@TaniticiOl" />linkini tıkla</MudText>
+            @*            <MudChip>1</MudChip>
+            <MudText><b>Tanıtıcı ol</b><MudIconButton Icon="@Icons.Material.Filled.AppRegistration" OnClick="@(() => DialogService.Show<TntRegisterDialog>())" />linkini tıkla</MudText>
+            *@            <MudChip>2</MudChip>
+            <MudText>Bilgilerini gir,</MudText>
+            <MudChip>3</MudChip>
+            <MudText>Onayladıktan sonra sana eMail ile şifreni gönderelim,</MudText>
+            <MudChip>4</MudChip>
+            <MudText>Site hesabına giriş yap,</MudText>
+            <MudChip>5</MudChip>
+            <MudText>Mağaza ve senin için özel hazırlanan Linkleri kopyala,</MudText>
+            <MudChip>6</MudChip>
+            <MudText>İstediğin medyada bu linkleri yapıştır/yayınla,</MudText>
+            <MudText Style="grid-column: 1 / 3"><em>Yakınlarına bu linkleri gönder, onlar da tıklasınlar/tıklatsınlar, sen kazan</em></MudText>
+            <MudText Style="grid-column: 1 / 3"><em>Veya onlara bu iletiyi gönder onlar da katılsın, kazansın</em></MudText>
+            <MudChip>7</MudChip>
+            <MudText>Bu linke tıklayarak yapılan her alışverişten kazandığın primler hesabına kaydedilsin,</MudText>
+            <MudChip>8</MudChip>
+            <MudText>Kazandığın primler hesap kesim tarihinden sonra bankana yatsın.</MudText>
+            <MudText Style="grid-column: 1 / 3; "><em>İstersen talimatında belirttiğin yere aktarılmasını sağlayarak bağış da yapabilirsin</em></MudText>
+            <MudDivider Style="grid-column: 1 / 3; margin: 8px 0;" />
+            <MudText Typo="Typo.subtitle2" Style="grid-column: 1 / 3">Kendi yaptığın alışverişten bile bu sayede prim kazanırsın.</MudText>
+            <MudText Typo="Typo.subtitle2" Style="grid-column: 1 / 3">Kazandığın primleri siteden takip edebilirsin.</MudText>
+            <MudText Typo="Typo.subtitle2" Style="grid-column: 1 / 3">Link tıklanıp alışveriş yapılmasa bile prim kazanırsın.</MudText>
+            <MudText Typo="Typo.subtitle2" Style="grid-column: 1 / 3">Tıklanma sayına göre primin artar!</MudText>
+        </div>
+    </MudPaper>
+</div>
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+
+    private void TaniticiOl()
+    {
+        //if (AppState.UsrId == 0)
+        //    DialogService.Show<TntRegisterDialog>();
+    }
+}

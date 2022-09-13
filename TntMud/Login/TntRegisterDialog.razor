@@ -51,7 +51,7 @@
         StateHasChanged();
 
         ReturnModel rtrn = new();
-        rtrn = await db.StoreProc<ReturnModel, RegisterModel>("TT_NEW(@Name, @eMail, @mTel)", model);
+        rtrn = await db.StoreProcAsync<ReturnModel, RegisterModel>("TT_NEW(@Name, @eMail, @mTel)", model);
 
         if (rtrn.Rsp == 0) {
             Snackbar.Add(rtrn.Msg, Severity.Success, config =>

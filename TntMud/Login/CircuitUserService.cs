@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 // Singleton
-public class CircuitUserService : ICircuitUserService
+public sealed class CircuitUserService : ICircuitUserService
 {
     public record _record2 (int UsrId, string IP);
-    public class _record
+    public sealed class _record
     {
         public int UsrId;
         public string IP;
