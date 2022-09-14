@@ -13,6 +13,8 @@ public sealed class AppState
     public int UsrRefId { get; set; } = default;
     public string UsrIp { get; set; } = string.Empty;
     public string UsrMoniker { get; set; } = string.Empty;
+    public string UsrNN => UsrMoniker + UsrId;
+
 
     public event EventHandler? UsrChanged;
     void OnUsrChanged() => UsrChanged?.Invoke(this, EventArgs.Empty);

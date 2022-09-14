@@ -1,4 +1,4 @@
-﻿namespace LinkNoNetApp.Services;
+﻿namespace DataLibrary;
 
 public interface IEmailService
 {

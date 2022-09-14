@@ -124,8 +124,8 @@ public class BillingAddress
 public class OrderDetail
 {
     public int id { get; set; }
-    public string varKey { get; set; }
-    public string varValue { get; set; }
+    public string varKey { get; set; }      // if = "coupon_code"
+    public string varValue { get; set; }    // burada arayacagiz
 }
 
 public class OrderItem

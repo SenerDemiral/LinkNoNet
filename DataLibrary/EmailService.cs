@@ -1,19 +1,24 @@
-﻿using Microsoft.AspNetCore.Builder.Extensions;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using Microsoft.Extensions.Configuration;
+using FirebirdSql.Data.Services;
 
-namespace LinkNoNetApp.Services;
+namespace DataLibrary;
 
 public class EmailService : IEmailService
 {
-    private readonly IConfiguration _config;
+    private readonly string eMailUsr;
+    private readonly string eMailPwd;
 
     public EmailService(IConfiguration config)
     {
-        _config = config;
+        //Kullanildigi Project user secret den alinir.
+        eMailUsr = config.GetConnectionString("eMailUsr");
+        eMailPwd = config.GetConnectionString("eMailPwd");
     }
+
     //private async Task SendEmailAsync(string eMailTo, string eSubject, string eBody)
     public async Task SendEmailAsync(string eMailTo, string eSubject, string eBody)
     {
@@ -24,8 +29,8 @@ public class EmailService : IEmailService
         //int port = 587;
 
         string host = "smtp.gmail.com";
-        int port = 587;
-        
+        int port = 587; // Tls (465 for Ssl)
+
         MimeMessage msg = new MimeMessage();
         msg.From.Add(new MailboxAddress("LinkNoNet", "sener.demiral@gmail.com"));
         msg.To.Add(MailboxAddress.Parse(eMailTo));
@@ -46,7 +51,7 @@ public class EmailService : IEmailService
             client.AuthenticationMechanisms.Remove("XOAUTH2");
 
             // Note: only needed if the SMTP server requires authentication.
-            await client.AuthenticateAsync(_config.GetSection("Email").GetValue<string>("User"), _config.GetSection("Email").GetValue<string>("Password"))
+            await client.AuthenticateAsync(eMailUsr, eMailPwd)
                     .ConfigureAwait(false);
 
             await client.SendAsync(msg).ConfigureAwait(false);

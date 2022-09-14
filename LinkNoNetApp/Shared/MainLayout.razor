@@ -13,12 +13,12 @@
         <MudSpacer />
         @if (AppState.UsrId == 0)
         {
-            <MudFab StartIcon="@Icons.Material.Filled.Logout" Label="Login" Color="Color.Error" Size="Size.Small" OnClick="@(() => DialogService.Show<LoginDialog>())" />
+            <MudFab StartIcon="@Icons.Material.Filled.Logout" Label="GİRİŞ" Color="Color.Error" Size="Size.Small" OnClick="@(() => DialogService.Show<LoginDialog>())" />
         }
         else
         {
             <MudTooltip Text="Güvenli Çıkış">
-            <MudFab EndIcon="@Icons.Material.Filled.Logout" Label="@AppState.UsrMoniker" Color="Color.Error" Size="Size.Small" OnClick="Logout" />
+            <MudFab EndIcon="@Icons.Material.Filled.Logout" Label="@AppState.UsrNN" Color="Color.Error" Size="Size.Small" OnClick="Logout" />
             </MudTooltip>
         }
     </MudAppBar>

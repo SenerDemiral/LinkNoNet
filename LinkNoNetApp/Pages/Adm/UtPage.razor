@@ -129,7 +129,8 @@
 
         contextMenuVisible = false;
 
-        await EmailService.SendEmailAsync("sener.demiral@gmail.com", "Deneme", "<h1>DENEME</h1>").ConfigureAwait(false);
+        string body = "Sayın <b>[USRNAME]</b><br/><br/><a href='http://linkno.net'>LinkNo.net</a> sitemize giriş bilgileriniz aşağıda belirtimiştir.<br/><br/>UsrId: <b>[USRID]</b><br/><br/>Pwd: <b>[USRPWD]</b><br/><br/>Lütfen bu maile yanıt vermeyin (no-reply).";
+        await EmailService.SendEmailAsync("sener.demiral@gmail.com", "Deneme", body).ConfigureAwait(false);
 
 
     }
