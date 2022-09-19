@@ -3,23 +3,36 @@
 @inject IDialogService DialogService
 
 <MudNavMenu Dense="true">
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    
-    <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
-    <MudNavLink Href="fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Fetch data</MudNavLink>
-    
+    @if (AppState.UsrTyp == "?")
+    {
+        <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    }
     @if (AppState.UsrTyp == "A")
     {
-        <MudNavLink Href="adm/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">AdmHome</MudNavLink>
-        <MudNavLink Href="adm/ut" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">User</MudNavLink>
+        <MudNavLink Href="adm/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Admin</MudNavLink>
+        <MudNavLink Href="adm/ut" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Kullanıcı</MudNavLink>
+        <MudNavLink Href="adm/mt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Storefront">Mağaza</MudNavLink>
+        <MudNavLink Href="adm/tt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FamilyRestroom">Tanıtıcı</MudNavLink>
+        <MudNavLink Href="adm/mh" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Hakediş</MudNavLink>
+        <MudNavLink Href="adm/ah" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Campaign">Duyuru</MudNavLink>
     }
     @if (AppState.UsrTyp == "M")
     {
-        <MudNavLink Href="mgz/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">MgzHome</MudNavLink>
+        <MudNavLink Href="mgz/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Mağaza</MudNavLink>
+        <MudNavLink Href="mgz/mgt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FamilyRestroom">Tanıtıcı</MudNavLink>
+        <MudNavLink Href="mgz/mgk" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Sell">Komisyon</MudNavLink>
+        <MudNavLink Href="mgz/mks" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Kupon Seri</MudNavLink>
+        <MudNavLink Href="mgz/mh" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Hakediş</MudNavLink>
+        <MudNavLink Href="mgz/ah" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Campaign">Duyuru</MudNavLink>
+        <MudNavLink Href="mgz/mt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Profil</MudNavLink>
     }
     @if (AppState.UsrTyp == "T")
     {
-        <MudNavLink Href="tnt/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">TntHome</MudNavLink>
+        <MudNavLink Href="tnt/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Tanıtıcı</MudNavLink>
+        <MudNavLink Href="tnt/mt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Storefront">Mağaza</MudNavLink>
+        <MudNavLink Href="tnt/mh" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Hakediş</MudNavLink>
+        <MudNavLink Href="tnt/ah" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Campaign">Duyuru</MudNavLink>
+        <MudNavLink Href="tnt/tt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Profil</MudNavLink>
     }
 
    @* <MudDivider Class="my-2" />

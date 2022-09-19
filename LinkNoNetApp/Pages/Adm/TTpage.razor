@@ -1,0 +1,18 @@
+﻿@page "/adm/tt"
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+<PageTitle>Admin</PageTitle>
+
+<h3>Tanıtıcılar</h3>
+
+@code {
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (AppState.UsrTyp != "A")
+        {
+            NavigationManager.NavigateTo("/");
+            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+        }
+        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+}

@@ -1,0 +1,131 @@
+﻿@page "/tnt/mt"
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+@inject IDataAccess db
+@inject IDialogService DialogService
+<PageTitle>Tanıtıcı</PageTitle>
+
+<style>
+    .mud-table-cell {
+        padding: 4px !important;
+    }
+</style>
+
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
+</div>
+
+<MudDataGrid T="MT" Items="@data" @ref="mudDataGrid"
+             Breakpoint="Breakpoint.None"
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             Virtualize="true"
+             Hover="true" Striped="true" Dense="true" Bordered="true"
+             Filterable="false"
+             FilterMode="DataGridFilterMode.ColumnFilterMenu"
+             Groupable="false"
+             MultiSelection="false"
+             RowClassFunc="@SelectedRowClassFunc" RowClass="py-0" >
+    <Columns>
+        <Column T="MT" Field="@nameof(MT.MTid)" Title="ID" />
+        <Column T="MT" Field="@nameof(MT.Name)" Title="Ad" />
+        <Column T="MT" Field="@nameof(MT.Uri)" Title="Link" >
+            <CellTemplate>
+                <MudLink Href="@context.Item.Uri" Target="_blank">@context.Item.Uri</MudLink>
+            </CellTemplate>
+        </Column>
+    </Columns>
+    @*    <PagerContent>
+    <MudDataGridPager T="UT" />
+    </PagerContent>
+    *@
+</MudDataGrid>
+
+<MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
+    <DialogContent>
+        @*<MudContainer Style="max-height: 80vh ; overflow-y: scroll">*@
+        <MudList Clickable="true" Dense="true" DisableGutters="true">
+            <MudListItem Text="Aktivite" Disabled="@isActivityDisabled" OnClick="Activity" />
+            <MudDivider />
+            <MudListItem Text="Mağaza" Disabled="@isMagazaDisabled" />
+            <MudListItem Text="Tanıtıcı" Disabled="@isTaniticiDisabled" />
+        </MudList>
+        @*</MudContainer>*@
+    </DialogContent>
+</MudDialog>
+
+@code {
+    //[CascadingParameter] App app { get; set; }
+
+    private IEnumerable<MT>? data; // = new List<Element>();
+    string Typ = "";
+    int RefId = 0;
+    string sty { get; set; }
+    private int selectedRowNumber = -1;
+    private MudDataGrid<MT>? mudDataGrid;
+    private bool contextMenuVisible;
+    private int rating;
+
+    private bool isActivityDisabled = true;
+    private bool isMagazaDisabled = true;
+    private bool isTaniticiDisabled = true;
+    private bool isOnaylaDisabled = true;
+
+    private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private async Task Activity()
+    {
+        contextMenuVisible = false;
+    }
+
+    private void ContextMenuShow(MT item)
+    {
+        mudDataGrid.SelectedItem = item;
+
+        isActivityDisabled = false;
+
+        contextMenuVisible = true;
+    }
+
+    private string SelectedRowClassFunc(MT element, int rowNumber)
+    {
+        //if (selectedRowNumber == rowNumber)
+        //{
+        //    selectedRowNumber = -1;
+        //    return string.Empty;
+        //}
+        if (mudDataGrid.SelectedItem != null && mudDataGrid.SelectedItem.Equals(element))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (AppState.UsrTyp != "T")
+        {
+            NavigationManager.NavigateTo("/");
+            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+        }
+        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Deneme
+        string sql = $"select MTid, Name, Uri from MT";
+        data = await db.LoadData<MT, dynamic>(sql, new { });
+    }
+
+    private sealed class MT
+    {
+        public int MTid { get; set; }
+        public string? Name { get; set; }
+        public string? Uri { get; set; }
+    }
+
+}

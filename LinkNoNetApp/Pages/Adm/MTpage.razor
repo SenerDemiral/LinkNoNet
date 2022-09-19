@@ -1,4 +1,4 @@
-﻿@page "/adm/ut"
+﻿@page "/adm/mt"
 @inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
@@ -13,64 +13,64 @@
 </style>
 
 <div class="mud-theme-dark">
-    <MudText Align="Align.Center" Typo="Typo.body2">Users</MudText>
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
 </div>
 
-<MudDataGrid T="UT" Items="@data" @ref="mudDataGrid" 
-             Breakpoint="Breakpoint.None" 
-             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"  
-             Virtualize="true" 
+<MudDataGrid T="MT" Items="@data" @ref="mudDataGrid"
+             Breakpoint="Breakpoint.None"
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             Virtualize="true"
              Hover="true" Striped="true" Dense="true" Bordered="true"
-             Filterable="false" 
-             FilterMode="DataGridFilterMode.ColumnFilterMenu" 
-             Groupable="false" 
+             Filterable="false"
+             FilterMode="DataGridFilterMode.ColumnFilterMenu"
+             Groupable="false"
              MultiSelection="false"
              RowClassFunc="@SelectedRowClassFunc" RowClass="py-0"
              RowClick="@RowClicked" RowStyleFunc="@_rowStyleFunc">
     <Columns>
-        <Column T="UT" Title="Detay" Filterable="false">
+        <Column T="MT" Title="Detay" Filterable="false">
             <CellTemplate>
-                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" 
-                OnClick="@(() => ContextMenuShow(context.Item))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false"
+                               OnClick="@(() => ContextMenuShow(context.Item))" />
             </CellTemplate>
         </Column>
-        <Column T="UT" Field="@nameof(UT.UTid)" Title="ID" />
-        <Column T="UT" Field="@nameof(UT.StuEnum)" Title="Statu" Groupable="true" >
+        <Column T="MT" Field="@nameof(MT.UTid)" Title="ID" />
+        <Column T="MT" Field="@nameof(MT.StuEnum)" Title="Statu" Groupable="true">
             <GroupTemplate>
                 <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
             </GroupTemplate>
         </Column>
-        <Column T="UT" Field="@nameof(UT.Name)" Title="Ad" />
-        <Column T="UT" Field="@nameof(UT.NN)" Title="Lakap" />
-        <Column T="UT" Field="@nameof(UT.TypAd)" Title="Typ" Groupable="true">
+        <Column T="MT" Field="@nameof(MT.Name)" Title="Ad" />
+        <Column T="MT" Field="@nameof(MT.NN)" Title="Lakap" />
+        <Column T="MT" Field="@nameof(MT.TypAd)" Title="Typ" Groupable="true">
             <GroupTemplate>
                 <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
             </GroupTemplate>
         </Column>
-        <Column T="UT" Field="@nameof(UT.RefId)" />
-        <Column T="UT" Field="@nameof(UT.UpdTS)">
+        <Column T="MT" Field="@nameof(MT.RefId)" />
+        <Column T="MT" Field="@nameof(MT.UpdTS)">
             <CellTemplate>
                 @context.Item.UpdTS.ToString("dd.MM.yy HH:mm")
             </CellTemplate>
         </Column>
     </Columns>
-@*    <PagerContent>
-        <MudDataGridPager T="UT" />
+    @*    <PagerContent>
+    <MudDataGridPager T="UT" />
     </PagerContent>
-*@
+    *@
 </MudDataGrid>
 
 <MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
     <DialogContent>
         @*<MudContainer Style="max-height: 80vh ; overflow-y: scroll">*@
-            <MudList Clickable="true" Dense="true" DisableGutters="true">
-                <MudListItem Text="Aktivite" Disabled="@isActivityDisabled" OnClick="Activity" />
-                <MudDivider />
-                <MudListItem Text="Mağaza" Disabled="@isMagazaDisabled"/>
-                <MudListItem Text="Tanıtıcı" Disabled="@isTaniticiDisabled" />
-                <MudDivider />
+        <MudList Clickable="true" Dense="true" DisableGutters="true">
+            <MudListItem Text="Aktivite" Disabled="@isActivityDisabled" OnClick="Activity" />
+            <MudDivider />
+            <MudListItem Text="Mağaza" Disabled="@isMagazaDisabled" />
+            <MudListItem Text="Tanıtıcı" Disabled="@isTaniticiDisabled" />
+            <MudDivider />
             <MudListItem Text="Onayla" Disabled="@isOnaylaDisabled" OnClick="Onayla" />
-            </MudList>
+        </MudList>
         @*</MudContainer>*@
     </DialogContent>
 </MudDialog>
@@ -78,12 +78,12 @@
 @code {
     //[CascadingParameter] App app { get; set; }
 
-    private IEnumerable<UT>? data; // = new List<Element>();
+    private IEnumerable<MT>? data; // = new List<Element>();
     string Typ = "";
     int RefId = 0;
     string sty { get; set; }
     private int selectedRowNumber = -1;
-    private MudDataGrid<UT>? mudDataGrid;
+    private MudDataGrid<MT>? mudDataGrid;
     private bool contextMenuVisible;
     private int rating;
 
@@ -94,7 +94,7 @@
 
     private DialogOptions dialogOptions = new() { NoHeader = true, };
 
-    private Func<UT, int, string> _rowStyleFunc => (x, i) =>
+    private Func<MT, int, string> _rowStyleFunc => (x, i) =>
     {
         string style = "";
         if (x.Typ == "A")
@@ -112,11 +112,11 @@
         //    { "Title", mudDataGrid.SelectedItem.Moniker }
         //}, true);
 
-        var parameters = new DialogParameters 
-        { 
-            ["UTid"] = mudDataGrid.SelectedItem.UTid,
-            ["Title"] = mudDataGrid.SelectedItem.NN,
-        };
+        var parameters = new DialogParameters
+            {
+                ["UTid"] = mudDataGrid.SelectedItem.UTid,
+                ["Title"] = mudDataGrid.SelectedItem.NN,
+            };
 
         var result = await DialogService.Show<UAdialog>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
 
@@ -132,11 +132,11 @@
 
         string body = "Sayın <b>[USRNAME]</b><br/><br/><a href='http://linkno.net'>LinkNo.net</a> sitemize giriş bilgileriniz aşağıda belirtimiştir.<br/><br/>UsrId: <b>[USRID]</b><br/><br/>Pwd: <b>[USRPWD]</b><br/><br/>Lütfen bu maile yanıt vermeyin (no-reply).";
         await EmailService.SendEmailAsync("sener.demiral@gmail.com", "Deneme", body).ConfigureAwait(false);
-        
+
         contextMenuVisible = false;
     }
 
-    private void ContextMenuShow(UT item)
+    private void ContextMenuShow(MT item)
     {
         mudDataGrid.SelectedItem = item;
 
@@ -148,7 +148,7 @@
         contextMenuVisible = true;
     }
 
-    private string SelectedRowClassFunc(UT element, int rowNumber)
+    private string SelectedRowClassFunc(MT element, int rowNumber)
     {
         //if (selectedRowNumber == rowNumber)
         //{
@@ -165,7 +165,7 @@
             return string.Empty;
         }
     }
-    
+
     public override Task SetParametersAsync(ParameterView parameters)
     {
         if (AppState.UsrTyp != "A")
@@ -175,15 +175,15 @@
         }
         return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         // Deneme
         string sql = $"select * from UT order by UTid";
-        data = await db.LoadData<UT, dynamic>(sql, new { });
+        data = await db.LoadData<MT, dynamic>(sql, new { });
     }
 
-    void RowClicked(DataGridRowClickEventArgs<UT> args)
+    void RowClicked(DataGridRowClickEventArgs<MT> args)
     {
         //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
         //Typ = args.Item.Typ;
@@ -193,7 +193,7 @@
 
     }
 
-    private sealed class UT
+    private sealed class MT
     {
         public int UTid { get; set; }
         public string? Typ { get; set; }
@@ -217,7 +217,8 @@
         };
     }
 
-    private sealed class ttOnaylaOut {
+    private sealed class ttOnaylaOut
+    {
         public int NewStu { get; set; }
         public string? eMail { get; set; }
         public string? eBody { get; set; }

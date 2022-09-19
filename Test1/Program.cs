@@ -26,7 +26,7 @@ app.MapFallbackToPage("/_Host");
 
 app.MapGet("/t1", (HttpRequest request, HttpResponse response) =>
 {
-    return Results.Redirect("https://medlab.myideasoft.com", true, true);
+    return Results.Redirect("https://medlab.myideasoft.com?ref=999", true, true);
     // f f  302
     // t f  301
     // f t  307

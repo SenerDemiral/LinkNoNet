@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using DataLibrary;
-using MudBlazor;
 
 namespace LinkNoNetApp;
 // Scoped
@@ -9,7 +7,7 @@ public sealed class AppState
 {
     public string CrcId { get; set; } = string.Empty;
     public int UsrId { get; set; } = default;
-    public string UsrTyp { get; set; } = string.Empty;
+    public string UsrTyp { get; set; } = "?";
     public int UsrRefId { get; set; } = default;
     public string UsrIp { get; set; } = string.Empty;
     public string UsrMoniker { get; set; } = string.Empty;
@@ -71,7 +69,7 @@ public sealed class AppState
     public async Task Logout()
     {
         UsrId = 0;
-        UsrTyp = "";
+        UsrTyp = "?";
         UsrRefId = 0;
         UsrMoniker = "";
         await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);

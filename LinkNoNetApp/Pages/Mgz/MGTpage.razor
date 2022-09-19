@@ -1,0 +1,18 @@
+﻿@page "/mgz/mgt"
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+<PageTitle>Mağaza</PageTitle>
+
+<h3>Mağaza Grup Tantıcıları</h3>
+
+@code {
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (AppState.UsrTyp != "M")
+        {
+            NavigationManager.NavigateTo("/");
+            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+        }
+        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+}

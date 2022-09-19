@@ -13,7 +13,7 @@
         <MudSpacer />
         @if (AppState.UsrId == 0)
         {
-            <MudFab StartIcon="@Icons.Material.Filled.Logout" Label="GİRİŞ" Color="Color.Error" Size="Size.Small" OnClick="@(() => DialogService.Show<LoginDialog>())" />
+            <MudFab StartIcon="@Icons.Material.Filled.Login" Label="GİRİŞ" Color="Color.Error" Size="Size.Small" OnClick="@(() => DialogService.Show<LoginDialog>())" />
         }
         else
         {
