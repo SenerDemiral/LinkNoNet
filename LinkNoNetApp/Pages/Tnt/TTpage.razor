@@ -1,6 +1,8 @@
 ﻿@page "/tnt/tt"
 @inject AppState AppState
 @inject NavigationManager NavigationManager
+@implements IDisposable
+
 <PageTitle>Tanıtıcı</PageTitle>
 
 <h3>Tanıtıcılar</h3>
@@ -10,9 +12,14 @@
     {
         if (AppState.UsrTyp != "T")
         {
-            NavigationManager.NavigateTo("/");
+            //NavigationManager.NavigateTo("/");
             return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
         }
         return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
     }
+
+    public void Dispose()
+    {
+    }
+
 }

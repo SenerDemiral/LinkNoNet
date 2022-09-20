@@ -1,0 +1,186 @@
+﻿@page "/adm/ah"
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+@inject IDataAccess db
+@inject IDialogService DialogService
+@inject IEmailService EmailService
+<PageTitle>Admin</PageTitle>
+
+<style>
+    .mud-table-cell {
+        padding: 4px !important;
+    }
+</style>
+
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
+</div>
+
+<MudDataGrid T="AH" Items="@data" @ref="mudDataGrid"
+             Breakpoint="Breakpoint.None"
+             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             Virtualize="true"
+             Hover="true" Striped="true" Dense="true" Bordered="true"
+             Filterable="false"
+             FilterMode="DataGridFilterMode.ColumnFilterMenu"
+             Groupable="false"
+             MultiSelection="false"
+             RowClassFunc="@SelectedRowClassFunc" RowClass="py-0"
+             RowClick="@RowClicked" RowStyleFunc="@_rowStyleFunc">
+    <Columns>
+        <Column T="AH" Field="@nameof(AH.AHid)" Title="ID" />
+        @*<Column T="AH" Field="@nameof(AH.FrTyp)" Title="From" Groupable="true">
+            <GroupTemplate>
+                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
+            </GroupTemplate>
+        </Column>*@
+        <Column T="AH" Field="@nameof(AH.FrName)" Title="From" />
+
+        <Column T="AH" Field="@nameof(AH.ToTyp)" Title="To" Groupable="true">
+            <GroupTemplate>
+                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
+            </GroupTemplate>
+        </Column>
+        <Column T="AH" Field="@nameof(AH.ToName)" Title="Ad" />
+
+        <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj" >
+        </Column>
+        <Column T="AH" Field="@nameof(AH.Msg)" Title="Msg" >
+            <CellTemplate>
+                <p style="max-height:60px; overflow-y:auto; scrollbar-width:thin">
+                    @context.Item.mMsg
+                </p>
+            </CellTemplate>
+        </Column>
+
+        
+        <Column T="AH" Field="@nameof(AH.InsTS)">
+            <CellTemplate>
+                @context.Item.InsTS.ToString("dd.MM.yy HH:mm")
+            </CellTemplate>
+        </Column>
+    </Columns>
+    @*    <PagerContent>
+    <MudDataGridPager T="UT" />
+    </PagerContent>
+    *@
+</MudDataGrid>
+
+<MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
+    <DialogContent>
+        @*<MudContainer Style="max-height: 80vh ; overflow-y: scroll">*@
+        <MudList Clickable="true" Dense="true" DisableGutters="true">
+            <MudListItem Text="Aktivite" Disabled="@isActivityDisabled" OnClick="Activity" />
+            <MudDivider />
+            <MudListItem Text="Mağaza" Disabled="@isMagazaDisabled" />
+            <MudListItem Text="Tanıtıcı" Disabled="@isTaniticiDisabled" />
+            <MudDivider />
+            <MudListItem Text="Onayla" Disabled="@isOnaylaDisabled" OnClick="Onayla" />
+        </MudList>
+        @*</MudContainer>*@
+    </DialogContent>
+</MudDialog>
+
+@code {
+    //[CascadingParameter] App app { get; set; }
+
+    private IEnumerable<AH>? data; // = new List<Element>();
+    string Typ = "";
+    int RefId = 0;
+    //string sty { get; set; }
+    private int selectedRowNumber = -1;
+    private MudDataGrid<AH>? mudDataGrid;
+    private bool contextMenuVisible;
+    private int rating;
+
+    private bool isActivityDisabled = true;
+    private bool isMagazaDisabled = true;
+    private bool isTaniticiDisabled = true;
+    private bool isOnaylaDisabled = true;
+
+    private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private Func<AH, int, string> _rowStyleFunc => (x, i) =>
+    {
+        string style = "";
+        if (x.Ok == "H")
+            style += "background-color:#8CED8C";
+
+        return style;
+    };
+
+    private async Task Activity()
+    {
+    }
+
+    private async Task Onayla()
+    {
+        contextMenuVisible = false;
+    }
+
+    private void ContextMenuShow(AH item)
+    {
+        mudDataGrid.SelectedItem = item;
+
+        contextMenuVisible = true;
+    }
+
+    private string SelectedRowClassFunc(AH element, int rowNumber)
+    {
+        //if (selectedRowNumber == rowNumber)
+        //{
+        //    selectedRowNumber = -1;
+        //    return string.Empty;
+        //}
+        if (mudDataGrid.SelectedItem != null && mudDataGrid.SelectedItem.Equals(element))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (AppState.UsrTyp != "A")
+        {
+            NavigationManager.NavigateTo("/");
+            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+        }
+        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Deneme
+        string sql = $"select * from AH_ACTIVE('A')";
+        data = await db.LoadData<AH, dynamic>(sql, new { });
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<AH> args)
+    {
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        //Typ = args.Item.Typ;
+        //RefId = args.Item.RefId;
+        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
+        //inLineDialogVisible = true;
+
+    }
+
+    private sealed class AH
+    {
+        public int AHid { get; set; }
+        public string? FrTyp { get; set; }
+        public string? FrName { get; set; }
+        public string? ToTyp { get; set; }
+        public string? ToName { get; set; }
+        public string? Ok { get; set; }
+        public string? Sbj { get; set; }
+        public string? Msg { get; set; }
+        public MarkupString mMsg => (MarkupString)Msg;
+        public DateTime InsTS { get; }
+    }
+}
