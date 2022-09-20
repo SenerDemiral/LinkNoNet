@@ -1,10 +1,10 @@
-﻿@page "/adm/ah"
+﻿@page "/tnt/ah"
 @inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 @inject IDialogService DialogService
 @inject IEmailService EmailService
-<PageTitle>Admin</PageTitle>
+<PageTitle>Tanıtıcı</PageTitle>
 
 <style>
     .mud-table-cell {
@@ -25,15 +25,23 @@
              FilterMode="DataGridFilterMode.ColumnFilterMenu"
              Groupable="false"
              MultiSelection="false"
+             SelectedItems="@selectedItems"
+             SelectedItemChanged="@selectedItemChanged"
              RowClassFunc="@SelectedRowClassFunc" RowClass="py-0"
              RowClick="@RowClicked" RowStyleFunc="@_rowStyleFunc">
     <Columns>
-        <Column T="AH" Field="@nameof(AH.AHid)" Title="ID" />
         @*<Column T="AH" Field="@nameof(AH.FrTyp)" Title="From" Groupable="true">
             <GroupTemplate>
                 <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
             </GroupTemplate>
         </Column>*@
+        <Column T="AH" Field="@nameof(AH.isOk)" Title="Ok" >
+            <CellTemplate>
+                <input type="checkbox" name="horns" checked="@context.Item.isOk">
+                @context.Item.AHid
+            </CellTemplate>
+            </Column>
+
         <Column T="AH" Field="@nameof(AH.FrName)" Title="From" />
         <Column T="AH" Field="@nameof(AH.ToName)" Title="To" />
 
@@ -47,7 +55,7 @@
             </CellTemplate>
         </Column>
 
-        
+
         <Column T="AH" Field="@nameof(AH.InsTS)">
             <CellTemplate>
                 @context.Item.InsTS.ToString("dd.MM.yy HH:mm")
@@ -86,7 +94,9 @@
     private MudDataGrid<AH>? mudDataGrid;
     private bool contextMenuVisible;
     private int rating;
+    private HashSet<AH> selectedItems = new();
 
+    private bool isOk = true;
     private bool isActivityDisabled = true;
     private bool isMagazaDisabled = true;
     private bool isTaniticiDisabled = true;
@@ -119,6 +129,14 @@
         contextMenuVisible = true;
     }
 
+    private void selectedItemChanged(AH item)
+    {
+        //if (item.isOk)
+        //    item.Ok = "H";
+        //else
+        //    item.Ok = "E";
+
+    }
     private string SelectedRowClassFunc(AH element, int rowNumber)
     {
         //if (selectedRowNumber == rowNumber)
@@ -139,7 +157,7 @@
 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-        if (AppState.UsrTyp != "A")
+        if (AppState.UsrTyp != "T")
         {
             NavigationManager.NavigateTo("/");
             return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
@@ -162,6 +180,13 @@
         //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
         //inLineDialogVisible = true;
 
+        var item = args.Item;
+        if (item.isOk)
+            item.Ok = "H";
+        else
+            item.Ok = "E";
+        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = item.AHid, OkWho = AppState.UsrId, Ok = item.Ok });
+
     }
 
     private sealed class AH
@@ -176,5 +201,6 @@
         public string? Msg { get; set; }
         public MarkupString mMsg => (MarkupString)Msg;
         public DateTime InsTS { get; }
+        public bool isOk => Ok == "E" ? true : false;
     }
 }

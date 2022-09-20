@@ -1,10 +1,10 @@
-﻿@page "/adm/ah"
+﻿@page "/mgz/ah"
 @inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 @inject IDialogService DialogService
 @inject IEmailService EmailService
-<PageTitle>Admin</PageTitle>
+<PageTitle>Mağaza</PageTitle>
 
 <style>
     .mud-table-cell {
@@ -39,7 +39,7 @@
 
         <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj" >
         </Column>
-        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Msg" >
+        <Column T="AH" Field="@nameof(AH.Msg)" Title="Msg" >
             <CellTemplate>
                 <p style="max-height:60px; overflow-y:auto; scrollbar-width:thin">
                     @context.Item.mMsg
@@ -139,7 +139,7 @@
 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-        if (AppState.UsrTyp != "A")
+        if (AppState.UsrTyp != "M")
         {
             NavigationManager.NavigateTo("/");
             return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
