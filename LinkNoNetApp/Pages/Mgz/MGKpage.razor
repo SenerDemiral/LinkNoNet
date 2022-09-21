@@ -1,11 +1,88 @@
 ﻿@page "/mgz/mgk"
 @inject AppState AppState
 @inject NavigationManager NavigationManager
+@inject IDataAccess db
+
 <PageTitle>Mağaza</PageTitle>
 
 <h3>Mağaza Grup Komisyonları</h3>
 
+<MudDataGrid T="MGK" Items="@data" @ref="gridRef"
+            ReadOnly="false" 
+            EditMode="DataGridEditMode.Form"
+            StartedEditingItem="@StartedEditingItem" 
+            CancelledEditingItem="@CancelledEditingItem" 
+            CommittedItemChanges="@CommittedItemChanges"
+            EditTrigger="DataGridEditTrigger.OnRowClick"
+            HorizontalScrollbar="true" 
+            Bordered="true" 
+            Dense="true">
+    <Columns>
+        <Column T="MGK" Field="MTid" Title="MTid" IsEditable="false" />
+        <Column T="MGK" Field="Grp" IsEditable="false">
+            <EditTemplate>
+                <MudSelect @bind-Value="context.Item.Grp" 
+                    Label="Grup" Variant="Variant.Outlined"
+                    Disabled="@context.Item.isDisabled"
+                    Required RequiredError="Grup secmelisiniz CALISMIYOR!!!" 
+                    Margin="Margin.Dense">
+                    <MudSelectItem Value="@("A")">A</MudSelectItem>
+                    <MudSelectItem Value="@("B")">B</MudSelectItem>
+                    <MudSelectItem Value="@("C")">C</MudSelectItem>
+                    <MudSelectItem Value="@("Y")">Y</MudSelectItem>
+                </MudSelect>
+            </EditTemplate>
+        </Column>
+        <Column T="MGK" Field="KmsYzd" />
+    </Columns>
+</MudDataGrid>
+
+<MudButton Class="mt-3" 
+           ButtonType="ButtonType.Button"
+           Size="Size.Small"
+           Color="Color.Tertiary"
+           Variant="Variant.Filled"
+           OnClick="@Insert">Insert
+</MudButton>
+
 @code {
+    private List<MGK> data = new List<MGK>();
+    private MudDataGrid<MGK>? gridRef;
+    private bool inserting = false;
+
+    void Insert()
+    {
+        MGK item = new()
+        {
+            mode = "N"
+        };
+        data.Insert(0, item);
+        //gridRef.SetSelectedItemAsync(item);
+    }
+    void StartedEditingItem(MGK item)
+    {
+    }
+
+    void CancelledEditingItem(MGK item)
+    {
+        if (item.mode == "N")
+            data.RemoveAt(0);
+    }
+
+    void CommittedItemChanges(MGK item)
+    {
+        //if (item.mode == "N") {
+        // insert item & get ids & clear mode;
+        //item.mode = "";
+        //}
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from MGK";
+        data = (await db.LoadData<MGK, dynamic>(sql, new { })).ToList();
+    }
+
     public override Task SetParametersAsync(ParameterView parameters)
     {
         if (AppState.UsrTyp != "M")
@@ -14,5 +91,24 @@
             return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
         }
         return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+
+    private sealed class MGK
+    {
+        public int MTid { get; set; }
+        public string Grp { get; set; }
+        public int KmsYzd { get; set; }
+
+        public string? mode { get; set; }
+        public bool isDisabled
+        {
+            get
+            {
+                return mode is null ? true : false;
+            }
+            set{
+
+            }
+        }
     }
 }

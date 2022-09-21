@@ -1,0 +1,72 @@
+﻿@page "/"
+@using DataLibrary
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject IDataAccess db
+
+<div class="grid" tabindex="-1">
+    <QuickGrid Items="@itemsQueryable" Virtualize="true" @ref="grid">
+        <PropertyColumn Property="@(c => c.UAid)" Sortable="true" />
+        <PropertyColumn Property="@(c => c.EXD)" Sortable="true" Format="dd.MM.yy HH"/>
+
+        <PropertyColumn Property="@(c => c.UTid)" Sortable="true" Align="Align.Right" />
+        <PropertyColumn Property="@(c => c.Typ)" Sortable="true" Align="Align.Right" />
+        <PropertyColumn Property="@(c => c.Stu)" Sortable="true" Align="Align.Right" />
+        <PropertyColumn Property="@(c => c.LgnNme)" Sortable="true" Align="Align.Right" />
+    </QuickGrid>
+</div>
+
+@code {
+    QuickGrid<UA>? grid;
+    IQueryable<UA>? itemsQueryable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from UA where UTid = @UTid order by UAid";
+        itemsQueryable = (await db.LoadData<UA, dynamic>(sql, new { UTid = -1 })).AsQueryable();
+    }
+
+    private sealed class UA
+    {
+        public int UAid { get; set; }
+        public DateTime EXD { get; set; }
+        public int UTid { get; set; }
+        public string Typ { get; set; }
+        public int Stu { get; set; }
+        public string LgnNme { get; set; }
+        public string IP { get; set; }
+    }
+
+}
+
+<style>
+    .grid {
+        height: 25rem;
+        overflow-y: auto;
+    }
+
+        .grid ::deep table {
+            min-width: 100%;
+        }
+
+    /* Sticky header while scrolling */
+    ::deep thead {
+        position: sticky;
+        top: 0;
+        background-color: #d8d8d8;
+        outline: 1px solid gray;
+        z-index: 1;
+    }
+
+    /* For virtualized grids, it's essential that all rows have the same known height */
+    ::deep tr {
+        height: 30px;
+        border-bottom: 0.5px solid silver;
+    }
+
+    ::deep tbody td {
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 0;
+        text-overflow: ellipsis;
+    }
+</style>
