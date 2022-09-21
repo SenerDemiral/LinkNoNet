@@ -28,7 +28,7 @@
              RowClassFunc="@SelectedRowClassFunc" RowClass="py-0"
              RowClick="@RowClicked" RowStyleFunc="@_rowStyleFunc">
     <Columns>
-        <Column T="UT" Title="Detay" Filterable="false">
+        <Column T="UT" Title="Detay" Filterable="false" Sortable="false">
             <CellTemplate>
                 <MudIconButton Icon="@Icons.Material.Filled.Outbound" Class="px-1 py-0" Disabled="false" 
                 OnClick="@(() => ContextMenuShow(context.Item))" />
@@ -79,13 +79,10 @@
     //[CascadingParameter] App app { get; set; }
 
     private IEnumerable<UT>? data; // = new List<Element>();
-    string Typ = "";
-    int RefId = 0;
     string sty { get; set; }
     private int selectedRowNumber = -1;
     private MudDataGrid<UT>? mudDataGrid;
     private bool contextMenuVisible;
-    private int rating;
 
     private bool isActivityDisabled = true;
     private bool isMagazaDisabled = true;

@@ -57,13 +57,9 @@
     //[CascadingParameter] App app { get; set; }
 
     private IEnumerable<MT>? data; // = new List<Element>();
-    string Typ = "";
-    int RefId = 0;
-    string sty { get; set; }
     private int selectedRowNumber = -1;
     private MudDataGrid<MT>? mudDataGrid;
     private bool contextMenuVisible;
-    private int rating;
 
     private bool isActivityDisabled = true;
     private bool isMagazaDisabled = true;

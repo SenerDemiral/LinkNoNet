@@ -9,11 +9,12 @@
 <style>
     .mud-table-cell {
         padding: 4px !important;
+        font-weight: inherit;
     }
 </style>
 
 <div class="mud-theme-dark">
-    <MudText Align="Align.Center" Typo="Typo.body2">Duyurular</MudText>
+    <MudText Align="Align.Center" Typo="Typo.body2">Gelen Duyurular</MudText>
 </div>
 
 <MudDataGrid T="AH" Items="@data" @ref="mudDataGrid"
@@ -25,21 +26,31 @@
              FilterMode="DataGridFilterMode.ColumnFilterMenu"
              Groupable="false"
              MultiSelection="false"
-             RowClassFunc="@SelectedRowClassFunc" RowClass="py-0"
-             RowClick="@RowClicked" RowStyleFunc="@_rowStyleFunc">
+             RowClassFunc="@SelectedRowClassFunc" 
+             RowClass="py-0"
+             RowClick="@RowClicked" 
+             RowStyleFunc="@_rowStyleFunc">
     <Columns>
-        <Column T="AH" Field="@nameof(AH.AHid)" Title="ID" />
         @*<Column T="AH" Field="@nameof(AH.FrTyp)" Title="From" Groupable="true">
             <GroupTemplate>
                 <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
             </GroupTemplate>
         </Column>*@
+        <Column T="AH" Field="@nameof(AH.isOk)" Title="Ok">
+            <CellTemplate>
+                <input type="checkbox" 
+                    checked="@context.Item.isOk" 
+                    onclick="@(() => OnOkClick(context.Item))">
+                @context.Item.AHid
+            </CellTemplate>
+        </Column>
+
         <Column T="AH" Field="@nameof(AH.FrName)" Title="From" />
         <Column T="AH" Field="@nameof(AH.ToName)" Title="To" />
 
         <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj" >
         </Column>
-        <Column T="AH" Field="@nameof(AH.Msg)" Title="Msg" >
+        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Msg" >
             <CellTemplate>
                 <p style="max-height:60px; overflow-y:auto; scrollbar-width:thin">
                     @context.Item.mMsg
@@ -79,13 +90,9 @@
     //[CascadingParameter] App app { get; set; }
 
     private IEnumerable<AH>? data; // = new List<Element>();
-    string Typ = "";
-    int RefId = 0;
-    //string sty { get; set; }
     private int selectedRowNumber = -1;
     private MudDataGrid<AH>? mudDataGrid;
     private bool contextMenuVisible;
-    private int rating;
 
     private bool isActivityDisabled = true;
     private bool isMagazaDisabled = true;
@@ -98,7 +105,7 @@
     {
         string style = "";
         if (x.Ok == "H")
-            style += "background-color:#8CED8C";
+            style = "font-weight:500";
 
         return style;
     };
@@ -161,7 +168,15 @@
         //RefId = args.Item.RefId;
         //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
         //inLineDialogVisible = true;
+    }
 
+    private void OnOkClick(AH item)
+    {
+        if (item.isOk)
+            item.Ok = "H";
+        else
+            item.Ok = "E";
+        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = item.AHid, OkWho = AppState.UsrId, Ok = item.Ok });
     }
 
     private sealed class AH
@@ -176,5 +191,6 @@
         public string? Msg { get; set; }
         public MarkupString mMsg => (MarkupString)Msg;
         public DateTime InsTS { get; }
+        public bool isOk => Ok == "E" ? true : false;
     }
 }
