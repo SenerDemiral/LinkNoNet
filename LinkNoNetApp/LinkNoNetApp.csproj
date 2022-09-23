@@ -9,7 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="3.4.1" />
-    <PackageReference Include="MudBlazor" Version="6.0.15" />
+    <PackageReference Include="MudBlazor" Version="6.0.16" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>

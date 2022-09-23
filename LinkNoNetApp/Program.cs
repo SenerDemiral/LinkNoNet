@@ -5,9 +5,11 @@ using LinkNoNetApp.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor.Services;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddImageSharp();
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -31,6 +33,7 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+app.UseImageSharp();
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -34,25 +34,9 @@
                                OnClick="@(() => ContextMenuShow(context.Item))" />
             </CellTemplate>
         </Column>
-        <Column T="MT" Field="@nameof(MT.UTid)" Title="ID" />
-        <Column T="MT" Field="@nameof(MT.StuEnum)" Title="Statu" Groupable="true">
-            <GroupTemplate>
-                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
-            </GroupTemplate>
-        </Column>
+        <Column T="MT" Field="@nameof(MT.MTid)" Title="ID" />
         <Column T="MT" Field="@nameof(MT.Name)" Title="Ad" />
-        <Column T="MT" Field="@nameof(MT.NN)" Title="Lakap" />
-        <Column T="MT" Field="@nameof(MT.TypAd)" Title="Typ" Groupable="true">
-            <GroupTemplate>
-                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
-            </GroupTemplate>
-        </Column>
-        <Column T="MT" Field="@nameof(MT.RefId)" />
-        <Column T="MT" Field="@nameof(MT.UpdTS)">
-            <CellTemplate>
-                @context.Item.UpdTS.ToString("dd.MM.yy HH:mm")
-            </CellTemplate>
-        </Column>
+        <Column T="MT" Field="@nameof(MT.Uri)" />
     </Columns>
     @*    <PagerContent>
     <MudDataGridPager T="UT" />
@@ -110,11 +94,11 @@
 
         var parameters = new DialogParameters
             {
-                ["UTid"] = mudDataGrid.SelectedItem.UTid,
-                ["Title"] = mudDataGrid.SelectedItem.NN,
+                //["UTid"] = mudDataGrid.SelectedItem.MTid,
+                //["Title"] = mudDataGrid.SelectedItem.NN,
             };
 
-        var result = await DialogService.Show<UAdialog>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
+        //var result = await DialogService.Show<UAdialog>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
 
         contextMenuVisible = false;
     }
@@ -175,7 +159,7 @@
     protected override async Task OnInitializedAsync()
     {
         // Deneme
-        string sql = $"select * from UT order by UTid";
+        string sql = $"select * from MT";
         data = await db.LoadData<MT, dynamic>(sql, new { });
     }
 
@@ -191,26 +175,14 @@
 
     private sealed class MT
     {
-        public int UTid { get; set; }
+        public int MTid { get; set; }
         public string? Typ { get; set; }
         public int Stu { get; set; }
         public string? StuAd { get; set; }
-        public string? Moniker { get; set; }
-        public string? NN { get; set; }
         public string? Name { get; set; }
         public string? eMail { get; set; }
         public string? mTel { get; set; }
-        public int RefId { get; set; }
-        public DateTime UpdTS { get; }
-
-        public Constants.ttStus StuEnum => (Constants.ttStus)Stu;
-        public string TypAd => Typ switch
-        {
-            "A" => "Admin",
-            "M" => "Mağaza",
-            "T" => "Tanıtıcı",
-            _ => "?"
-        };
+        public string? Uri { get; set; }
     }
 
     private sealed class ttOnaylaOut

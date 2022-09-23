@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkNoNetApp", "LinkNoNetAp
 		{FC0E8890-62E9-4332-9A3D-6150C7F5D98C} = {FC0E8890-62E9-4332-9A3D-6150C7F5D98C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickGridDeneme", "QuickGridDeneme\QuickGridDeneme.csproj", "{97BBB4D7-8FE2-47BB-887D-3187D322ABE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickGridDeneme", "QuickGridDeneme\QuickGridDeneme.csproj", "{97BBB4D7-8FE2-47BB-887D-3187D322ABE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

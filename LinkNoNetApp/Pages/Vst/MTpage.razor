@@ -1,0 +1,80 @@
+﻿@page "/vst/mt"
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+@inject IDataAccess db
+@inject IDialogService DialogService
+@inject IEmailService EmailService
+<PageTitle>Admin</PageTitle>
+
+<style>
+    .mud-table-cell {
+        padding: 4px !important;
+    }
+</style>
+
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
+</div>
+
+<div class="mx-auto my-2"  style="max-width: 50%;">
+<MudExpansionPanels >
+    @foreach(var itm in data) 
+    {
+        <MudExpansionPanel  >
+                <TitleContent>
+                    <div class="d-flex align-center gap-2">
+                        <MudImage Src="@itm.Icon" Alt="can" Elevation="2" Class="rounded-lg" />
+                        <MudText><b>@itm.Name</b></MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudLink Href="@itm.Uri" Target="_blank">@itm.Uri</MudLink>
+                    <MudText>Panel Content</MudText>
+                    <p>Info ...</p>
+                    <textarea rows="5" disabled name="description" style="width:100%; resize:vertical" >
+                        @itm.Info
+                    </textarea><br>
+                </ChildContent>
+        </MudExpansionPanel>
+    }
+</MudExpansionPanels>
+</div>
+
+@code {
+    //[CascadingParameter] App app { get; set; }
+
+    private IEnumerable<MT>? data; // = new List<Element>();
+
+    private Func<MT, int, string> _rowStyleFunc => (x, i) =>
+    {
+        string style = "";
+        if (x.Typ == "A")
+            style += "background-color:#8CED8C";
+        if (x.Typ == "M")
+            style += "background-color:#E5BDE5";
+
+        return style;
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Deneme
+        string sql = $"select * from MT";
+        data = await db.LoadData<MT, dynamic>(sql, new { });
+    }
+
+    private sealed class MT
+    {
+        public int MTid { get; set; }
+        public string? Typ { get; set; }
+        public int Stu { get; set; }
+        public string? StuAd { get; set; }
+        public string? Name { get; set; }
+        public string? eMail { get; set; }
+        public string? mTel { get; set; }
+        public string? Uri { get; set; }
+        public string? Icon { get; set; }
+        public string? Info { get; set; }
+    }
+
+}
