@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using System.Diagnostics;
 using TntMud;
 //using Microsoft.AspNetCore.SignalR.Protocols.MessagePack
 using TntMud.Data;
@@ -62,5 +63,19 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var getService = scope.ServiceProvider.GetRequiredService<IDataSet>();
+
+//    var aaa = await getService.UtLblSrch(fndAnd: "21,40", fndOr: "");
+//    Stopwatch sw = Stopwatch.StartNew();
+//    for (int i = 0; i < 100_000; i++)
+//    {
+//        aaa = await getService.UtLblSrch(fndAnd: "2,40,66", fndOr: "");
+//    }
+//    sw.Stop();
+//    Console.WriteLine($"UTset: {sw.ElapsedMilliseconds}ms {sw.ElapsedTicks}tick");
+//}
 
 app.Run();

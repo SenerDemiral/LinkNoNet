@@ -1,5 +1,7 @@
 ﻿using DataLibrary;
+using MailKit;
 using Microsoft.Extensions.Caching.Memory;
+using Org.BouncyCastle.Crypto;
 using System.Diagnostics;
 using TntMud.Models;
 
@@ -33,6 +35,142 @@ public sealed class DataSet : IDataSet
 
         return output;
     }
+    
+    private int[] str2intAry(string s)
+    {
+        // Max 50 token
+        string[] fsa = s.Split(',', 50, StringSplitOptions.RemoveEmptyEntries);
+        fsa = fsa.Distinct().ToArray(); // Duplicate olmasin
+        int[] result = new int[fsa.Length];
+
+        int i = 0;
+        foreach (string str in fsa)
+            result[i++] = ushort.Parse(str);
+        Array.Sort(result);
+        return result;
+    }
+
+    public async Task<List<UT>> UtLblSrch(string fndAnd, string fndOr)
+    {
+        // UtLblSrchYAVAS tan 10 kat hizli
+        var utSet = await UTset();
+        List<UT> output = new();
+
+        int[] fa = str2intAry(fndAnd);
+        int[] fo = str2intAry(fndOr);
+        int fal = fa.Length;
+        int fol = fo.Length;
+        int sal;
+        bool faOk, foOk;
+        int bf, bs;
+
+        foreach (var itm in utSet)
+        {
+            sal = itm.LblAry.Length;
+            faOk = false;
+            foOk = false;
+
+            // fa dakilerin hepsi itm.LblAry de olmali (AND)
+            if (fal > sal)  // Aranan mevcuttan cok fOk=false
+                faOk = false;
+            else if (fal == 0)   // Aranan yok
+                faOk = true;
+            else
+            {
+                bf = 0;
+                bs = 0;
+                for (int f = bf; f < fal; f++)
+                {
+                    faOk = false;
+                    for (int s = bs; s < sal; s++)
+                    {
+                        if (fa[f] == itm.LblAry[s])
+                        {
+                            bf = f + 1;
+                            bs = s + 1;
+                            faOk = true;
+                            break;
+                        }
+                        else if (itm.LblAry[s] > fa[f]) // s ascending oldugu icin sonrasindakilerde de bulamazsin
+                            break;
+                    }
+                    if (!faOk)   // bulundugu surece devam et
+                        break;
+                }
+            }
+
+            if (faOk)
+            {
+                // fo dakilerin biri itm.LblAry de olmali (OR)
+                if (fol == 0)   // Aranan yok
+                    foOk = true;
+                else
+                {
+                    for (int f = 0; f < fol; f++)
+                    {
+                        foOk = false;
+                        for (int s = 0; s < sal; s++)
+                        {
+                            if (fo[f] == itm.LblAry[s])
+                            {
+                                foOk = true;
+                                break;
+                            }
+                            else if (itm.LblAry[s] > fo[f]) // s ascending oldugu icin sonrasindakilerde de bulamazsin
+                                break;
+                        }
+                        if (foOk)   // bulundugunda bitir
+                            break;
+                    }
+                }
+            }
+            if (faOk && foOk)
+                output.Add(itm);
+        }
+        return output;
+    }
+    
+    public async Task<List<UT>> UtLblSrchYAVAS(string fndAnd, string fndOr)
+    {
+        var utSet = await UTset();
+        List<UT> output = new();
+
+        int[] fa = str2intAry(fndAnd);
+        int[] fo = str2intAry(fndOr);
+        int fal = fa.Length;
+        int fol = fo.Length;
+        bool faOk, foOk;
+
+        foreach (var itm in utSet)
+        {
+            //utSet.Prepend(itm);
+            faOk = foOk = false;
+            // hic Lbl olmayabilir
+            // itm icinde aranan kadar Lbl olmayabilir
+            // fal sifir olabilir fa yok
+            if (fal == 0 ||                                 // and find yok
+                itm.LblAry.Length >= fal &&                 // Lbl sayisi >= aran and
+                fa.Intersect(itm.LblAry).Count() == fal)    // Aranan sayida Lbl var
+            { 
+                faOk = true; 
+            }
+
+            if (faOk)
+            {
+                if (fol == 0 ||                             // or find yok
+                    itm.LblAry.Length > 0 &&                // Lbl var
+                    fo.Intersect(itm.LblAry).Count() > 0)   // Or dakilerden biri var
+                {
+                    foOk = true;
+                }
+            }
+
+            if (faOk && foOk)
+                output.Add(itm);
+        }
+        return output;
+    }
+
 
     public async Task<List<UT>> UTsetSrch(string fndAnd, string fndOr)
     {
@@ -136,5 +274,6 @@ public sealed class DataSet : IDataSet
 public interface IDataSet
 {
     public Task<IEnumerable<UT>> UTset();
+    public Task<List<UT>> UtLblSrch(string fndAnd, string fndOr);
     public Task<List<UT>> UTsetSrch(string fndAnd, string fndOr);
 }
