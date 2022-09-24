@@ -1,11 +1,104 @@
 ﻿@page "/mgz/mks"
 @inject AppState AppState
 @inject NavigationManager NavigationManager
+@inject IDataAccess db
+
 <PageTitle>Mağaza</PageTitle>
 
-<h3>Mağaza Kupon Serileri</h3>
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Kupon Serileri</MudText>
+</div>
+
+<MudDataGrid T="MKS" Items="@data" @ref="gridRef"
+             ReadOnly="false"
+             EditMode="DataGridEditMode.Form"
+             StartedEditingItem="@StartedEditingItem"
+             CancelledEditingItem="@CancelledEditingItem"
+             CommittedItemChanges="@CommittedItemChanges"
+             EditTrigger="DataGridEditTrigger.OnRowClick"
+             EditDialogOptions="@editDialogOptions"
+             HorizontalScrollbar="false"
+             Bordered="true"
+             Dense="true">
+    <ColGroup>
+        <col style="width:10%" />
+        <col style="width:10%" />
+    </ColGroup>
+    <Columns>
+        <Column T="MKS" Field="Seri" IsEditable="true" >
+            <EditTemplate>
+                <MudTextField Label="Seri" ReadOnly="!context.Item.isNew" @bind-Value="context.Item.Seri" />
+            </EditTemplate>
+        </Column>
+        <Column T="MKS" Field="EndTS" IsEditable="true" >
+            <CellTemplate>
+                @context.Item.EndTS.ToString("dd.MM.yy")
+            </CellTemplate>
+            <EditTemplate>
+                <MudDatePicker Label="Bitiş tarihi" Date="context.Item.EndTS" @bind-Value="context.Item.EndTS" DateFormat="dd.MM.yyyy" />
+            </EditTemplate>
+        </Column>
+
+        <Column T="MKS" Field="Info" >
+            <CellTemplate>
+                <textarea rows="3" disabled name="description" style="width:100%; resize:vertical">
+                    @context.Item.Info
+                </textarea>
+            </CellTemplate>
+            <EditTemplate>
+                <MudTextField Label="Info" Lines="3" @bind-Value="context.Item.Info" />
+            </EditTemplate>
+        </Column>
+    </Columns>
+</MudDataGrid>
+
+<MudButton Class="mt-3"
+           ButtonType="ButtonType.Button"
+           Size="Size.Small"
+           Color="Color.Tertiary"
+           Variant="Variant.Filled"
+           OnClick="@Insert">Insert
+</MudButton>
 
 @code {
+    private List<MKS> data = new List<MKS>();
+    private MudDataGrid<MKS>? gridRef;
+    private bool inserting = false;
+    private DialogOptions editDialogOptions = new DialogOptions() { FullWidth = true, NoHeader = true };
+    void Insert()
+    {
+        MKS item = new()
+            {
+                MTid = AppState.UsrRefId,
+                Mode = "N",
+                EndTS = DateTime.Today.AddMonths(1)
+            };
+        data.Insert(0, item);
+    }
+
+    void StartedEditingItem(MKS itm)
+    {
+    }
+
+    void CancelledEditingItem(MKS itm)
+    {
+    }
+
+    void CommittedItemChanges(MKS itm)
+    {
+        // New/Update
+        string sp = "MKS_MDF(@Mode, @MTid, @Seri, @EndTS, @Info)";
+        var res = db.StoreProc<dynamic, dynamic>(sp, itm);
+        string msj = res.MSJ;
+        itm.Mode = null;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from MKS where MTid = @MTid order by EndTS desc";
+        data = (await db.LoadData<MKS, dynamic>(sql, new { MTid = AppState.UsrRefId })).ToList();
+    }
+
     public override Task SetParametersAsync(ParameterView parameters)
     {
         if (AppState.UsrTyp != "M")
@@ -14,5 +107,24 @@
             return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
         }
         return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+
+    private sealed class MKS
+    {
+        public int MTid { get; set; }
+        public string Seri { get; set; }
+        public DateTime EndTS { get; set; }
+        public string? Info { get; set; }
+        public string? Mode { get; set; }
+        public bool isNew
+        {
+            get
+            {
+                return Mode is null ? false : true;
+            }
+            set
+            {
+            }
+        }
     }
 }

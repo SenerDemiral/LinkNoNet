@@ -1,11 +1,79 @@
 ﻿@page "/mgz/mgt"
 @inject AppState AppState
 @inject NavigationManager NavigationManager
+@inject IDataAccess db
+
 <PageTitle>Mağaza</PageTitle>
 
-<h3>Mağaza Grup Tantıcıları</h3>
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Tanıtıcıları</MudText>
+</div>
+
+<MudDataGrid T="MGT" Items="@data" @ref="gridRef"
+             ReadOnly="false"
+             EditMode="DataGridEditMode.Form"
+             StartedEditingItem="@StartedEditingItem"
+             CancelledEditingItem="@CancelledEditingItem"
+             CommittedItemChanges="@CommittedItemChanges"
+             EditTrigger="DataGridEditTrigger.OnRowClick"
+             
+             HorizontalScrollbar="true"
+             Bordered="true"
+             Dense="true">
+    <Columns>
+        <Column T="MGT" Field="TtAd" IsEditable="false" />
+        <Column T="MGT" Field="Grp" IsEditable="true">
+            <EditTemplate>
+                <MudSelect @bind-Value="context.Item.Grp"
+                           Label="Grup" Variant="Variant.Outlined"
+                           Required RequiredError="Grup secmelisiniz CALISMIYOR!!!"
+                           Margin="Margin.Dense">
+                    <MudSelectItem Value="@("A")">A</MudSelectItem>
+                    <MudSelectItem Value="@("B")">B</MudSelectItem>
+                    <MudSelectItem Value="@("C")">C</MudSelectItem>
+                    <MudSelectItem Value="@("D")">D</MudSelectItem>
+                    <MudSelectItem Value="@("E")">E</MudSelectItem>
+                    <MudSelectItem Value="@("Y")">Y</MudSelectItem>
+                </MudSelect>
+            </EditTemplate>
+        </Column>
+        <Column T="MGT" Field="KmsYzd" IsEditable="false" />
+    </Columns>
+</MudDataGrid>
+
+@*<MudButton Class="mt-3"
+           ButtonType="ButtonType.Button"
+           Size="Size.Small"
+           Color="Color.Tertiary"
+           Variant="Variant.Filled"
+           OnClick="@Insert">Insert
+</MudButton>*@
 
 @code {
+    private List<MGT> data = new List<MGT>();
+    private MudDataGrid<MGT>? gridRef;
+    private bool inserting = false;
+
+    void StartedEditingItem(MGT itm)
+    {
+    }
+
+    void CancelledEditingItem(MGT itm)
+    {
+    }
+
+    void CommittedItemChanges(MGT itm)
+    {
+        string sql = "update MGT set Grp = @Grp where MTid = @MTid and TTid = @TTid";
+        db.SaveData(sql, new { MTid = AppState.UsrRefId, Grp = itm.Grp, TTid = itm.TTid });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from MGT_GET(@Typ, @Id)";
+        data = (await db.LoadData<MGT, dynamic>(sql, new { Typ = AppState.UsrTyp, Id = AppState.UsrRefId })).ToList();
+    }
+
     public override Task SetParametersAsync(ParameterView parameters)
     {
         if (AppState.UsrTyp != "M")
@@ -14,5 +82,15 @@
             return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
         }
         return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+
+    private sealed class MGT
+    {
+        public int MTid { get; set; }
+        public string? MtAd { get; set; }
+        public string Grp { get; set; }
+        public int KmsYzd { get; set; }
+        public int TTid { get; set; }
+        public string? TtAd { get; set; }
     }
 }

@@ -10,9 +10,7 @@ public sealed class AppState
     public string UsrTyp { get; set; } = "?";
     public int UsrRefId { get; set; } = default;
     public string UsrIp { get; set; } = string.Empty;
-    public string UsrMoniker { get; set; } = string.Empty;
-    public string UsrNN => UsrMoniker + UsrId;
-
+    public string UsrNN { get; set; } = string.Empty;
 
     public event EventHandler? UsrChanged;
     void OnUsrChanged() => UsrChanged?.Invoke(this, EventArgs.Empty);
@@ -42,7 +40,7 @@ public sealed class AppState
                 UsrId = rtrn.UTID;
                 UsrTyp = rtrn.TYP;
                 UsrRefId = rtrn.REFID;
-                UsrMoniker = rtrn.MONIKER;
+                UsrNN = rtrn.NN;
             }
         }
         OnUsrChanged();
@@ -56,12 +54,12 @@ public sealed class AppState
     {
     }
 
-    public void LoginOk(int usrId, string usrTyp, int usrRefId, string usrMoniker)
+    public void LoginOk(int usrId, string usrTyp, int usrRefId, string usrNN)
     {
         UsrId = usrId;
         UsrTyp = usrTyp;
         UsrRefId = usrRefId;
-        UsrMoniker = usrMoniker;
+        UsrNN = usrNN;
         //await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
         OnUsrChanged();
     }
@@ -71,7 +69,7 @@ public sealed class AppState
         UsrId = 0;
         UsrTyp = "?";
         UsrRefId = 0;
-        UsrMoniker = "";
+        UsrNN = "";
         await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
         
         OnUsrChanged();

@@ -1,0 +1,53 @@
+﻿@page "/tnt/mgt"
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+@inject IDataAccess db
+
+<PageTitle>Tanıtıcı</PageTitle>
+
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Tanıtıcı Mağazaları</MudText>
+</div>
+
+<MudDataGrid T="MGT" Items="@data" @ref="gridRef"
+             ReadOnly="true"
+             HorizontalScrollbar="true"
+             Bordered="true"
+             Dense="true">
+    <Columns>
+        <Column T="MGT" Field="MtAd" IsEditable="false" />
+        <Column T="MGT" Field="Grp" IsEditable="true" />
+        <Column T="MGT" Field="KmsYzd" IsEditable="false" />
+    </Columns>
+</MudDataGrid>
+
+@code {
+    private List<MGT> data = new List<MGT>();
+    private MudDataGrid<MGT>? gridRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string sql = $"select * from MGT_GET(@Typ, @Id)";
+        data = (await db.LoadData<MGT, dynamic>(sql, new { Typ = AppState.UsrTyp, Id = AppState.UsrRefId })).ToList();
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (AppState.UsrTyp != "T")
+        {
+            NavigationManager.NavigateTo("/");
+            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+        }
+        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
+    }
+
+    private sealed class MGT
+    {
+        public int MTid { get; set; }
+        public string? MtAd { get; set; }
+        public string Grp { get; set; }
+        public int KmsYzd { get; set; }
+        public int TTid { get; set; }
+        public string? TtAd { get; set; }
+    }
+}

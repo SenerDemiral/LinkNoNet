@@ -5,7 +5,9 @@
 
 <PageTitle>Mağaza</PageTitle>
 
-<h3>Mağaza Grup Komisyonları</h3>
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Grup Komisyonları</MudText>
+</div>
 
 <MudDataGrid T="MGK" Items="@data" @ref="gridRef"
             ReadOnly="false" 
@@ -37,13 +39,13 @@
     </Columns>
 </MudDataGrid>
 
-<MudButton Class="mt-3" 
+@*<MudButton Class="mt-3" 
            ButtonType="ButtonType.Button"
            Size="Size.Small"
            Color="Color.Tertiary"
            Variant="Variant.Filled"
            OnClick="@Insert">Insert
-</MudButton>
+</MudButton>*@
 
 @code {
     private List<MGK> data = new List<MGK>();
@@ -59,28 +61,26 @@
         data.Insert(0, item);
         //gridRef.SetSelectedItemAsync(item);
     }
-    void StartedEditingItem(MGK item)
+    void StartedEditingItem(MGK itm)
     {
     }
 
-    void CancelledEditingItem(MGK item)
+    void CancelledEditingItem(MGK itm)
     {
-        if (item.mode == "N")
+        if (itm.mode == "N")
             data.RemoveAt(0);
     }
 
-    void CommittedItemChanges(MGK item)
+    void CommittedItemChanges(MGK itm)
     {
-        //if (item.mode == "N") {
-        // insert item & get ids & clear mode;
-        //item.mode = "";
-        //}
+        string sql = "update MGK set KmsYzd = @KmsYzd where MTid = @MTid and Grp = @Grp";
+        db.SaveData(sql, new { MTid = AppState.UsrRefId, Grp = itm.Grp, KmsYzd = itm.KmsYzd });
     }
 
     protected override async Task OnInitializedAsync()
     {
-        string sql = $"select * from MGK";
-        data = (await db.LoadData<MGK, dynamic>(sql, new { })).ToList();
+        string sql = $"select * from MGK where MTid = @MTid";
+        data = (await db.LoadData<MGK, dynamic>(sql, new { MTid = AppState.UsrRefId})).ToList();
     }
 
     public override Task SetParametersAsync(ParameterView parameters)
