@@ -16,28 +16,28 @@
     <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
 </div>
 
-<div class="mx-auto my-2"  style="max-width: 50%;">
-<MudExpansionPanels >
-    @foreach(var itm in data) 
-    {
-        <MudExpansionPanel  >
-                <TitleContent>
-                    <div class="d-flex align-center gap-2">
-                        <MudImage Src="@itm.Icon" Alt="can" Elevation="2" Class="rounded-lg" />
-                        <MudText><b>@itm.Name</b></MudText>
-                    </div>
-                </TitleContent>
-                <ChildContent>
-                    <MudLink Href="@itm.Uri" Target="_blank">@itm.Uri</MudLink>
-                    <MudText>Panel Content</MudText>
-                    <p>Info ...</p>
-                    <textarea rows="5" disabled name="description" style="width:100%; resize:vertical" >
-                        @itm.Info
-                    </textarea>
-                </ChildContent>
-        </MudExpansionPanel>
-    }
-</MudExpansionPanels>
+<div class="mx-auto my-2" >
+    <MudExpansionPanels >
+        @foreach(var itm in data) 
+        {
+            <MudExpansionPanel  >
+                    <TitleContent>
+                        <div class="d-flex align-center gap-2">
+                            <MudImage Src="@itm.Icon" Alt="can" Elevation="2" Class="rounded-lg" />
+                            <MudText><b>@itm.Name</b></MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudLink Href="@itm.Uri" Target="_blank">@itm.Uri</MudLink>
+                        <MudText>Panel Content</MudText>
+                        <p>Info ...</p>
+                        <textarea rows="5" disabled name="description" style="width:100%; resize:vertical" >
+                            @itm.Info
+                        </textarea>
+                    </ChildContent>
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
 </div>
 
 @code {

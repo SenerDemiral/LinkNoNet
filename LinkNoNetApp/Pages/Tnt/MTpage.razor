@@ -15,6 +15,30 @@
     <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
 </div>
 
+<div class="mx-auto my-2">
+    <MudExpansionPanels>
+        @foreach (var itm in data)
+        {
+            <MudExpansionPanel IsExpandedChanged="@((x) => ExpandedChanged(x, itm.MTid))">
+                <TitleContent>
+                    <div class="d-flex align-center gap-2">
+                        <MudText><b>@itm.Name</b></MudText>
+                        <MudText><b>@itm.Uri</b></MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudText>Panel Content</MudText>
+                    <p>Info ...</p>
+                    @foreach(var dty in mksd[itm.MTid])
+                    {
+                        <div>@dty.KuponNo</div>
+                    }
+                </ChildContent>
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
+</div>
+
 <MudDataGrid T="MT" Items="@data" @ref="mudDataGrid"
              Breakpoint="Breakpoint.None"
              FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
@@ -57,6 +81,7 @@
     //[CascadingParameter] App app { get; set; }
 
     private IEnumerable<MT>? data; // = new List<Element>();
+    private Dictionary<int, List<MKS>> mksd = new();
     private int selectedRowNumber = -1;
     private MudDataGrid<MT>? mudDataGrid;
     private bool contextMenuVisible;
@@ -67,6 +92,38 @@
     private bool isOnaylaDisabled = true;
 
     private DialogOptions dialogOptions = new() { NoHeader = true, };
+
+    private async Task ExpandedChanged(bool newVal, int mtId)
+    {
+        if (newVal)
+        {
+            //await Task.Delay(600);
+            //_panelContent = _bigAsyncContent;
+        }
+        else
+        {
+            // Reset after a while to prevent sudden collapse.
+            //Task.Delay(350).ContinueWith(t => _panelContent = null).AndForget();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Deneme
+        string sql = $"select MTid, Name, Uri from MT";
+        data = await db.LoadData<MT, dynamic>(sql, new { });
+        foreach(var mt in data)
+        {
+            var mksl = new List<MKS>();
+            mksd.Add(mt.MTid, mksl);
+            var dmks = await db.LoadData<MKS, dynamic>("select * from MKS where MTid = @MTid", new { MTid= mt.MTid });
+            foreach(var i in dmks)
+            {
+                i.KuponNo = $"LN{AppState.UsrRefId}{i.Seri}";
+                mksl.Add(i);
+            }
+        }
+    }
 
     private async Task Activity()
     {
@@ -110,18 +167,21 @@
         return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        // Deneme
-        string sql = $"select MTid, Name, Uri from MT";
-        data = await db.LoadData<MT, dynamic>(sql, new { });
-    }
 
     private sealed class MT
     {
         public int MTid { get; set; }
         public string? Name { get; set; }
         public string? Uri { get; set; }
+        public string? LNlink => $"http://LinkNo.Net/m/{MTid}";
+
     }
 
+    private sealed class MKS
+    {
+        public int MTid { get; set; }
+        public string Seri { get; set; }
+        public string KuponNo { get; set; }
+        
+    }
 }

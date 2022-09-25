@@ -95,6 +95,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var ccc = new MKS();
+
         string sql = $"select * from MKS where MTid = @MTid order by EndTS desc";
         data = (await db.LoadData<MKS, dynamic>(sql, new { MTid = AppState.UsrRefId })).ToList();
     }
@@ -118,13 +120,11 @@
         public string? Mode { get; set; }
         public bool isNew
         {
-            get
-            {
-                return Mode is null ? false : true;
-            }
-            set
-            {
-            }
+            get {return Mode is null ? false : true;}
+            set {}
+        }
+        public bool isIns() {
+            return Mode is null ? false : true;
         }
     }
 }
