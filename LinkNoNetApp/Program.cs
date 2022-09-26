@@ -19,6 +19,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IDataAccess, FBDataAccess>();
 builder.Services.AddScoped<AppState>();
+builder.Services.AddScoped<ClipboardService>();
 
 //builder.Services.AddMudServices();
 builder.Services.AddMudServices(config =>

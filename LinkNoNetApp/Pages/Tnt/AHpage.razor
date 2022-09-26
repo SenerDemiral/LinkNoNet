@@ -38,7 +38,7 @@
                 <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
             </GroupTemplate>
         </Column>*@
-        <Column T="AH" Field="@nameof(AH.isOk)" Title="Ok" >
+        <Column T="AH" Field="@nameof(AH.isOk)" Title="Okundu" >
             <CellTemplate>
                 <input type="checkbox" 
                     checked="@context.Item.isOk" 
@@ -47,12 +47,12 @@
             </CellTemplate>
         </Column>
 
-        <Column T="AH" Field="@nameof(AH.FrName)" Title="From" />
-        <Column T="AH" Field="@nameof(AH.ToName)" Title="To" />
+        <Column T="AH" Field="@nameof(AH.FrName)" Title="Kimden" />
+        <Column T="AH" Field="@nameof(AH.ToName)" Title="Kime" />
 
-        <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj" >
+        <Column T="AH" Field="@nameof(AH.Sbj)" Title="Konu" >
         </Column>
-        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Msg" >
+        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Mesaj" >
             <CellTemplate>
                 <p style="max-height:60px; overflow-y:auto; scrollbar-width:thin">
                     @context.Item.mMsg

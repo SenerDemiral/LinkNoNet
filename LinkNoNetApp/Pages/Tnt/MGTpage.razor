@@ -6,7 +6,7 @@
 <PageTitle>Tanıtıcı</PageTitle>
 
 <div class="mud-theme-dark">
-    <MudText Align="Align.Center" Typo="Typo.body2">Tanıtıcı Mağazaları</MudText>
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Komisyon Oranları</MudText>
 </div>
 
 <MudDataGrid T="MGT" Items="@data" @ref="gridRef"
@@ -15,9 +15,9 @@
              Bordered="true"
              Dense="true">
     <Columns>
-        <Column T="MGT" Field="MtAd" IsEditable="false" />
+        <Column T="MGT" Field="MtAd" Title="Mağaza" IsEditable="false" />
         <Column T="MGT" Field="Grp" IsEditable="true" />
-        <Column T="MGT" Field="KmsYzd" IsEditable="false" />
+        <Column T="MGT" Field="KmsYzd" Title="Komisyon %" IsEditable="false" />
     </Columns>
 </MudDataGrid>
 

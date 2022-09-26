@@ -3,16 +3,30 @@
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 @inject IDialogService DialogService
+@inject ClipboardService ClipboardService
 <PageTitle>Tanıtıcı</PageTitle>
 
 <style>
     .mud-table-cell {
         padding: 4px !important;
     }
+    .link {
+        border: 1px solid aqua;
+        font-size: larger;
+        padding: 6px;
+        background-color: aliceblue;
+    }
+    .kupon {
+        display: block;
+        border: 1px solid aqua;
+        font-size: larger;
+        padding: 6px;
+        background-color: aliceblue;
+    }
 </style>
 
 <div class="mud-theme-dark">
-    <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Linkleri ve Kupon Kodları</MudText>
 </div>
 
 
@@ -22,7 +36,7 @@
         {
             <MudExpansionPanel IsExpandedChanged="@((x) => ExpandedChanged(x, itm.MTid))">
                 <TitleContent>
-                    <MudText><b>@itm.Name</b</MudText>
+                    <MudText><b>@itm.Name</b></MudText>
                 </TitleContent>
                 <ChildContent>
                     <MudDataGrid T="MKS" Items="@mksd[itm.MTid]"
@@ -33,7 +47,7 @@
                                  Groupable="false"
                                  MultiSelection="false" >
                         <ToolBarContent>
-                            <MudField Label="Link" Variant="Variant.Filled">@itm.LNlink</MudField>
+                            <MudTextField T="string" Style="max-width:50%" Label="Link"  Variant="Variant.Outlined" Text="@itm.LNlink" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.ContentCopy" OnAdornmentClick="@(() => CopyToClipboard(itm.LNlink))" />
                         </ToolBarContent>
                         <ColGroup>
 		                    <col style="width:5%;"/>
@@ -49,7 +63,7 @@
                             </Column>
                             <Column T="MKS" Field="@nameof(MKS.KuponNo)" Title="Kupon" >
                                 <CellTemplate>
-                                    <MudText Align="Align.Center">@context.Item.KuponNo</MudText>
+                                    <span class="kupon">@context.Item.KuponNo</span>
                                 </CellTemplate>
                             </Column>
                             <Column T="MKS" Field="@nameof(MKS.EndTS)" Title="Bitiş" >
@@ -57,7 +71,7 @@
                                     <MudText Align="Align.Center">@context.Item.EndTS.ToString("dd.MM.yy")</MudText>
                                 </CellTemplate>
                             </Column>
-                            <Column T="MKS" Field="@nameof(MKS.Info)" Title="Link" >
+                            <Column T="MKS" Field="@nameof(MKS.Info)" Title="Info" >
                                 <CellTemplate>
                                     <textarea disabled name="description" style="width:100%; resize:vertical" >
                                         @context.Item.Info
@@ -113,7 +127,7 @@
 
 @code {
     //[CascadingParameter] App app { get; set; }
-
+    private MudTextField<string> singleLineReference;
     private IEnumerable<MT>? data; // = new List<Element>();
     private Dictionary<int, List<MKS>> mksd = new();
     private int selectedRowNumber = -1;
@@ -127,6 +141,18 @@
 
     private DialogOptions dialogOptions = new() { NoHeader = true, };
 
+    async Task CopyToClipboard(string txt)
+    {
+        // Writing to the clipboard may be denied, so you must handle the exception
+        try
+        {
+            await ClipboardService.WriteTextAsync(txt);
+        }
+        catch
+        {
+            Console.WriteLine("Cannot write text to clipboard");
+        }
+    }
     private async Task ExpandedChanged(bool newVal, int mtId)
     {
         if (newVal)
