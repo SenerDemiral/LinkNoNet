@@ -15,31 +15,66 @@
     <MudText Align="Align.Center" Typo="Typo.body2">Mağazalar</MudText>
 </div>
 
+
 <div class="mx-auto my-2">
     <MudExpansionPanels>
         @foreach (var itm in data)
         {
             <MudExpansionPanel IsExpandedChanged="@((x) => ExpandedChanged(x, itm.MTid))">
                 <TitleContent>
-                    <div class="d-flex align-center gap-2">
-                        <MudText><b>@itm.Name</b></MudText>
-                        <MudText><b>@itm.Uri</b></MudText>
-                    </div>
+                    <MudText><b>@itm.Name</b</MudText>
                 </TitleContent>
                 <ChildContent>
-                    <MudText>Panel Content</MudText>
-                    <p>Info ...</p>
-                    @foreach(var dty in mksd[itm.MTid])
-                    {
-                        <div>@dty.KuponNo</div>
-                    }
+                    <MudDataGrid T="MKS" Items="@mksd[itm.MTid]"
+                                 Breakpoint="Breakpoint.None"
+                                 FixedHeader="true" HorizontalScrollbar="false"
+                                 Hover="true" Striped="true" Dense="true" Bordered="true"
+                                 Filterable="false"
+                                 Groupable="false"
+                                 MultiSelection="false" >
+                        <ToolBarContent>
+                            <MudField Label="Link" Variant="Variant.Filled">@itm.LNlink</MudField>
+                        </ToolBarContent>
+                        <ColGroup>
+		                    <col style="width:5%;"/>
+		                    <col style="width:5%;"/>
+		                    <col style="width:5%;"/>
+		                    <col />
+	                    </ColGroup>
+                        <Columns>
+                            <Column T="MKS" Field="@nameof(MKS.isAktif)" Title="Aktif" >
+                                <CellTemplate >
+                                    <MudCheckBox Checked="@context.Item.isAktif" Disabled="true" Style="align-items: center;"></MudCheckBox>
+                                </CellTemplate>
+                            </Column>
+                            <Column T="MKS" Field="@nameof(MKS.KuponNo)" Title="Kupon" >
+                                <CellTemplate>
+                                    <MudText Align="Align.Center">@context.Item.KuponNo</MudText>
+                                </CellTemplate>
+                            </Column>
+                            <Column T="MKS" Field="@nameof(MKS.EndTS)" Title="Bitiş" >
+                                <CellTemplate>
+                                    <MudText Align="Align.Center">@context.Item.EndTS.ToString("dd.MM.yy")</MudText>
+                                </CellTemplate>
+                            </Column>
+                            <Column T="MKS" Field="@nameof(MKS.Info)" Title="Link" >
+                                <CellTemplate>
+                                    <textarea disabled name="description" style="width:100%; resize:vertical" >
+                                        @context.Item.Info
+                                    </textarea>
+                                </CellTemplate>
+                            </Column>
+                        </Columns>
+                    </MudDataGrid>
                 </ChildContent>
             </MudExpansionPanel>
         }
     </MudExpansionPanels>
 </div>
 
-<MudDataGrid T="MT" Items="@data" @ref="mudDataGrid"
+
+
+@*<MudDataGrid T="MT" Items="@data" @ref="mudDataGrid"
              Breakpoint="Breakpoint.None"
              FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
              Virtualize="true"
@@ -58,12 +93,11 @@
             </CellTemplate>
         </Column>
     </Columns>
-    @*    <PagerContent>
-    <MudDataGridPager T="UT" />
+    <PagerContent>
+    <MudDataGridPager T="MT" />
     </PagerContent>
-    *@
 </MudDataGrid>
-
+*@
 <MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
     <DialogContent>
         @*<MudContainer Style="max-height: 80vh ; overflow-y: scroll">*@
@@ -109,18 +143,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Deneme
+        int refId = AppState.UsrRefId;
         string sql = $"select MTid, Name, Uri from MT";
         data = await db.LoadData<MT, dynamic>(sql, new { });
         foreach(var mt in data)
         {
+            mt.LNlink = $"http://rdr.LinkNo.Net/cst?mt={mt.MTid}&tt={refId}";
+
             var mksl = new List<MKS>();
             mksd.Add(mt.MTid, mksl);
-            var dmks = await db.LoadData<MKS, dynamic>("select * from MKS where MTid = @MTid", new { MTid= mt.MTid });
-            foreach(var i in dmks)
+            //string ssql = "select * from MKS where MTid = @MTid order by Aktif, EndTS desc";
+            string ssql = "select * from MKS_ACTIVE(@MTid) order by EndTS desc";
+            var dmks = await db.LoadData<MKS, dynamic>(ssql, new { MTid= mt.MTid });
+            foreach(var mks in dmks)
             {
-                i.KuponNo = $"LN{AppState.UsrRefId}{i.Seri}";
-                mksl.Add(i);
+                mks.KuponNo = $"LN{refId}{mks.Seri}";
+                mksl.Add(mks);
             }
         }
     }
@@ -173,7 +211,7 @@
         public int MTid { get; set; }
         public string? Name { get; set; }
         public string? Uri { get; set; }
-        public string? LNlink => $"http://LinkNo.Net/m/{MTid}";
+        public string? LNlink { get; set; } 
 
     }
 
@@ -182,6 +220,10 @@
         public int MTid { get; set; }
         public string Seri { get; set; }
         public string KuponNo { get; set; }
-        
+        public string? Info { get; set; }
+        public DateTime EndTS { get; set; }
+        public string Aktif { get; set; }
+        public bool isAktif => Aktif == "E" ? true : false; 
+
     }
 }

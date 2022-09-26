@@ -2,6 +2,7 @@
 @inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
+@inject ISnackbar Snackbar
 
 <PageTitle>Mağaza</PageTitle>
 
@@ -15,27 +16,49 @@
              StartedEditingItem="@StartedEditingItem"
              CancelledEditingItem="@CancelledEditingItem"
              CommittedItemChanges="@CommittedItemChanges"
-             EditTrigger="DataGridEditTrigger.OnRowClick"
+             EditTrigger="DataGridEditTrigger.Manual"
              EditDialogOptions="@editDialogOptions"
              HorizontalScrollbar="false"
              Bordered="true"
              Dense="true">
+    <ToolBarContent>
+        <MudFab StartIcon="@Icons.Filled.Add" Label="YENİ SERİ" Size="Size.Small" OnClick="@Insert" />
+    </ToolBarContent>
     <ColGroup>
+        <col style="width:5%" />
         <col style="width:10%" />
         <col style="width:10%" />
+        <col style="width:10%" />
+        <col />
     </ColGroup>
     <Columns>
-        <Column T="MKS" Field="Seri" IsEditable="true" >
+        <Column T="MKS" >
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" OnClick="@context.Actions.StartEditingItem" />
+            </CellTemplate>
+        </Column>
+
+        <Column T="MKS" Field="Seri" IsEditable="true">
             <EditTemplate>
                 <MudTextField Label="Seri" ReadOnly="!context.Item.isNew" @bind-Value="context.Item.Seri" />
             </EditTemplate>
         </Column>
-        <Column T="MKS" Field="EndTS" IsEditable="true" >
+
+        <Column T="MKS" Field="EndTS" Title="Bitiş" IsEditable="true">
             <CellTemplate>
                 @context.Item.EndTS.ToString("dd.MM.yy")
             </CellTemplate>
             <EditTemplate>
                 <MudDatePicker Label="Bitiş tarihi" Date="context.Item.EndTS" @bind-Value="context.Item.EndTS" DateFormat="dd.MM.yyyy" />
+            </EditTemplate>
+        </Column>
+
+        <Column T="MKS" Field="@nameof(MKS.isAktif)" Title="Aktif">
+            <CellTemplate>
+                <MudCheckBox Checked="@context.Item.isAktif" Disabled="true" Style="align-items: center;"></MudCheckBox>
+            </CellTemplate>
+            <EditTemplate>
+                <MudCheckBox Label=" :Aktif" LabelPosition="LabelPosition.Start" @bind-Checked="@context.Item.isAktif" Size="Size.Medium" Style="align-items: flex-start;"></MudCheckBox>
             </EditTemplate>
         </Column>
 
@@ -52,28 +75,23 @@
     </Columns>
 </MudDataGrid>
 
-<MudButton Class="mt-3"
-           ButtonType="ButtonType.Button"
-           Size="Size.Small"
-           Color="Color.Tertiary"
-           Variant="Variant.Filled"
-           OnClick="@Insert">Insert
-</MudButton>
-
 @code {
     private List<MKS> data = new List<MKS>();
     private MudDataGrid<MKS>? gridRef;
     private bool inserting = false;
     private DialogOptions editDialogOptions = new DialogOptions() { FullWidth = true, NoHeader = true };
+
     void Insert()
     {
         MKS item = new()
             {
                 MTid = AppState.UsrRefId,
                 Mode = "N",
-                EndTS = DateTime.Today.AddMonths(1)
+                EndTS = DateTime.Today.AddMonths(1),
+                Aktif = "E"
             };
         data.Insert(0, item);
+
     }
 
     void StartedEditingItem(MKS itm)
@@ -87,16 +105,23 @@
     void CommittedItemChanges(MKS itm)
     {
         // New/Update
-        string sp = "MKS_MDF(@Mode, @MTid, @Seri, @EndTS, @Info)";
+        string sp = "MKS_MDF(@Mode, @MTid, @Seri, @EndTS, @Aktif, @Info)";
         var res = db.StoreProc<dynamic, dynamic>(sp, itm);
         string msj = res.MSJ;
-        itm.Mode = null;
+        //Snackbar.Clear();
+        //Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        if (res.OK == "H")
+        {
+            Snackbar.Add(msj, Severity.Error);
+        }
+        else {
+            Snackbar.Add(msj, Severity.Success);
+            itm.Mode = null;
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var ccc = new MKS();
-
         string sql = $"select * from MKS where MTid = @MTid order by EndTS desc";
         data = (await db.LoadData<MKS, dynamic>(sql, new { MTid = AppState.UsrRefId })).ToList();
     }
@@ -117,6 +142,15 @@
         public string Seri { get; set; }
         public DateTime EndTS { get; set; }
         public string? Info { get; set; }
+        public string? Aktif { get; set; }
+        public bool isAktif {
+            get {
+                return Aktif == "E" ? true : false;
+            }
+            set {
+                Aktif = value ? "E" : "H";
+            }
+        }
         public string? Mode { get; set; }
         public bool isNew
         {

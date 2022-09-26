@@ -27,8 +27,9 @@ app.MapGet("/cst", (HttpRequest request, int ? mt, int? tt, [FromServices] IData
         return Results.BadRequest("Hata"); 
     }
     var url = request.GetDisplayUrl();
+    var host = request.Host.ToString();
     var rip = request.HttpContext.Connection.RemoteIpAddress?.ToString();
-    var row = fb.StoreProc<Redirect_Op, dynamic>("Redirect_Op(@mt, @tt, @rip, @url)", new {mt=mt, tt=tt, rip=rip, url=url});
+    var row = fb.StoreProc<Redirect_Op, dynamic>("Redirect_Op(@mt, @tt, @rip, @url, @host)", new {mt=mt, tt=tt, rip=rip, url=url, host=host});
     if (row.Ok == "H")
         return Results.NotFound("Hata");
 

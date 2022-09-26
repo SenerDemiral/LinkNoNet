@@ -37,28 +37,12 @@
         <MudNavLink Href="tnt/tt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Profil</MudNavLink>
     }
 
-   @* <MudDivider Class="my-2" />
-
-    @if(AppState.UsrId == 0)
-    {
-        <MudNavLink Icon="@Icons.Material.Filled.Login" OnClick="@(() => DialogService.Show<LoginDialog>())">Login</MudNavLink>
-    }
-    else
-    {
-        <MudNavLink Icon="@Icons.Material.Filled.Logout" OnClick="Logout">@AppState.UsrNN</MudNavLink>
-    }*@
-
     <MudDivider Class="my-2" />
     <MudText Class="px-4 mud-text-secondary" Style="font-size:xx-small">@Constants.PublishVersion @DateTime.Today.Year</MudText>
 </MudNavMenu>
 
 @code
 {
-    private async Task Logout()
-    {
-        await AppState.Logout();
-    }
-
     protected override async Task OnInitializedAsync()
     {
         AppState.UsrChanged += App_UsrChanged;

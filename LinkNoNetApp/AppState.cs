@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using DataLibrary;
+using MudBlazor;
+using System.Reflection;
 
 namespace LinkNoNetApp;
 // Scoped
@@ -33,7 +35,7 @@ public sealed class AppState
 
         if (UsrId != 0)
         {
-            var rtrn = _db.StoreProc<dynamic, dynamic>("Usr_Enter(@UsrId, @Ip)", new {UsrId = UsrId, Ip = UsrIp});
+            var rtrn = _db.StoreProc<dynamic, dynamic>("Usr_Enter(@UsrId)", new {UsrId = UsrId});
 
             if (rtrn.STU == 0)
             {
@@ -66,6 +68,7 @@ public sealed class AppState
 
     public async Task Logout()
     {
+        _db.StoreProc<dynamic, dynamic>("Usr_Logout(@UTid)", new { UTid = UsrId });
         UsrId = 0;
         UsrTyp = "?";
         UsrRefId = 0;

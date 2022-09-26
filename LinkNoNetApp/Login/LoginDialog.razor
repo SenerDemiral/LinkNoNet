@@ -46,9 +46,8 @@
 
     private async Task TryLogin()
     {
-        Model.Ip = AppState.UsrIp;
         // SP input params db de tanimlandigi sirasiyla gelmeli.
-        var rtrn = await db.StoreProcAsync<OutputModel, InputModel>("Usr_Login(@LgnNme, @LgnPwd, @Ip)", Model);
+        var rtrn = await db.StoreProcAsync<OutputModel, InputModel>("Usr_Login(@LgnNme, @LgnPwd)", Model);
 
         if(rtrn.Stu == 0) {
             Snackbar.Add(rtrn.Msg, Severity.Success);
@@ -71,7 +70,6 @@
     {
         public string? LgnNme { get; set; }
         public string? LgnPwd { get; set; }
-        public string? Ip { get; set; }
     }
 
     private sealed class OutputModel
