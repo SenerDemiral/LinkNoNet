@@ -19,7 +19,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-// http://rdr.linkno.net/cst?mt=55&tt=77
+// http://rdr.linkno.net/cst?mt={mtId}&tt={ttId}  Customer/Musteri bu link ile Magazaya gidecek
 app.MapGet("/cst", (HttpRequest request, int ? mt, int? tt, [FromServices] IDataAccess fb) =>
 {
     if (mt is null || tt is null) 

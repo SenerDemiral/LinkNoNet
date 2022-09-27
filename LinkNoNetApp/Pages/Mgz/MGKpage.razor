@@ -20,7 +20,7 @@
             Bordered="true" 
             Dense="true">
     <Columns>
-        <Column T="MGK" Field="MTid" Title="MTid" IsEditable="false" />
+        @*<Column T="MGK" Field="MTid" Title="MTid" IsEditable="false" />*@
         <Column T="MGK" Field="Grp" IsEditable="false">
             <EditTemplate>
                 <MudSelect @bind-Value="context.Item.Grp" 
@@ -31,6 +31,8 @@
                     <MudSelectItem Value="@("A")">A</MudSelectItem>
                     <MudSelectItem Value="@("B")">B</MudSelectItem>
                     <MudSelectItem Value="@("C")">C</MudSelectItem>
+                    <MudSelectItem Value="@("D")">D</MudSelectItem>
+                    <MudSelectItem Value="@("E")">E</MudSelectItem>
                     <MudSelectItem Value="@("Y")">Y</MudSelectItem>
                 </MudSelect>
             </EditTemplate>

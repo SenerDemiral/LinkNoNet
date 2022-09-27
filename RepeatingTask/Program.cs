@@ -58,17 +58,23 @@ app.MapGet("/auth/{mgzId:int}", async (int mgzId, string state, string? code, st
 
 app.Run();
 
-//  Savlore         MTid=21
-//  RedirectUri:    http://api.linkno.net/auth/21
-//  clientId:       nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8
-//  BrowserLink:    https://www.savlore.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=savlore21&redirect_uri=http://api.linkno.net/auth/21
-
-//  Perse           MTid=34
-//  RedirectUri:    http://api.linkno.net/auth/34
-//  clientId:       
-//  BrowserLink:    https://perse.myideasoft.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=perse34&redirect_uri=http://api.linkno.net/auth/34
-
-//  MedLab          MTid=35 demo
-//  RedirectUri:    https://api.linkno.net/auth/35
+//  MedLab          MTid=10 demo
+//  RedirectUri:    https://api.linkno.net/auth/10
 //  clientId:       30wapite3s4kkoko0kw8k4o88wo0k0wo80o4cwwkk444ggo4kw
-//  BrowserLink:    https://medlab.myideasoft.com/admin/user/auth?client_id=30wapite3s4kkoko0kw8k4o88wo0k0wo80o4cwwkk444ggo4kw&response_type=code&state=medlab35&redirect_uri=http://api.linkno.net/auth/35
+//  BrowserLink:    https://medlab.myideasoft.com/admin/user/auth?client_id=30wapite3s4kkoko0kw8k4o88wo0k0wo80o4cwwkk444ggo4kw&response_type=code&state=medlab10&redirect_uri=http://api.linkno.net/auth/10
+
+//  Savlore         MTid=11
+//  RedirectUri:    http://api.linkno.net/auth/11
+//  clientId:       nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8
+//  BrowserLink:    https://www.savlore.com/admin/user/auth?client_id=nq8qwjyrylwc440c4kssow08koowc4ggo8o0swc0g0gwgok8&response_type=code&state=savlore11&redirect_uri=http://api.linkno.net/auth/11
+
+//  Savira          MTid=12
+//  RedirectUri:    http://api.linkno.net/auth/12
+//  clientId:       
+//  BrowserLink:    https://www.savlore.com/admin/user/auth?client_id=...&response_type=code&state=savira12&redirect_uri=http://api.linkno.net/auth/12
+
+//  Perse           MTid=13
+//  RedirectUri:    http://api.linkno.net/auth/13
+//  clientId:       
+//  BrowserLink:    https://perse.com/admin/user/auth?client_id=...&response_type=code&state=perse13&redirect_uri=http://api.linkno.net/auth/13
+
