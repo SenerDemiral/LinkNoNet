@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkNoNetApp", "LinkNoNetAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickGridDeneme", "QuickGridDeneme\QuickGridDeneme.csproj", "{97BBB4D7-8FE2-47BB-887D-3187D322ABE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedirectorApp", "RedirectorApp\RedirectorApp.csproj", "{E7CED01C-C56B-49CA-A2A9-A7DCA2DF8106}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedirectorApp", "RedirectorApp\RedirectorApp.csproj", "{E7CED01C-C56B-49CA-A2A9-A7DCA2DF8106}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

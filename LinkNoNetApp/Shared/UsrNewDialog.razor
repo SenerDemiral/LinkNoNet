@@ -1,0 +1,103 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inject ISnackbar Snackbar
+@inject AppState AppState
+@inject IDataAccess db
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Yeni Kullanıcı</MudText>
+        <MudDivider />
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudTextField Label="İsim" AutoFocus="true"
+                          HelperText="Ad Soyad"
+                          @bind-Value="model.Name"
+                          For="@(() => model.Name)" />
+            <MudTextField Label="Email" Class="mt-3"
+                          @bind-Value="model.eMail"
+                          For="@(() => model.eMail)" />
+            <MudTextField Label="Tel" Class="mt-3"
+                          @bind-Value="model.mTel"
+                          For="@(() => model.mTel)"
+                          Mask="@mTelMask"
+                          HelperText="@mTelMask.Mask" />
+            <br />
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       Class="ml-auto">
+                Kaydet
+            </MudButton>
+            <MudButton OnClick="Cancel">Iptal</MudButton>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    public bool success { get; set; } = false;
+
+    private UT model { get; set; } = new();
+    public PatternMask mTelMask = new PatternMask("(###) ### ## ##")
+        {
+            MaskChars = new[] { new MaskChar('#', @"[0-9]") },
+            Placeholder = '_',
+            CleanDelimiters = true,
+        };
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+
+        model.Typ = AppState.UsrTyp;
+        model.RefId = AppState.UsrRefId;
+
+        var rtrn = await db.StoreProcAsync<dynamic, UT>("UT_NEW(@Typ, @RefId, @Name, @eMail, @mTel)", model);
+
+        int rsp = rtrn.RSP;
+        string msg = rtrn.MSG;
+
+        if (rsp == 0)
+        {
+            Snackbar.Add(msg, Severity.Success);
+
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add(msg, Severity.Warning);
+        }
+    }
+
+    private void Cancel()
+    {
+        Snackbar.Add("İşlem iptal edildi", Severity.Warning);
+        MudDialog?.Cancel();
+    }
+
+    private class UT
+    {
+        public string Typ { get; set; }
+        public int RefId { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        [StringLength(40, ErrorMessage = "Max 40")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        [EmailAddress(ErrorMessage = "Hata")]
+        [StringLength(40, ErrorMessage = "Max 40")]
+        public string eMail { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        [Phone]
+        [StringLength(20, ErrorMessage = "Hatali", MinimumLength = 10)]
+        public string mTel { get; set; }
+    }
+
+}

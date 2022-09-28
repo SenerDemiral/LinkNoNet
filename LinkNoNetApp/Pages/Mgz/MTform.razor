@@ -1,0 +1,210 @@
+﻿@page "/mgz/mt"
+@using System.ComponentModel.DataAnnotations
+@inject AppState AppState
+@inject NavigationManager NavigationManager
+@inject IDataAccess db
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>Mağaza</PageTitle>
+
+<div class="mud-theme-dark">
+    <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Profil</MudText>
+</div>
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudTextField Label="Ad" AutoFocus="true"
+                  @bind-Value="model.Name"
+                  For="@(() => model.Name)" />
+    <MudTextField Label="Email" Class="mt-3"
+                  @bind-Value="model.eMail"
+                  For="@(() => model.eMail)" />
+    <MudTextField Label="Tel" Class="mt-3"
+                  @bind-Value="model.Tel"
+                  For="@(() => model.Tel)"
+                  Mask="@TelMask"
+                  HelperText="@TelMask.Mask" />
+    <MudTextField Label="Info" Lines="4"
+                  @bind-Value="model.Info"
+                  For="@(() => model.Info)" />
+
+    <div class="d-flex align-center gap-4 ">
+        <MudText>Mail kimlere?</MudText>
+        <MudCheckBox @bind-Checked="model.iseM2Mgz" Label="Mağazaya" />
+        <MudCheckBox @bind-Checked="model.iseM2Ytk" Label="Yetkiliye" />
+        <MudCheckBox @bind-Checked="model.iseM2Usr" Label="Kullanıcılara" />
+    </div>
+    @if (isEditable)
+    {
+        <div class="d-flex align-center gap-4 ">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Kaydet</MudButton>
+            <MudButton OnClick="Cancel">Iptal</MudButton>
+        </div>
+    }
+</EditForm>
+<br />
+<MudDataGrid T="UT" Items="@datau"
+             Breakpoint="Breakpoint.None"
+             FixedHeader="true"
+             HorizontalScrollbar="false"
+             Virtualize="true"
+             Hover="true" Striped="true" Dense="true" Bordered="true"
+             Filterable="false"
+             Groupable="false"
+             MultiSelection="false"
+             RowClass="py-0">
+    <ToolBarContent>
+        <MudFab StartIcon="@Icons.Filled.Add" Label="YENİ KULLANICI" Size="Size.Small"
+                OnClick="@(() => DialogService.Show<UsrNewDialog>())" />
+    </ToolBarContent>
+    <ColGroup>
+        <col style="width:5%;" />
+        <col />
+    </ColGroup>
+    <Columns>
+        <Column T="UT" Field="@nameof(UT.isAktif)" Title="Aktif" Sortable="false" Filterable="false">
+            <CellTemplate>
+                @*<input type="checkbox" disabled="@(!isEditable)"
+                checked="@context.Item.isAktif"
+                onclick="@(() => UtAktifClick(context.Item))" />*@
+                <input type="checkbox" disabled="@(!isEditable)"
+                       checked="@context.Item.isAktif"
+                       onclick="@(() => UpdateUT(context.Item))" />
+                @*<input type="checkbox"
+                disabled="@(!isEditable)"
+                @bind="@context.Item.isAktif"
+                @bind:event="onchange"
+                onclick="@(() => UtAktifClick(context.Item))">*@
+            </CellTemplate>
+        </Column>
+
+        <Column T="UT" Field="@nameof(UT.Name)" Title="Ad" Filterable="false" />
+    </Columns>
+</MudDataGrid>
+
+@code {
+    private MT model { get; set; } = new();
+    private IEnumerable<UT>? datau; // = new List<Element>();
+    private bool success { get; set; } = false;
+    private bool isEditable { get; set; } = false;
+
+    public PatternMask TelMask = new PatternMask("(###) ### ## ##")
+        {
+            MaskChars = new[] { new MaskChar('#', @"[0-9]") },
+            Placeholder = '_',
+            CleanDelimiters = true,
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        isEditable = false;
+        if (AppState.UsrId == AppState.UsrRefId)
+            isEditable = true;
+
+        await ReadRec();
+
+        string sql = $"select UTid, Stu, Name from UT where RefId = @MTid and UTid <> RefId and Stu >= 0";
+        datau = await db.LoadData<UT, dynamic>(sql, new { MTid = AppState.UsrRefId });
+    }
+
+    private async Task ReadRec()
+    {
+        string sql = $"select * from MT where MTid = @MTid";
+        model = await db.LoadRec<MT, dynamic>(sql, new { MTid = AppState.UsrRefId });
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+
+        model.Who = AppState.UsrId; // Yetkilisi ise izin ver
+
+        var rtrn = await db.StoreProcAsync<dynamic, MT>("MT_UPD(@MTid, @Who, @Name, @eMail, @Tel, @Info, @eM2Mgz, @eM2Ytk, @eM2Usr)", model);
+
+        string? msj = rtrn.MSJ;
+        if (string.IsNullOrEmpty(msj))
+        {
+            Snackbar.Add("Kayıt yapıldı.", Severity.Success);
+        }
+        else
+        {
+            await ReadRec();
+            Snackbar.Add(msj, Severity.Error);
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await ReadRec();
+        Snackbar.Add("İşlem iptal edildi", Severity.Warning);
+    }
+
+    private void UpdateUT(UT itm)
+    {
+        itm.Stu = itm.isAktif ? 1 : 0;
+        string sql = "update UT set Stu = @Stu where UTid = @UTid";
+        db.LoadRec<dynamic, dynamic>(sql, new { UTid = itm.UTid, Stu = itm.Stu });
+    }
+
+    private void InsertUT()
+    {
+        DialogService.Show<UsrNewDialog>();
+    }
+
+    private sealed class MT
+    {
+        public int MTid { get; set; }
+        public int Who { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        [StringLength(40, ErrorMessage = "Max 40", MinimumLength = 10)]
+        public string? Name { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        [EmailAddress(ErrorMessage = "Hata")]
+        [StringLength(40, ErrorMessage = "Max 40", MinimumLength = 10)]
+        public string? eMail { get; set; }
+
+        [Required(ErrorMessage = "Bu alan zorunludur")]
+        [Phone]
+        [StringLength(20, ErrorMessage = "Hatalı, en az 10", MinimumLength = 10)]
+        public string? Tel { get; set; }
+
+        public string? Info { get; set; }
+        public string eM2Mgz { get; set; }
+        public string eM2Ytk { get; set; }
+        public string eM2Usr { get; set; }
+
+        public bool iseM2Mgz
+        {
+            get { return eM2Mgz == "E" ? true : false; }
+            set { eM2Mgz = value ? "E" : "H"; }
+        }
+        public bool iseM2Ytk
+        {
+            get { return eM2Ytk == "E" ? true : false; }
+            set { eM2Ytk = value ? "E" : "H"; }
+        }
+        public bool iseM2Usr
+        {
+            get { return eM2Usr == "E" ? true : false; }
+            set { eM2Usr = value ? "E" : "H"; }
+        }
+    }
+
+    private sealed class UT
+    {
+        public int UTid { get; set; }
+
+        public string Name { get; set; }
+        public int Stu { get; set; }
+        public bool isAktif
+        {
+            get => Stu == 0 ? true : false;
+            set { Stu = value ? 0 : 1; }
+        }
+    }
+
+}

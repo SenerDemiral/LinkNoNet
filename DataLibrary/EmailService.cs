@@ -15,8 +15,10 @@ public class EmailService : IEmailService
     public EmailService(IConfiguration config)
     {
         //Kullanildigi Project user secret den alinir.
-        eMailUsr = config.GetConnectionString("eMailUsr");
-        eMailPwd = config.GetConnectionString("eMailPwd");
+        //eMailUsr = config.GetConnectionString("eMailUsr");
+        //eMailPwd = config.GetConnectionString("eMailPwd");
+        eMailUsr = config["MailKit:eMailUsr"];
+        eMailPwd = config["MailKit:eMailPwd"];
     }
 
     //private async Task SendEmailAsync(string eMailTo, string eSubject, string eBody)

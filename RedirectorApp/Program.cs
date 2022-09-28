@@ -3,6 +3,8 @@ using DataLibrary;
 using FirebirdSql.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Extensions;
+using HashidsNet;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,14 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.AddSingleton<IDataAccess, FBDataAccess>();
+
+// Simdilik kullanilmiyor
+builder.Services.AddSingleton<IHashids>(_ =>
+{
+    var salt = builder.Configuration["HashIds:Salt"];
+    var length = Int32.Parse(builder.Configuration["HashIds:Salt"]);
+    return new Hashids(builder.Configuration["HashIds:Salt"], length);
+});
 
 var app = builder.Build();
 
