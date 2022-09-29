@@ -10,10 +10,18 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField AutoFocus="true" @bind-Value="Model.LgnNme" Label="UsrId" Variant="Variant.Text"></MudTextField>
-        <MudTextField @bind-Value="Model.LgnPwd" 
-            Label="Pwd" Variant="Variant.Text" InputType="@PasswordInput" 
-            Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ToggleShowPwd" AdornmentAriaLabel="Show Password" />
+        <MudTextField AutoFocus="true"
+                      @bind-Value="Model.LgnNme"
+                      Label="UsrId"
+                      Variant="Variant.Text" />
+        <MudTextField @bind-Value="Model.LgnPwd"
+                      Label="Pwd"
+                      Variant="Variant.Text"
+                      InputType="@PasswordInput"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@PasswordInputIcon"
+                      OnAdornmentClick="ToggleShowPwd"
+                      AdornmentAriaLabel="Show Password" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -21,14 +29,14 @@
     </DialogActions>
 </MudDialog>
 
-@code{
+@code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
     private InputModel Model { get; set; } = new();
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-    
+
     void ToggleShowPwd()
     {
         @if (isShow)
@@ -37,7 +45,8 @@
             PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
             PasswordInput = InputType.Password;
         }
-        else {
+        else
+        {
             isShow = true;
             PasswordInputIcon = Icons.Material.Filled.Visibility;
             PasswordInput = InputType.Text;
@@ -49,14 +58,16 @@
         // SP input params db de tanimlandigi sirasiyla gelmeli.
         var rtrn = await db.StoreProcAsync<OutputModel, InputModel>("Usr_Login(@LgnNme, @LgnPwd)", Model);
 
-        if(rtrn.Stu == 0) {
+        if (rtrn.Stu == 0)
+        {
             Snackbar.Add(rtrn.Msg, Severity.Success);
             MudDialog.Close();
             await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, rtrn.UTid);
 
             AppState.LoginOk(rtrn.UTid, rtrn.Typ!, rtrn.RefId, rtrn.NN);
         }
-        else {
+        else
+        {
             Snackbar.Add(rtrn.Msg, Severity.Error);
         }
     }

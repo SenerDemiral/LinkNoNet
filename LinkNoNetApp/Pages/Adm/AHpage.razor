@@ -13,8 +13,8 @@
     }
 
     .selected {
-        background-color:aquamarine;
-        font-weight:500;
+        background-color: aquamarine;
+        font-weight: 500;
     }
 </style>
 
@@ -24,7 +24,9 @@
 
 <MudDataGrid T="AH" Items="@data" @ref="mudDataGrid"
              Breakpoint="Breakpoint.None"
-             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             FixedHeader="true"
+             Height="@Constants.Height"
+             HorizontalScrollbar="false"
              Virtualize="true"
              Hover="true" Striped="true" Dense="true" Bordered="true"
              Filterable="false"
@@ -32,29 +34,29 @@
              Groupable="false"
              MultiSelection="false"
              RowClass="py-0"
-             RowClick="@RowClicked" 
+             RowClick="@RowClicked"
              RowStyleFunc="@_rowStyleFunc">
     <Columns>
         @*<Column T="AH" Field="@nameof(AH.FrTyp)" Title="From" Groupable="true">
-            <GroupTemplate>
-                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
-            </GroupTemplate>
+        <GroupTemplate>
+        <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
+        </GroupTemplate>
         </Column>*@
         <Column T="AH" Field="@nameof(AH.isOk)" Title="Ok">
             <CellTemplate>
-                <input type="checkbox" 
-                    checked="@context.Item.isOk" 
-                    disabled="@context.Item.isDisabled" 
-                    nclick="@(() => OnOkClick(context.Item))">
+                <input type="checkbox"
+                       checked="@context.Item.isOk"
+                       disabled="@context.Item.isDisabled"
+                       nclick="@(() => OnOkClick(context.Item))">
                 @context.Item.AHid
             </CellTemplate>
         </Column>
         <Column T="AH" Field="@nameof(AH.FrName)" Title="From" />
         <Column T="AH" Field="@nameof(AH.ToName)" Title="To" />
 
-        <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj" >
+        <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj">
         </Column>
-        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Msg" >
+        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Msg">
             <CellTemplate>
                 <p style="max-height:60px; overflow-y:auto; scrollbar-width:thin">
                     @context.Item.mMsg
@@ -62,20 +64,18 @@
             </CellTemplate>
         </Column>
 
-        
+
         <Column T="AH" Field="@nameof(AH.InsTS)">
             <CellTemplate>
                 @context.Item.InsTS.ToString("dd.MM.yy HH:mm")
             </CellTemplate>
         </Column>
     </Columns>
-    @*    <PagerContent>
-    <MudDataGridPager T="UT" />
-    </PagerContent>
-    *@
 </MudDataGrid>
 
-<MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
+<MudDialog @bind-IsVisible="contextMenuVisible"
+           Options="dialogOptions"
+           DisableSidePadding="false">
     <DialogContent>
         @*<MudContainer Style="max-height: 80vh ; overflow-y: scroll">*@
         <MudList Clickable="true" Dense="true" DisableGutters="true">
@@ -110,7 +110,7 @@
         string style = "";
         if (x.Ok == "H")
             style = "font-weight:500";
-            //style += "background-color:#8CED8C; font-weight:500 !important;";
+        //style += "background-color:#8CED8C; font-weight:500 !important;";
 
         return style;
     };
@@ -158,13 +158,10 @@
 
     }
 
-    private void OnOkClick(AH item)
+    private void OnOkClick(AH itm)
     {
-        if (item.isOk)
-            item.Ok = "H";
-        else
-            item.Ok = "E";
-        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = item.AHid, OkWho = AppState.UsrId, Ok = item.Ok });
+        itm.Ok = itm.isOk ? "H" : "E";
+        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = itm.AHid, OkWho = AppState.UsrId, Ok = itm.Ok });
     }
 
     private sealed class AH

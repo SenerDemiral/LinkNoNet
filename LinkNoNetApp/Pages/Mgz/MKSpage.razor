@@ -33,7 +33,7 @@
         <col />
     </ColGroup>
     <Columns>
-        <Column T="MKS" >
+        <Column T="MKS">
             <CellTemplate>
                 <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" OnClick="@context.Actions.StartEditingItem" />
             </CellTemplate>
@@ -63,7 +63,7 @@
             </EditTemplate>
         </Column>
 
-        <Column T="MKS" Field="Info" >
+        <Column T="MKS" Field="Info">
             <CellTemplate>
                 <textarea rows="3" disabled name="description" style="width:100%; resize:vertical">
                     @context.Item.Info
@@ -115,7 +115,8 @@
         {
             Snackbar.Add(msj, Severity.Error);
         }
-        else {
+        else
+        {
             Snackbar.Add(msj, Severity.Success);
             itm.Mode = null;
         }
@@ -144,21 +145,22 @@
         public DateTime EndTS { get; set; }
         public string? Info { get; set; }
         public string? Aktif { get; set; }
-        public bool isAktif {
-            get {
-                return Aktif == "E" ? true : false;
-            }
-            set {
+        public bool isAktif
+        {
+            get => Aktif == "E" ? true : false;
+            set
+            {
                 Aktif = value ? "E" : "H";
             }
         }
         public string? Mode { get; set; }
         public bool isNew
         {
-            get {return Mode is null ? false : true;}
-            set {}
+            get { return Mode is null ? false : true; }
+            set { }
         }
-        public bool isIns() {
+        public bool isIns()
+        {
             return Mode is null ? false : true;
         }
     }

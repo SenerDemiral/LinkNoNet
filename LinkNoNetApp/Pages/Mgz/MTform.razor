@@ -48,14 +48,15 @@
              Breakpoint="Breakpoint.None"
              FixedHeader="true"
              HorizontalScrollbar="false"
-             Virtualize="true"
              Hover="true" Striped="true" Dense="true" Bordered="true"
              Filterable="false"
              Groupable="false"
              MultiSelection="false"
              RowClass="py-0">
     <ToolBarContent>
-        <MudFab StartIcon="@Icons.Filled.Add" Label="YENİ KULLANICI" Size="Size.Small"
+        <MudFab StartIcon="@Icons.Filled.Add"
+                Label="YENİ KULLANICI"
+                Size="Size.Small"
                 OnClick="@(() => DialogService.Show<UsrNewDialog>())" />
     </ToolBarContent>
     <ColGroup>
@@ -63,7 +64,8 @@
         <col />
     </ColGroup>
     <Columns>
-        <Column T="UT" Field="@nameof(UT.isAktif)" Title="Aktif" Sortable="false" Filterable="false">
+        <Column T="UT" Field="@nameof(UT.isAktif)" Title="Aktif"
+                Sortable="false" Filterable="false">
             <CellTemplate>
                 @*<input type="checkbox" disabled="@(!isEditable)"
                 checked="@context.Item.isAktif"
@@ -79,7 +81,8 @@
             </CellTemplate>
         </Column>
 
-        <Column T="UT" Field="@nameof(UT.Name)" Title="Ad" Filterable="false" />
+        <Column T="UT" Field="@nameof(UT.Name)" Title="Ad"
+                Filterable="false" />
     </Columns>
 </MudDataGrid>
 

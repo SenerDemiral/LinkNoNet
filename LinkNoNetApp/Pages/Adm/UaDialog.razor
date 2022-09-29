@@ -6,7 +6,11 @@
             <MudTable Items="@data" Hover="true" Dense="true" Bordered="true" Striped="true">
                 <HeaderContent>
                     <MudTh>ID</MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<UA, object>(x=>x.EXD)">EXD</MudTableSortLabel></MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<UA, object>(x=>x.EXD)">
+                            EXD
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh>Type</MudTh>
                     <MudTh>Statu</MudTh>
                     <MudTh>Login</MudTh>

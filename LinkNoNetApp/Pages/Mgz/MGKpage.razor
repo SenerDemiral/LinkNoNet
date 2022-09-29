@@ -10,24 +10,24 @@
 </div>
 
 <MudDataGrid T="MGK" Items="@data" @ref="gridRef"
-            ReadOnly="false" 
-            EditMode="DataGridEditMode.Form"
-            StartedEditingItem="@StartedEditingItem" 
-            CancelledEditingItem="@CancelledEditingItem" 
-            CommittedItemChanges="@CommittedItemChanges"
-            EditTrigger="DataGridEditTrigger.OnRowClick"
-            HorizontalScrollbar="true" 
-            Bordered="true" 
-            Dense="true">
+             ReadOnly="false"
+             EditMode="DataGridEditMode.Form"
+             StartedEditingItem="@StartedEditingItem"
+             CancelledEditingItem="@CancelledEditingItem"
+             CommittedItemChanges="@CommittedItemChanges"
+             EditTrigger="DataGridEditTrigger.OnRowClick"
+             HorizontalScrollbar="true"
+             Bordered="true"
+             Dense="true">
     <Columns>
         @*<Column T="MGK" Field="MTid" Title="MTid" IsEditable="false" />*@
         <Column T="MGK" Field="Grp" IsEditable="false">
             <EditTemplate>
-                <MudSelect @bind-Value="context.Item.Grp" 
-                    Label="Grup" Variant="Variant.Outlined"
-                    Disabled="@context.Item.isDisabled"
-                    Required RequiredError="Grup secmelisiniz CALISMIYOR!!!" 
-                    Margin="Margin.Dense">
+                <MudSelect @bind-Value="context.Item.Grp"
+                           Label="Grup" Variant="Variant.Outlined"
+                           Disabled="@context.Item.isDisabled"
+                           Required RequiredError="Grup secmelisiniz CALISMIYOR!!!"
+                           Margin="Margin.Dense">
                     <MudSelectItem Value="@("A")">A</MudSelectItem>
                     <MudSelectItem Value="@("B")">B</MudSelectItem>
                     <MudSelectItem Value="@("C")">C</MudSelectItem>
@@ -41,7 +41,7 @@
     </Columns>
 </MudDataGrid>
 
-@*<MudButton Class="mt-3" 
+@*<MudButton Class="mt-3"
            ButtonType="ButtonType.Button"
            Size="Size.Small"
            Color="Color.Tertiary"
@@ -57,9 +57,9 @@
     void Insert()
     {
         MGK item = new()
-        {
-            mode = "N"
-        };
+            {
+                mode = "N"
+            };
         data.Insert(0, item);
         //gridRef.SetSelectedItemAsync(item);
     }
@@ -82,7 +82,7 @@
     protected override async Task OnInitializedAsync()
     {
         string sql = $"select * from MGK where MTid = @MTid";
-        data = (await db.LoadData<MGK, dynamic>(sql, new { MTid = AppState.UsrRefId})).ToList();
+        data = (await db.LoadData<MGK, dynamic>(sql, new { MTid = AppState.UsrRefId })).ToList();
     }
 
     public override Task SetParametersAsync(ParameterView parameters)
@@ -104,13 +104,8 @@
         public string? mode { get; set; }
         public bool isDisabled
         {
-            get
-            {
-                return mode is null ? true : false;
-            }
-            set{
-
-            }
+            get => mode is null ? true : false;
+            set { }
         }
     }
 }

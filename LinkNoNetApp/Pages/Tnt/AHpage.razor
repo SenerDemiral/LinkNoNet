@@ -19,7 +19,9 @@
 
 <MudDataGrid T="AH" Items="@data" @ref="mudDataGrid"
              Breakpoint="Breakpoint.None"
-             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             FixedHeader="true"
+             Height="@Constants.Height"
+             HorizontalScrollbar="false"
              Virtualize="true"
              Hover="true" Striped="true" Dense="true" Bordered="true"
              Filterable="false"
@@ -28,9 +30,9 @@
              MultiSelection="false"
              SelectedItems="@selectedItems"
              SelectedItemChanged="@selectedItemChanged"
-             RowClassFunc="@SelectedRowClassFunc" 
+             RowClassFunc="@SelectedRowClassFunc"
              RowClass="py-0"
-             RowClick="@RowClicked" 
+             RowClick="@RowClicked"
              RowStyleFunc="@_rowStyleFunc">
     <ColGroup>
         <col style="width:5%;" />
@@ -40,16 +42,11 @@
         <col style="width:10%;" />
     </ColGroup>
     <Columns>
-        @*<Column T="AH" Field="@nameof(AH.FrTyp)" Title="From" Groupable="true">
-            <GroupTemplate>
-                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
-            </GroupTemplate>
-        </Column>*@
-        <Column T="AH" Field="@nameof(AH.isOk)" Title="Okundu" >
+        <Column T="AH" Field="@nameof(AH.isOk)" Title="Okundu">
             <CellTemplate>
-                <input type="checkbox" 
-                    checked="@context.Item.isOk" 
-                    onclick="@(() => OnOkClick(context.Item))">
+                <input type="checkbox"
+                       checked="@context.Item.isOk"
+                       onclick="@(() => OnOkClick(context.Item))">
                 @context.Item.AHid
             </CellTemplate>
         </Column>
@@ -58,8 +55,8 @@
         @*<Column T="AH" Field="@nameof(AH.ToName)" Title="Kime" />*@
 
         <Column T="AH" Field="@nameof(AH.Sbj)" Title="Konu" />
-        
-        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Mesaj" >
+
+        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Mesaj">
             <CellTemplate>
                 <p style="max-height:60px; overflow-y:auto; scrollbar-width:thin">
                     @context.Item.mMsg
@@ -73,13 +70,11 @@
             </CellTemplate>
         </Column>
     </Columns>
-    @*    <PagerContent>
-    <MudDataGridPager T="UT" />
-    </PagerContent>
-    *@
 </MudDataGrid>
 
-<MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
+<MudDialog @bind-IsVisible="contextMenuVisible"
+           Options="dialogOptions"
+           DisableSidePadding="false">
     <DialogContent>
         @*<MudContainer Style="max-height: 80vh ; overflow-y: scroll">*@
         <MudList Clickable="true" Dense="true" DisableGutters="true">
@@ -176,28 +171,13 @@
 
     void RowClicked(DataGridRowClickEventArgs<AH> args)
     {
-        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-        //Typ = args.Item.Typ;
-        //RefId = args.Item.RefId;
-        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
-        //inLineDialogVisible = true;
-
-        //var item = args.Item;
-        //if (item.isOk)
-        //    item.Ok = "H";
-        //else
-        //    item.Ok = "E";
-        //db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = item.AHid, OkWho = AppState.UsrId, Ok = item.Ok });
-
     }
 
-    private void OnOkClick(AH item)
+    private void OnOkClick(AH itm)
     {
-        if (item.isOk)
-            item.Ok = "H";
-        else
-            item.Ok = "E";
-        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = item.AHid, OkWho = AppState.UsrId, Ok = item.Ok });
+        itm.Ok = itm.isOk ? "H" : "E";
+
+        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = itm.AHid, OkWho = AppState.UsrId, Ok = itm.Ok });
     }
 
     private sealed class AH

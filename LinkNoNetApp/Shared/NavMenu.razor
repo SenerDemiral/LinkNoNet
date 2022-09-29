@@ -20,21 +20,21 @@
     @if (AppState.UsrTyp == "M")
     {
         <MudNavLink Href="mgz/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Mağaza</MudNavLink>
-        <MudNavLink Href="mgz/mgt"  Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FamilyRestroom">Tanıtıcı</MudNavLink>
-        <MudNavLink Href="mgz/mgk"  Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Sell">Komisyon</MudNavLink>
-        <MudNavLink Href="mgz/mks"  Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Kupon Seri</MudNavLink>
-        <MudNavLink Href="mgz/mh"   Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Hakediş</MudNavLink>
-        <MudNavLink Href="mgz/ah"   Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Campaign">Duyuru</MudNavLink>
-        <MudNavLink Href="mgz/mt"   Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Profil</MudNavLink>
+        <MudNavLink Href="mgz/mgt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FamilyRestroom">Tanıtıcı</MudNavLink>
+        <MudNavLink Href="mgz/mgk" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Sell">Komisyon</MudNavLink>
+        <MudNavLink Href="mgz/mks" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Kupon Seri</MudNavLink>
+        <MudNavLink Href="mgz/mh" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Hakediş</MudNavLink>
+        <MudNavLink Href="mgz/ah" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Campaign">Duyuru</MudNavLink>
+        <MudNavLink Href="mgz/mt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Profil</MudNavLink>
     }
     @if (AppState.UsrTyp == "T")
     {
         <MudNavLink Href="tnt/home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Tanıtıcı</MudNavLink>
-        <MudNavLink Href="tnt/mt"   Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Storefront">Link + Kupon</MudNavLink>
-        <MudNavLink Href="tnt/mgt"  Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FamilyRestroom">Komisyon</MudNavLink>
-        <MudNavLink Href="tnt/mh"   Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Hakediş</MudNavLink>
-        <MudNavLink Href="tnt/ah"   Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Campaign">Duyuru</MudNavLink>
-        <MudNavLink Href="tnt/tt"   Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Profil</MudNavLink>
+        <MudNavLink Href="tnt/mt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Storefront">Link + Kupon</MudNavLink>
+        <MudNavLink Href="tnt/mgt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FamilyRestroom">Komisyon</MudNavLink>
+        <MudNavLink Href="tnt/mh" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Hakediş</MudNavLink>
+        <MudNavLink Href="tnt/ah" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Campaign">Duyuru</MudNavLink>
+        <MudNavLink Href="tnt/tt" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Profil</MudNavLink>
     }
 
     <MudDivider Class="my-2" />
@@ -50,7 +50,8 @@
 
     private void App_UsrChanged(object sender, EventArgs e)
     {
-        switch (AppState.UsrTyp){
+        switch (AppState.UsrTyp)
+        {
             case "A": NavigationManager.NavigateTo("adm/home"); break;
             case "M": NavigationManager.NavigateTo("mgz/home"); break;
             case "T": NavigationManager.NavigateTo("tnt/home"); break;

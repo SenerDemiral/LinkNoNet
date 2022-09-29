@@ -10,12 +10,14 @@
     .mud-table-cell {
         padding: 4px !important;
     }
+
     .link {
         border: 1px solid aqua;
         font-size: larger;
         padding: 6px;
         background-color: aliceblue;
     }
+
     .kupon {
         display: block;
         border: 1px solid aqua;
@@ -40,42 +42,49 @@
                 </TitleContent>
                 <ChildContent>
                     <MudDataGrid T="MKS" Items="@mksd[itm.MTid]"
-                                 Breakpoint="Breakpoint.None"
-                                 FixedHeader="true" HorizontalScrollbar="false"
-                                 Hover="true" Striped="true" Dense="true" Bordered="true"
-                                 Filterable="false"
-                                 Groupable="false"
-                                 MultiSelection="false" >
+                             Breakpoint="Breakpoint.None"
+                             FixedHeader="true"
+                             HorizontalScrollbar="false"
+                             Hover="true" Striped="true" Dense="true" Bordered="true"
+                             Filterable="false"
+                             Groupable="false"
+                             MultiSelection="false">
                         <ToolBarContent>
-                            <MudTextField T="string" Style="max-width:50%" Label="Link"  Variant="Variant.Outlined" Text="@itm.LNlink" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.ContentCopy" OnAdornmentClick="@(() => CopyToClipboard(itm.LNlink))" />
+                            <MudTextField T="string" Style="max-width:50%"
+                                      Label="Link"
+                                      Text="@itm.LNlink"
+                                      Variant="Variant.Outlined"
+                                      Adornment="Adornment.End"
+                                      AdornmentIcon="@Icons.Filled.ContentCopy"
+                                      OnAdornmentClick="@(() => CopyToClipboard(itm.LNlink))" />
                         </ToolBarContent>
                         <ColGroup>
-		                    <col style="width:5%;"/>
-		                    <col style="width:5%;"/>
-		                    <col style="width:5%;"/>
-		                    <col />
-	                    </ColGroup>
+                            <col style="width:5%;" />
+                            <col style="width:5%;" />
+                            <col style="width:5%;" />
+                            <col />
+                        </ColGroup>
                         <Columns>
-                            <Column T="MKS" Field="@nameof(MKS.isAktif)" Title="Aktif" >
-                                <CellTemplate >
+                            <Column T="MKS" Field="@nameof(MKS.isAktif)" Title="Aktif">
+                                <CellTemplate>
                                     <MudCheckBox Checked="@context.Item.isAktif" Disabled="true" Style="align-items: center;"></MudCheckBox>
                                 </CellTemplate>
                             </Column>
-                            <Column T="MKS" Field="@nameof(MKS.KuponNo)" Title="Kupon" >
+                            <Column T="MKS" Field="@nameof(MKS.KuponNo)" Title="Kupon">
                                 <CellTemplate>
                                     <span class="kupon">@context.Item.KuponNo</span>
                                 </CellTemplate>
                             </Column>
-                            <Column T="MKS" Field="@nameof(MKS.EndTS)" Title="Bitiş" >
+                            <Column T="MKS" Field="@nameof(MKS.EndTS)" Title="Bitiş">
                                 <CellTemplate>
                                     <MudText Align="Align.Center">@context.Item.EndTS.ToString("dd.MM.yy")</MudText>
                                 </CellTemplate>
                             </Column>
-                            <Column T="MKS" Field="@nameof(MKS.Info)" Title="Info" >
+                            <Column T="MKS" Field="@nameof(MKS.Info)" Title="Info">
                                 <CellTemplate>
-                                    <textarea disabled name="description" style="width:100%; resize:vertical" >
+                                    <textarea disabled name="description" style="width:100%; resize:vertical">
                                         @context.Item.Info
-                                    </textarea>
+                                                    </textarea>
                                 </CellTemplate>
                             </Column>
                         </Columns>
@@ -172,7 +181,7 @@
         int refId = AppState.UsrRefId;
         string sql = $"select MTid, Name, Uri from MT";
         data = await db.LoadData<MT, dynamic>(sql, new { });
-        foreach(var mt in data)
+        foreach (var mt in data)
         {
             mt.LNlink = $"http://rdr.LinkNo.Net/cst?mt={mt.MTid}&tt={refId}";
 
@@ -180,8 +189,8 @@
             mksd.Add(mt.MTid, mksl);
             //string ssql = "select * from MKS where MTid = @MTid order by Aktif, EndTS desc";
             string ssql = "select * from MKS_ACTIVE(@MTid) order by EndTS desc";
-            var dmks = await db.LoadData<MKS, dynamic>(ssql, new { MTid= mt.MTid });
-            foreach(var mks in dmks)
+            var dmks = await db.LoadData<MKS, dynamic>(ssql, new { MTid = mt.MTid });
+            foreach (var mks in dmks)
             {
                 mks.KuponNo = $"LN{refId}{mks.Seri}";
                 mksl.Add(mks);
@@ -237,7 +246,7 @@
         public int MTid { get; set; }
         public string? Name { get; set; }
         public string? Uri { get; set; }
-        public string? LNlink { get; set; } 
+        public string? LNlink { get; set; }
 
     }
 
@@ -249,7 +258,7 @@
         public string? Info { get; set; }
         public DateTime EndTS { get; set; }
         public string Aktif { get; set; }
-        public bool isAktif => Aktif == "E" ? true : false; 
+        public bool isAktif => Aktif == "E" ? true : false;
 
     }
 }

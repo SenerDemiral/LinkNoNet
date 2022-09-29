@@ -35,7 +35,7 @@ public sealed class AppState
 
         if (UsrId != 0)
         {
-            var rtrn = _db.StoreProc<dynamic, dynamic>("Usr_Enter(@UsrId)", new {UsrId = UsrId});
+            var rtrn = _db.StoreProc<dynamic, dynamic>("Usr_Enter(@UsrId)", new { UsrId = UsrId });
 
             if (rtrn.STU == 0)
             {
@@ -74,7 +74,7 @@ public sealed class AppState
         UsrRefId = 0;
         UsrNN = "";
         await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
-        
+
         OnUsrChanged();
     }
 }

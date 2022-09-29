@@ -19,38 +19,38 @@
 
 <MudDataGrid T="AH" Items="@data" @ref="mudDataGrid"
              Breakpoint="Breakpoint.None"
-             FixedHeader="true" Height="@Constants.Height" HorizontalScrollbar="false"
+             FixedHeader="true"
+             Height="@Constants.Height"
+             HorizontalScrollbar="false"
              Virtualize="true"
              Hover="true" Striped="true" Dense="true" Bordered="true"
              Filterable="false"
              FilterMode="DataGridFilterMode.ColumnFilterMenu"
              Groupable="false"
              MultiSelection="false"
-             RowClassFunc="@SelectedRowClassFunc" 
+             RowClassFunc="@SelectedRowClassFunc"
              RowClass="py-0"
-             RowClick="@RowClicked" 
+             RowClick="@RowClicked"
              RowStyleFunc="@_rowStyleFunc">
     <Columns>
         @*<Column T="AH" Field="@nameof(AH.FrTyp)" Title="From" Groupable="true">
-            <GroupTemplate>
-                <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
-            </GroupTemplate>
+        <GroupTemplate>
+        <span style="font-weight:bold">@context.Grouping.Key <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">@context.Grouping.Count()</MudChip></span>
+        </GroupTemplate>
         </Column>*@
         <Column T="AH" Field="@nameof(AH.isOk)" Title="Ok">
             <CellTemplate>
-                <input type="checkbox" 
-                    checked="@context.Item.isOk" 
-                    onclick="@(() => OnOkClick(context.Item))">
+                <input type="checkbox"
+                       checked="@context.Item.isOk"
+                       onclick="@(() => OnOkClick(context.Item))">
                 @context.Item.AHid
             </CellTemplate>
         </Column>
 
         <Column T="AH" Field="@nameof(AH.FrName)" Title="From" />
         <Column T="AH" Field="@nameof(AH.ToName)" Title="To" />
-
-        <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj" >
-        </Column>
-        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Msg" >
+        <Column T="AH" Field="@nameof(AH.Sbj)" Title="Sbj" />
+        <Column T="AH" Field="@nameof(AH.mMsg)" Title="Msg">
             <CellTemplate>
                 <p style="max-height:60px; overflow-y:auto; scrollbar-width:thin">
                     @context.Item.mMsg
@@ -58,17 +58,12 @@
             </CellTemplate>
         </Column>
 
-        
         <Column T="AH" Field="@nameof(AH.InsTS)">
             <CellTemplate>
                 @context.Item.InsTS.ToString("dd.MM.yy HH:mm")
             </CellTemplate>
         </Column>
     </Columns>
-    @*    <PagerContent>
-    <MudDataGridPager T="UT" />
-    </PagerContent>
-    *@
 </MudDataGrid>
 
 <MudDialog @bind-IsVisible="contextMenuVisible" Options="dialogOptions" DisableSidePadding="false">
@@ -163,11 +158,6 @@
 
     void RowClicked(DataGridRowClickEventArgs<AH> args)
     {
-        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-        //Typ = args.Item.Typ;
-        //RefId = args.Item.RefId;
-        //sty = $"position:fixed; top:{args.MouseEventArgs.PageY}px; left:{args.MouseEventArgs.PageX}px;";
-        //inLineDialogVisible = true;
     }
 
     private void OnOkClick(AH item)
