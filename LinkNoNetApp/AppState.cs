@@ -28,24 +28,33 @@ public sealed class AppState
 
     public async ValueTask TryUsrEnter()
     {
-        var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
-        //AppState.OnEnter(connectionInfo?.IPAddress!);
-        if (toto.Success)
-            UsrId = toto.Value;
-
-        if (UsrId != 0)
+        try
         {
-            var rtrn = _db.StoreProc<dynamic, dynamic>("Usr_Enter(@UsrId)", new { UsrId = UsrId });
-
-            if (rtrn.STU == 0)
-            {
-                UsrId = rtrn.UTID;
-                UsrTyp = rtrn.TYP;
-                UsrRefId = rtrn.REFID;
-                UsrNN = rtrn.NN;
-            }
+            var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
+            if (toto.Success)
+                UsrId = toto.Value;
         }
-        OnUsrChanged();
+        catch (Exception)
+        {
+            UsrId = 0;
+            await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
+        }
+        finally
+        {
+            if (UsrId != 0)
+            {
+                var rtrn = _db.StoreProc<dynamic, dynamic>("Usr_Enter(@UsrId)", new { UsrId = UsrId });
+
+                if (rtrn.STU == 0)
+                {
+                    UsrId = rtrn.UTID;
+                    UsrTyp = rtrn.TYP;
+                    UsrRefId = rtrn.REFID;
+                    UsrNN = rtrn.NN;
+                }
+            }
+            OnUsrChanged();
+        }
     }
 
     public void OnEnter(string ip)
@@ -56,13 +65,13 @@ public sealed class AppState
     {
     }
 
-    public void LoginOk(int usrId, string usrTyp, int usrRefId, string usrNN)
+    public async Task LoginOk(int usrId, string usrTyp, int usrRefId, string usrNN)
     {
         UsrId = usrId;
         UsrTyp = usrTyp;
         UsrRefId = usrRefId;
         UsrNN = usrNN;
-        //await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
+        await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
         OnUsrChanged();
     }
 

@@ -62,9 +62,9 @@
         {
             Snackbar.Add(rtrn.Msg, Severity.Success);
             MudDialog.Close();
-            await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, rtrn.UTid);
+            //await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, rtrn.UTid);
 
-            AppState.LoginOk(rtrn.UTid, rtrn.Typ!, rtrn.RefId, rtrn.NN);
+            await AppState.LoginOk(rtrn.UTid, rtrn.Typ!, rtrn.RefId, rtrn.NN);
         }
         else
         {

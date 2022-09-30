@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -19,7 +19,7 @@
 
 	<ItemGroup>
 		<Content Update="wwwroot\is-cache\**\*.*" CopyToPublishDirectory="Never" />
-		<Content Update="wwwroot\wwwroot\uploads\**\*.*" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\uploads\**\*.*" CopyToPublishDirectory="Never" />
 	</ItemGroup>
 
 	<ItemGroup>
