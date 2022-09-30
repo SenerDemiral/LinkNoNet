@@ -26,7 +26,7 @@ public sealed class AppState
         _db = db;
     }
 
-    public async Task TryUsrEnter()
+    public async ValueTask TryUsrEnter()
     {
         var toto = await _protectedLocalStorage.GetAsync<int>(Constants.BrowserUsrIdKey);
         //AppState.OnEnter(connectionInfo?.IPAddress!);

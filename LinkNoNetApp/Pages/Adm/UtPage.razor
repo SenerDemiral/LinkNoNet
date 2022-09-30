@@ -129,20 +129,21 @@
                 ["Title"] = mudDataGrid.SelectedItem.NN,
             };
 
-        var result = await DialogService.Show<UAdialog>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
+        var result = await DialogService.Show<UAxxxx>($"{mudDataGrid.SelectedItem.NN} Activities", parameters).Result;
 
         contextMenuVisible = false;
     }
 
     private async Task Onayla()
     {
-        string sp = $"TT_ONAYLA(@Who, @UTid)";
-        var rtrn = db.StoreProc<ttOnaylaOut, dynamic>(sp, new { Who = AppState.UsrId, UTid = mudDataGrid.SelectedItem.UTid });
-        mudDataGrid.SelectedItem.Stu = rtrn.NewStu;
+        //string sp = $"TT_ONAYLA(@Who, @UTid)";
+        //var rtrn = db.StoreProc<ttOnaylaOut, dynamic>(sp, new { Who = AppState.UsrId, UTid = mudDataGrid.SelectedItem.UTid });
+        //mudDataGrid.SelectedItem.Stu = rtrn.NewStu;
         //await EmailService.SendEmailAsync(rtrn.eMail, rtrn.eSubject, rtrn.eBody).ConfigureAwait(false);
 
-        //string body = "Sayın <b>[USRNAME]</b><br/><br/><a href='http://linkno.net'>LinkNo.net</a> sitemize giriş bilgileriniz aşağıda belirtimiştir.<br/><br/>UsrId: <b>[USRID]</b><br/><br/>Pwd: <b>[USRPWD]</b><br/><br/>Lütfen bu maile yanıt vermeyin (no-reply).";
-        //await EmailService.SendEmailAsync("sener.demiral@gmail.com", "Deneme", body).ConfigureAwait(false);
+        // Deneme
+        string body = "Sayın <b>[USRNAME]</b><br/><br/><a href='http://linkno.net'>LinkNo.net</a> sitemize giriş bilgileriniz aşağıda belirtimiştir.<br/><br/>UsrId: <b>[USRID]</b><br/><br/>Pwd: <b>[USRPWD]</b><br/><br/>Lütfen bu maile yanıt vermeyin (no-reply).";
+        await EmailService.SendEmailAsync("sener.demiral@gmail.com", "Deneme", body).ConfigureAwait(false);
 
         contextMenuVisible = false;
     }
@@ -156,7 +157,9 @@
         isTaniticiDisabled = item.Typ == "T" ? false : true;
         isOnaylaDisabled = item.Stu == -1 ? false : true;
 
+        isOnaylaDisabled = false;
         contextMenuVisible = true;
+
     }
 
     private string SelectedRowClassFunc(UT element, int rowNumber)

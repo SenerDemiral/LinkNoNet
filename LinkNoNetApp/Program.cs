@@ -10,6 +10,17 @@ using SixLabors.ImageSharp.Web.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("C:\\AspNetConfig\\LinkNoNet.json",
+                       optional: true,
+                       reloadOnChange: true);
+
+//builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+//{
+//    _ = config.AddJsonFile("C:\\AspNetConfig\\LinkNoNet.json",
+//                       optional: true,
+//                       reloadOnChange: true);
+//});
+
 builder.Services.AddImageSharp();
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -36,6 +47,12 @@ builder.Services.AddMudServices(config =>
 });
 
 var app = builder.Build();
+
+//foreach (var c in builder.Configuration.AsEnumerable())
+//{
+//    if (c.Key.StartsWith("Hash") || c.Key.StartsWith("Mail"))
+//    Console.WriteLine(c.Key + " = " + c.Value);
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

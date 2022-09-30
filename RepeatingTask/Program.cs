@@ -1,6 +1,9 @@
 using RepeatingTask;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("C:\\AspNetConfig\\LinkNoNet.json",
+                       optional: true,
+                       reloadOnChange: true);
 
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IDataAccess, FBDataAccess>();

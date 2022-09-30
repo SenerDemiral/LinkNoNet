@@ -12,9 +12,9 @@
     <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Profil</MudText>
 </div>
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-    <MudTextField Label="Ad" AutoFocus="true"
+    <MudTextField Label="Ad" 
                   @bind-Value="model.Name"
                   For="@(() => model.Name)" />
     <MudTextField Label="Email" Class="mt-3"
@@ -91,7 +91,7 @@
     private IEnumerable<UT>? datau; // = new List<Element>();
     private bool success { get; set; } = false;
     private bool isEditable { get; set; } = false;
-
+    
     public PatternMask TelMask = new PatternMask("(###) ### ## ##")
         {
             MaskChars = new[] { new MaskChar('#', @"[0-9]") },
@@ -101,6 +101,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         isEditable = false;
         if (AppState.UsrId == AppState.UsrRefId)
             isEditable = true;
@@ -115,13 +116,18 @@
     {
         string sql = $"select * from MT where MTid = @MTid";
         model = await db.LoadRec<MT, dynamic>(sql, new { MTid = AppState.UsrRefId });
+
     }
 
     private async Task OnValidSubmit(EditContext context)
     {
         success = true;
         StateHasChanged();
-
+        
+        // Degisiklik omasa bile bir alana focus ediyorsa Modified sayiyor
+        // Faydasi yok
+        //var aaa = context.IsModified();
+        
         model.Who = AppState.UsrId; // Yetkilisi ise izin ver
 
         var rtrn = await db.StoreProcAsync<dynamic, MT>("MT_UPD(@MTid, @Who, @Name, @eMail, @Tel, @Info, @eM2Mgz, @eM2Ytk, @eM2Usr)", model);

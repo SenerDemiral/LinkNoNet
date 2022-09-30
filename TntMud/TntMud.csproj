@@ -1,25 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-	  <TargetFramework>net6.0</TargetFramework>
-	  <Nullable>enable</Nullable>
-	  <ImplicitUsings>enable</ImplicitUsings>
-	  <UserSecretsId>f4210f23-452c-4771-a5d9-46d29203bcb7</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>f4210f23-452c-4771-a5d9-46d29203bcb7</UserSecretsId>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<Content Update="wwwroot\is-cache\**\*.*" CopyToPublishDirectory="Never" />
 		<Content Update="wwwroot\wwwroot\uploads\**\*.*" CopyToPublishDirectory="Never" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.2.1" />
-    <PackageReference Include="MudBlazor" Version="6.0.15" />
-    <PackageReference Include="SixLabors.ImageSharp.Web" Version="2.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentValidation" Version="11.2.1" />
+		<PackageReference Include="MudBlazor" Version="6.0.15" />
+		<PackageReference Include="SixLabors.ImageSharp.Web" Version="2.0.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DataLibrary\DataLibrary.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DataLibrary\DataLibrary.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -1,8 +1,22 @@
 ﻿@page "/"
+@inject ProtectedLocalStorage pls
 @namespace LinkNoNetApp.Pages
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
 }
 
 <component type="typeof(App)" render-mode="Server" />
+
+@{
+    //var toto = await pls.GetAsync<int>(Constants.BrowserUsrIdKey);
+    //int UsrId = 0;
+    //if (toto.Success)
+    //    UsrId = toto.Value;
+
+}
+
+@functions{
+
+}

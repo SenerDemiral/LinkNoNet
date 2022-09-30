@@ -14,8 +14,9 @@
 
 @code 
 {
-    protected override async Task OnInitializedAsync() 
+    public override async Task SetParametersAsync(ParameterView parameters)
     {
         await AppState.TryUsrEnter();
+        await base.SetParametersAsync(parameters);
     }
 }
