@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Hashids.net" Version="1.6.1" />
 		<PackageReference Include="MailKit" Version="3.4.1" />
 		<PackageReference Include="MudBlazor" Version="6.0.17-dev.1" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />

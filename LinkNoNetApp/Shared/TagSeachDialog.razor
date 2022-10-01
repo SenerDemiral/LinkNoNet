@@ -1,0 +1,192 @@
+﻿@page "/tsd"
+<h3>TagSeachDialog</h3>
+
+<MudPaper Width="300px">
+    <MudList Clickable="true" SelectedItemChanged="@OnSelected">
+        <MudListSubheader>
+            @(selectedItem?.Text ?? "You are dry") (@(selectedValue?.ToString() ?? "0"))
+        </MudListSubheader>
+
+        @foreach (var grp in Grps)
+        {
+            int grpIx = Grps.IndexOf(grp);
+            <MudListItem Text="@grp.Name">
+                
+                <NestedList>
+                    @foreach (var tag in grp.Tags)
+                    {
+                        int tagIx = (grp.Tags).IndexOf(tag);
+                        <MudListItem Disabled="@tag.Disabled"
+                             Text="@tag.Name"
+                             Value="@tag.Id"
+                             OnClick="@(() => OnTagClicked(grp.Id, grpIx, tag.Id, tagIx))" />
+                    }
+                </NestedList>
+
+            </MudListItem>
+        }
+    </MudList>
+</MudPaper>
+
+
+@*@foreach(var grp in Grps)
+{
+    @grp.Id @grp.Name @grp.isMny
+    <br />
+
+    @foreach (var tag in grp.Tags)
+    {
+        @tag.Id @tag.Name
+        <br />
+    }
+}
+*@
+@code {
+    MudListItem selectedItem;
+    object selectedValue = 1;
+    int selGrpId, selGrpIx;
+    int selTagId, selTagIx;
+
+    private List<Grp> Grps = new()
+    {
+        new Grp
+        {
+            Id = 1,
+            Name = "Sex",
+            isMny = false,
+
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    Id = 1,
+                    Name = "Erkek"
+                },
+                new Tag
+                {
+                    Id = 2,
+                    Name = "Kadin"
+                }
+            }
+        },
+        new Grp
+        {
+            Id = 2,
+            Name = "Hby",
+            isMny = true,
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    Id = 3,
+                    Name = "Spor"
+                },
+                new Tag
+                {
+                    Id = 4,
+                    Name = "Sanat"
+                },
+                new Tag
+                {
+                    Id = 5,
+                    Name = "Muzik"
+                }
+            }
+        },
+
+    };
+    private List<Tag> ListA = new();
+    
+    Dictionary<int, Grp> dGrps = new();
+    Dictionary<int, Tag> dTags = new();
+
+    private void OnTagClicked(int grpId, int grpIx, int tagId, int tagIx)
+    {
+        selGrpId = grpId;
+        selGrpIx = grpIx;
+        selTagId = tagId;
+        selTagIx = tagIx;
+    }
+
+    private void OnSelected(MudListItem itm)
+    {
+        //itm.Disabled = true;
+        //Grps[1].Tags[1].Disabled = true;
+        //var aaa = Grps.FindIndex((x => x.Tags.Fin == ));
+
+        //var gi = 1;
+        //var ti = Grps[gi].Tags.FindIndex(x => x.Id == 5);
+        //Grps[gi].Tags[ti].Disabled = true;
+        FindInTagsAndToggle(5);
+        foreach(var tag in dTags.Select((x) => x.Value.GrpId == 0))
+        {
+            
+        }
+    }
+
+    private void FindInTagsAndToggle(int fti)
+    {
+        foreach (var grp in Grps)
+        {
+            foreach (var tag in grp.Tags)
+            {
+                if (tag.Id == fti)
+                    tag.Disabled = !tag.Disabled;
+            }
+
+        }
+    }
+    //Grps.Add(2, new Grp { Id = 2, Name = "Age", isMny = false });
+    //Grps.Add(3, new Grp { Id = 3, Name = "Prf", isMny = true });
+
+    // id = ListT[0].Id
+    // Grps[ListT[0].GrpId].isMny
+
+    //Grps. = new Grp { Id = 1, Name = "Sex"}
+
+    //{
+    //    1, new Grp { Id = 1, Name = "Sex"},
+    //    2, new Grp { Id = 2, Name = "Age"},
+        //    3, new Grp { Id = 3, Name = "Prf"},
+        //}
+        /*
+        private List<Tag> ListA = new();
+        private List<Tag> ListO = new();
+        private List<Tag> ListT = new()
+        {
+        new Tag(1, 1, "Erkek"),
+        new Tag(2, 1, "Kadın"),
+
+        new Tag(10, 2, "<21"),
+        new Tag(11, 2, "21-25"),
+        new Tag(12, 2, "26-30"),
+        new Tag(13, 2, ">30"),
+
+        new Tag(20, 3, "Doktor"),
+        new Tag(20, 3, "Mühendis"),
+        new Tag(20, 3, "Sanatçı"),
+     };
+    */
+    public sealed class Tag
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool Disabled { get; set; } = false;
+        public int GrpId { get; set; }
+        //public Tag(int id, string name)
+        //{
+        //    Id = id;
+        //    Name = name;
+        //}
+    }
+
+    public sealed class Grp
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool isMny { get; set; } // AND search icin Aynı grupdan birden çok seçilebilir
+        public List<Tag> Tags { get; set; }
+    }
+}
+
+
