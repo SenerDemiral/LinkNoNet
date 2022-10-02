@@ -162,7 +162,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Deneme
         string sql = $"select * from MT";
         data = await db.LoadData<MT, dynamic>(sql, new { });
     }

@@ -1,23 +1,48 @@
 ﻿@page "/tsd3"
+@inject IDataAccess db
+
 <h3>TagSeachDialog</h3>
 
-<MudPaper Width="300px">
-    <MudList Clickable="true" SelectedItemChanged="@OnSelected">
+<MudPaper>
+    <MudList Clickable="true" Dense="true" >
+        <MudListSubheader DisableGutters="true">
+            <MudRadioGroup @bind-SelectedOption="@SelectedOption" >
+                <MudRadio Option="true" Color="Color.Primary" Dense="true">Bunların Hepsi</MudRadio>
+                <MudRadio Option="false" Color="Color.Secondary" Dense="true">Bunlardan Biri</MudRadio>
+            </MudRadioGroup>
+            <MudChipSet AllClosable="true" OnClose="@ClosedA">
+                @foreach (var tag in aTags)
+                {
+                    var fullName = $"{Grps[tag.LGid].Name}:{tag.Name}";
 
-        @foreach (var grp in dGrps)
+                    <MudChip Text="@fullName" Value="@tag" Color="Color.Primary" Size="Size.Small"></MudChip>
+                }
+            </MudChipSet>
+            <MudChipSet AllClosable="true" OnClose="@ClosedO">
+                @foreach (var tag in oTags)
+                {
+                    var fullName = $"{Grps[tag.LGid].Name}:{tag.Name}";
+
+                    <MudChip Text="@fullName" Value="@tag" Color="Color.Secondary" Size="Size.Small"></MudChip>
+                }
+            </MudChipSet>
+
+        </MudListSubheader>
+        @foreach (var grp in Grps)
         {
             int grpKey = grp.Key;
-            var grpVal = grp.Value as Grp;
-            <MudListItem Text="@grpVal.Name">
+            var grpVal = grp.Value as LG;
+            <MudListItem Text="@grpVal.Name" Dense="true" Expanded="@grpVal.isExpanded"
+                     ExpandedChanged="@(e => this.ToggleExpanded(e, grpKey))"
+            >
 
                 <NestedList>
-                    @foreach (var tag in dTags.Where((x) => x.GrpId == grp.Key))
+                    @foreach (var tag in Tags.Where((x) => x.LGid == grp.Key))
                     {
-                        //var tagVal = tag.Value
-                        <MudListItem Disabled="@tag.Disabled"
+                        <MudListItem Disabled="@tag.isDisabled" Dense="true"
                              Text="@tag.Name"
-                             Value="@tag.Id"
-                             OnClick="@(() => OnTagClicked(tag.Id))" />
+                             Value="@tag"
+                             OnClick="@(() => OnClick(tag))" />
                     }
                 </NestedList>
 
@@ -27,53 +52,109 @@
 </MudPaper>
 
 
+
+
 @code {
-    int selTagKey;
+    List<LT> aTags = new();
+    List<LT> oTags = new();
+    public bool SelectedOption { get; set; } = true;    //Hepsi
+    public bool expanded;
 
-    Dictionary<int, Grp> dGrps = new()
-    {
-        {1, new Grp { Id = 1, Name = "Sex", isMny = false } },
-        {2, new Grp { Id = 2, Name = "Hby", isMny = true } },
-    };
-    List<Tag> dTags = new()
-    {
-        new Tag { Id = 1, Name = "Erkek", GrpId = 1 },
-        new Tag { Id = 2, Name = "Kadin", GrpId = 1 },
+    Dictionary<int, LG> Grps = new();
+    //{
+    //    {1, new LG { LGid = 1, Name = "Sex", isMny = false } },
+    //    {2, new LG { LGid = 2, Name = "Hby", isMny = true } },
+    //};
+    List<LT> Tags = new();
+    //{
+    //    new LT { LTid = 1, Name = "Erkek", LGid = 1 },
+    //    new LT { LTid = 2, Name = "Kadin", LGid = 1 },
 
-        new Tag { Id = 3, Name = "Spor", GrpId = 2 },
-        new Tag { Id = 4, Name = "Muzik", GrpId = 2 },
-        new Tag { Id = 5, Name = "Resim", GrpId = 2 },
-    };
+    //    new LT { LTid = 3, Name = "Spor", LGid = 2 },
+    //    new LT { LTid = 4, Name = "Muzik", LGid = 2 },
+    //    new LT { LTid = 5, Name = "Resim", LGid = 2 },
+    //};
 
-    private void OnTagClicked(int tKey)
+    protected override async Task OnInitializedAsync()
     {
-        selTagKey = tKey;
+        Tags = (await db.LoadData<LT, dynamic>("select * from LT", new { })).ToList();
+        Grps = (await db.LoadData<LG, dynamic>("select * from LG", new { })).ToDictionary((x) => x.LGid);
+    }
+    private void ToggleExpanded(bool expanded, int key)
+    {
+        if (expanded)
+        {
+            foreach (var entry in Grps.Where(entry => entry.Key != key))
+            {
+                entry.Value.isExpanded = false;
+            }
+        }
+        Grps[key].isExpanded = expanded;
+    }
+    
+    private void OnClick(LT tag)
+    {
+        var gId = tag.LGid;
+
+        if (!Grps[gId].isMny)
+        {
+            if (Tags.Find((x) => x.LGid == gId && x.isDisabled) is not null)
+                return;
+        }
+
+        LT nTag = tag with { isDisabled = false };
+        if (SelectedOption) // Hepsi
+            aTags.Add(nTag);
+        else   // Biri
+            oTags.Add(nTag);
+
+        tag.isDisabled = true;
+
     }
 
-    private void OnSelected(MudListItem itm)
+    public void ClosedA(MudChip chip)
     {
-        //itm.Disabled = true;
-        //Grps[1].Tags[1].Disabled = true;
-        //var aaa = Grps.FindIndex((x => x.Tags.Fin == ));
+        var tag = chip.Value as LT;
+        // aTag den sil
+        aTags.Remove(tag);
+        // Tag enable
+        var ti = Tags.FindIndex(x => x.LTid == tag.LTid);
+        if (ti != -1)
+            Tags[ti].isDisabled = false;
 
-        //var gi = 1;
-        //var ti = Grps[gi].Tags.FindIndex(x => x.Id == 5);
-        //Grps[gi].Tags[ti].Disabled = true;
     }
 
-    public sealed class Tag
+    public void ClosedO(MudChip chip)
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public bool Disabled { get; set; } = false;
-        public int GrpId { get; set; }
+        var tag = chip.Value as LT;
+        // oTag den sil
+        oTags.Remove(tag);
+        // Tag enable
+        var ti = Tags.FindIndex(x => x.LTid == tag.LTid);
+        if (ti != -1)
+            Tags[ti].isDisabled = false;
     }
 
-    public sealed class Grp
+
+    public record LT
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public bool isMny { get; set; } // AND search icin Aynı grupdan birden çok seçilebilir
+        public int LTid { get; set; }
+        public string? Name { get; set; }
+        public bool isDisabled { get; set; } = false;
+        public int LGid { get; set; }
+    }
+
+    public sealed class LG
+    {
+        public int LGid { get; set; }
+        public string? Name { get; set; }
+        public string Mny { get; set; }
+        public bool isMny
+        {
+            get { return Mny == "E" ? true : false; }
+            set { }
+        }
+        public bool isExpanded { get; set; }
     }
 }
 
