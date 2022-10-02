@@ -1,12 +1,12 @@
-﻿@page "/tsd3"
+﻿@page "/tsd"
 @inject IDataAccess db
 
 <h3>TagSeachDialog</h3>
 
 <MudPaper>
-    <MudList Clickable="true" Dense="true" >
+    <MudList Clickable="true" Dense="true">
         <MudListSubheader DisableGutters="true">
-            <MudRadioGroup @bind-SelectedOption="@SelectedOption" >
+            <MudRadioGroup @bind-SelectedOption="@SelectedOption">
                 <MudRadio Option="true" Color="Color.Primary" Dense="true">Bunların Hepsi</MudRadio>
                 <MudRadio Option="false" Color="Color.Secondary" Dense="true">Bunlardan Biri</MudRadio>
             </MudRadioGroup>
@@ -32,12 +32,13 @@
         {
             int grpKey = grp.Key;
             var grpVal = grp.Value as LG;
-            <MudListItem Text="@grpVal.Name" Dense="true" Expanded="@grpVal.isExpanded"
-                     ExpandedChanged="@(e => this.ToggleExpanded(e, grpKey))"
-            >
+            <MudListItem Text="@grpVal.Name"
+                     Dense="true"
+                     Expanded="@grpVal.isExpanded"
+                     ExpandedChanged="@(e => this.ToggleExpanded(e, grpKey))">
 
                 <NestedList>
-                    @foreach (var tag in Tags.Where((x) => x.LGid == grp.Key))
+                    @foreach (var tag in Tags.Where(x => x.LGid == grp.Key))
                     {
                         <MudListItem Disabled="@tag.isDisabled" Dense="true"
                              Text="@tag.Name"
@@ -91,7 +92,7 @@
         }
         Grps[key].isExpanded = expanded;
     }
-    
+
     private void OnClick(LT tag)
     {
         var gId = tag.LGid;
@@ -103,13 +104,17 @@
         }
 
         LT nTag = tag with { isDisabled = false };
-        if (SelectedOption) // Hepsi
+        if (SelectedOption) // Hepsi andTag
+        {
             aTags.Add(nTag);
-        else   // Biri
+            aTags = aTags.OrderBy(x => x.LGid).ToList();
+        }
+        else
+        {               // Biri orTag
             oTags.Add(nTag);
-
+            oTags = oTags.OrderBy(x => x.LGid).ToList();
+        }
         tag.isDisabled = true;
-
     }
 
     public void ClosedA(MudChip chip)
