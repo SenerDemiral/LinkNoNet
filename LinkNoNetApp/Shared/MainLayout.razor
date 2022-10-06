@@ -2,6 +2,9 @@
 @inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
+@inject IPubs pubs
+@inject ISnackbar Snackbar
+@implements IDisposable
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -41,6 +44,7 @@
 
 @code {
     bool _drawerOpen = true;
+    string AdmMsg = "";
 
     void DrawerToggle()
     {
@@ -51,4 +55,28 @@
     {
         await AppState.Logout();
     }
+
+    protected override void OnInitialized()
+    {
+        pubs.AdmMsgChanged += OnAdmMsgChanged;
+    }
+
+    private void OnAdmMsgChanged(object sender, AdmMsgEventArgs e)
+    {
+        if (e.Who == "H" ||                         // Herkese
+            e.Who == AppState.UsrTyp ||             // Adm, Mgz, Tnt
+            AppState.UsrId == int.Parse(e.Who))     // Usr
+        {
+            Snackbar.Add(e.Msg, Severity.Error, config =>
+            {
+                config.RequireInteraction = true;
+            });
+        }
+    }
+
+    public void Dispose()
+    {
+        pubs.AdmMsgChanged -= OnAdmMsgChanged;
+    }
+
 }

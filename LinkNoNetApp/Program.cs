@@ -27,6 +27,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
+builder.Services.AddSingleton<IPubs, Pubs>();
+builder.Services.AddSingleton<DataHub>();
+
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IDataAccess, FBDataAccess>();
 builder.Services.AddScoped<AppState>();
@@ -71,5 +74,15 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+app.MapGet("/pubsDnm/{who}/{msg}", (IPubs pubs, string who, string msg) =>
+{
+    pubs.AdmMsgRaise(who, msg);
+});
+
+app.MapGet("/DataHub/{etid}/{utid}/{info}", (DataHub dHub, int etid, int utid, string info) =>
+{
+    dHub.ECdAdd(etid, utid, info);
+});
 
 app.Run();
