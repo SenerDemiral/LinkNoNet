@@ -28,6 +28,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddSingleton<IPubs, Pubs>();
+builder.Services.AddSingleton<UsrHub>();
 builder.Services.AddSingleton<DataHub>();
 
 builder.Services.AddSingleton<IEmailService, EmailService>();
@@ -80,9 +81,9 @@ app.MapGet("/pubsDnm/{who}/{msg}", (IPubs pubs, string who, string msg) =>
     pubs.AdmMsgRaise(who, msg);
 });
 
-app.MapGet("/DataHub/{etid}/{utid}/{info}", (DataHub dHub, int etid, int utid, string info) =>
+app.MapGet("/DataHub/{etid}/{utid}/{info}", async (DataHub dHub, int etid, int utid, string info) =>
 {
-    dHub.ECdAdd(etid, utid, info);
+    await dHub.ChatAdd(etid, utid, info);
 });
 
 app.Run();

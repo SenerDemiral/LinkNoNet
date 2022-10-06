@@ -2,14 +2,17 @@
 @inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
+@implements IDisposable
 
-<PageTitle>Mağaza</PageTitle>
+@if (data is not null)
+{
+    <PageTitle>Mağaza</PageTitle>
 
-<div class="mud-theme-dark">
-    <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Tanıtıcıları</MudText>
-</div>
+    <div class="mud-theme-dark">
+        <MudText Align="Align.Center" Typo="Typo.body2">Mağaza Tanıtıcıları</MudText>
+    </div>
 
-<MudDataGrid T="MGT" Items="@data" @ref="gridRef"
+    <MudDataGrid T="MGT" Items="@data" @ref="gridRef"
              Breakpoint="Breakpoint.None"
              ReadOnly="false"
              EditMode="DataGridEditMode.Form"
@@ -20,27 +23,27 @@
              HorizontalScrollbar="true"
              Bordered="true"
              Dense="true">
-    <Columns>
-        <Column T="MGT" Field="TtAd" IsEditable="false" />
-        <Column T="MGT" Field="Grp" IsEditable="true">
-            <EditTemplate>
-                <MudSelect @bind-Value="context.Item.Grp"
+        <Columns>
+            <Column T="MGT" Field="TtAd" IsEditable="false" />
+            <Column T="MGT" Field="Grp" IsEditable="true">
+                <EditTemplate>
+                    <MudSelect @bind-Value="context.Item.Grp"
                            Label="Grup" Variant="Variant.Outlined"
                            Required RequiredError="Grup secmelisiniz CALISMIYOR!!!"
                            Margin="Margin.Dense">
-                    <MudSelectItem Value="@("A")">A</MudSelectItem>
-                    <MudSelectItem Value="@("B")">B</MudSelectItem>
-                    <MudSelectItem Value="@("C")">C</MudSelectItem>
-                    <MudSelectItem Value="@("D")">D</MudSelectItem>
-                    <MudSelectItem Value="@("E")">E</MudSelectItem>
-                    <MudSelectItem Value="@("Y")">Y</MudSelectItem>
-                </MudSelect>
-            </EditTemplate>
-        </Column>
-        <Column T="MGT" Field="KmsYzd" IsEditable="false" />
-    </Columns>
-</MudDataGrid>
-
+                        <MudSelectItem Value="@("A")">A</MudSelectItem>
+                        <MudSelectItem Value="@("B")">B</MudSelectItem>
+                        <MudSelectItem Value="@("C")">C</MudSelectItem>
+                        <MudSelectItem Value="@("D")">D</MudSelectItem>
+                        <MudSelectItem Value="@("E")">E</MudSelectItem>
+                        <MudSelectItem Value="@("Y")">Y</MudSelectItem>
+                    </MudSelect>
+                </EditTemplate>
+            </Column>
+            <Column T="MGT" Field="KmsYzd" IsEditable="false" />
+        </Columns>
+    </MudDataGrid>
+}
 @*<MudButton Class="mt-3"
            ButtonType="ButtonType.Button"
            Size="Size.Small"
@@ -50,7 +53,9 @@
 </MudButton>*@
 
 @code {
-    private List<MGT> data = new List<MGT>();
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
+
+    private List<MGT> data;// = new List<MGT>();
     private MudDataGrid<MGT>? gridRef;
     private bool inserting = false;
 
@@ -65,23 +70,28 @@
     void CommittedItemChanges(MGT itm)
     {
         string sql = "update MGT set Grp = @Grp where MTid = @MTid and TTid = @TTid";
-        db.SaveData(sql, new { MTid = AppState.UsrRefId, Grp = itm.Grp, TTid = itm.TTid });
+        db.SaveData(sql, new { MTid = USP.UsrRefId, Grp = itm.Grp, TTid = itm.TTid });
     }
 
     protected override async Task OnInitializedAsync()
     {
         string sql = $"select * from MGT_GET(@Typ, @Id)";
-        data = (await db.LoadData<MGT, dynamic>(sql, new { Typ = AppState.UsrTyp, Id = AppState.UsrRefId })).ToList();
+        data = (await db.LoadData<MGT, dynamic>(sql, new { Typ = USP.UsrTyp, Id = USP.UsrRefId })).ToList();
+    }
+    
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<UserStateProvider>(nameof(USP), out var value))
+        {
+            if (value is null || value.UsrTyp != "M")
+                NavigationManager.NavigateTo("");
+            else
+                await base.SetParametersAsync(parameters);  //Diger LifeCyle metodlarini cagiriyor
+        }
     }
 
-    public override Task SetParametersAsync(ParameterView parameters)
+    public void Dispose()
     {
-        if (AppState.UsrTyp != "M")
-        {
-            NavigationManager.NavigateTo("/");
-            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
-        }
-        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
     }
 
     private sealed class MGT

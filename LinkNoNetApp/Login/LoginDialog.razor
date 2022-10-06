@@ -31,8 +31,10 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter]
+    private UserStateProvider? USP { get; set; }
 
-    private InputModel Model { get; set; } = new();
+    private InputModel Model {  get; set; } = new();
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -64,7 +66,8 @@
             MudDialog.Close();
             //await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, rtrn.UTid);
 
-            await AppState.LoginOk(rtrn.UTid, rtrn.Typ!, rtrn.RefId, rtrn.NN);
+            //await AppState.LoginOk(rtrn.UTid, rtrn.Typ!, rtrn.RefId, rtrn.NN);
+            USP.LoginOk(rtrn.UTid, rtrn.Typ!, rtrn.RefId, rtrn.NN);
         }
         else
         {

@@ -87,6 +87,8 @@
 </MudDataGrid>
 
 @code {
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
+
     private MT model { get; set; } = new();
     private IEnumerable<UT>? datau; // = new List<Element>();
     private bool success { get; set; } = false;
@@ -98,6 +100,17 @@
             Placeholder = '_',
             CleanDelimiters = true,
         };
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<UserStateProvider>(nameof(USP), out var value))
+        {
+            if (value is null || value.UsrTyp != "M")
+                NavigationManager.NavigateTo("");
+            else
+                await base.SetParametersAsync(parameters);  //Diger LifeCyle metodlarini cagiriyor
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

@@ -62,18 +62,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await dataHub.ECdInit(5);
-        data = dataHub.ECd[5];
-        pubs.EcChanged += OnEcChanged;
+        await dataHub.ChatInit(5);
+        data = dataHub.Chats[5];
+        pubs.ChatChanged += OnChatChanged;
     }
 
-    private void OnEcChanged(object sender, EcEventArgs args)
+    private void OnChatChanged(object sender, ChatEventArgs args)
     {
         InvokeAsync(StateHasChanged);
     }
     public void Dispose()
     {
-        pubs.EcChanged -= OnEcChanged;
+        pubs.ChatChanged -= OnChatChanged;
     }
 
 }

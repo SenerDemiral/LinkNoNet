@@ -18,12 +18,14 @@ public sealed class AppState
     void OnUsrChanged() => UsrChanged?.Invoke(this, EventArgs.Empty);
 
     private readonly ProtectedLocalStorage _protectedLocalStorage;
-    IDataAccess _db;
+    private readonly IDataAccess _db;
+    private readonly UsrHub usrHub;
 
-    public AppState(ProtectedLocalStorage protectedLocalStorage, IDataAccess db)
+    public AppState(ProtectedLocalStorage protectedLocalStorage, IDataAccess db, UsrHub usrHub)
     {
         _protectedLocalStorage = protectedLocalStorage;
         _db = db;
+        this.usrHub = usrHub;
     }
 
     public async ValueTask TryUsrEnter()
@@ -51,6 +53,8 @@ public sealed class AppState
                     UsrTyp = rtrn.TYP;
                     UsrRefId = rtrn.REFID;
                     UsrNN = rtrn.NN;
+
+                    usrHub.UsrAdd(UsrId, UsrNN);
                 }
             }
             OnUsrChanged();
@@ -73,10 +77,13 @@ public sealed class AppState
         UsrNN = usrNN;
         await _protectedLocalStorage.SetAsync(Constants.BrowserUsrIdKey, UsrId);
         OnUsrChanged();
+        usrHub.UsrAdd(UsrId, UsrNN);
     }
 
     public async Task Logout()
     {
+        usrHub.UsrRemove(UsrId);
+     
         _db.StoreProc<dynamic, dynamic>("Usr_Logout(@UTid)", new { UTid = UsrId });
         UsrId = 0;
         UsrTyp = "?";

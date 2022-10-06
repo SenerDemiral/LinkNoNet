@@ -14,15 +14,19 @@
     <MudAppBar Elevation="0" Dense="true">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        @if (AppState.UsrId == 0)
+        @if (USP.UsrId == 0)
         {
-            <MudFab StartIcon="@Icons.Material.Filled.Login" Label="GİRİŞ" Color="Color.Error" Size="Size.Small" OnClick="@(() => DialogService.Show<LoginDialog>())" />
+            <MudFab StartIcon="@Icons.Material.Filled.Login"
+                Label="GİRİŞ"
+                Color="Color.Error"
+                Size="Size.Small" 
+                OnClick="@(() => DialogService.Show<LoginDialog>())" />
         }
         else
         {
             <MudTooltip Text="Güvenli Çıkış">
                 <MudFab EndIcon="@Icons.Material.Filled.Logout"
-                    Label="@AppState.UsrNN"
+                    Label="@USP.UsrNN"
                     Color="Color.Error"
                     Size="Size.Small"
                     OnClick="Logout" />
@@ -43,6 +47,9 @@
 </MudLayout>
 
 @code {
+    [CascadingParameter]
+    private UserStateProvider? USP { get; set; }
+
     bool _drawerOpen = true;
     string AdmMsg = "";
 
@@ -53,7 +60,7 @@
 
     private async Task Logout()
     {
-        await AppState.Logout();
+        await USP!.Logout();
     }
 
     protected override void OnInitialized()

@@ -90,7 +90,7 @@
 </MudDialog>
 
 @code {
-    //[CascadingParameter] App app { get; set; }
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
 
     private IEnumerable<AH>? data; // = new List<Element>();
     private int selectedRowNumber = -1;
@@ -152,14 +152,15 @@
         }
     }
 
-    public override Task SetParametersAsync(ParameterView parameters)
+    public override async Task SetParametersAsync(ParameterView parameters)
     {
-        if (AppState.UsrTyp != "T")
+        if (parameters.TryGetValue<UserStateProvider>(nameof(USP), out var value))
         {
-            NavigationManager.NavigateTo("/");
-            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+            if (value is null || value.UsrTyp != "T")
+                NavigationManager.NavigateTo("");
+            else
+                await base.SetParametersAsync(parameters);  //Diger LifeCyle metodlarini cagiriyor
         }
-        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
     }
 
     protected override async Task OnInitializedAsync()

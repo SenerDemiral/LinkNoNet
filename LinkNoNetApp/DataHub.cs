@@ -6,31 +6,30 @@ namespace LinkNoNetApp;
 
 public sealed class DataHub
 {
-    public ConcurrentDictionary<int, List<EC>> ECd;
+    public ConcurrentDictionary<int, List<EC>> Chats;
     private readonly IDataAccess db;
-    private readonly IPubs pub
-        ;
+    private readonly IPubs pub;
     public DataHub(IDataAccess dataAccess, IPubs pub)
     {
         this.db = dataAccess;
-        ECd = new ConcurrentDictionary<int, List<EC>>();
+        Chats = new ConcurrentDictionary<int, List<EC>>();
         this.pub = pub;
     }
 
-    public async Task ECdInit(int etId)
+    public async Task ChatInit(int etId)
     {
-        if (!ECd.ContainsKey(etId))
+        if (!Chats.ContainsKey(etId))
         {
-            ECd[etId] = (await db.LoadData<EC, dynamic>("select * from EC_GET(@ETid)", new { ETid = etId })).ToList();
+            Chats[etId] = (await db.LoadData<EC, dynamic>("select * from EC_GET(@ETid)", new { ETid = etId })).ToList();
         }
     }
-    public async Task ECdAdd(int etId, int utId, string info)
+    public async Task ChatAdd(int etId, int utId, string info)
     {
-        if (!ECd.ContainsKey(etId))
+        if (!Chats.ContainsKey(etId))
         {
-            //            ECd[etId] = new List<EC>();
-            ECd[etId] = (await db.LoadData<EC, dynamic>("select * from EC_GET(@ETid)", new { ETid = etId })).ToList();
-            pub.EcRaise();
+            //            Chats[etId] = new List<EC>();
+            Chats[etId] = (await db.LoadData<EC, dynamic>("select * from EC_GET(@ETid)", new { ETid = etId })).ToList();
+            pub.ChatRaise();
         }
         var ec = new EC()
         {
@@ -44,9 +43,9 @@ public sealed class DataHub
         ec.ECid = res.ECID;
         ec.InsTS = res.INSTS;
 
-        ECd[etId].Insert(0, ec);
+        Chats[etId].Insert(0, ec);
 
-        pub.EcRaise();
+        pub.ChatRaise();
         // Publish EC nin ETid sine ekleme yapildi
         // Buna Abone olanlar Refresh yapmali 
         // Aslinda bu Dict uzerinden yapsin tum islemini
@@ -54,7 +53,7 @@ public sealed class DataHub
 
     public List<EC> ECdGet(int etId)
     {
-        return ECd[etId];
+        return Chats[etId];
     }
 }
 

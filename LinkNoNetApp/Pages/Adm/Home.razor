@@ -6,15 +6,16 @@
 <h3>Admin Home</h3>
 
 @code {
-    public override Task SetParametersAsync(ParameterView parameters)
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
     {
-        if (AppState.UsrTyp != "A")
+        if (parameters.TryGetValue<UserStateProvider>(nameof(USP), out var value))
         {
-            NavigationManager.NavigateTo("/");
-            return Task.CompletedTask;  // Hic biryere gitmeden Dispose gidip cikiyor
+            if (value is null || value.UsrTyp != "A")
+                NavigationManager.NavigateTo("");
+            else
+                await base.SetParametersAsync(parameters);  //Diger LifeCyle metodlarini cagiriyor
         }
-        return base.SetParametersAsync(parameters); // Diger LifeCyle metodlarini cagiriyor
     }
-
-
 }
