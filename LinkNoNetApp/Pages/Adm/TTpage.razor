@@ -1,5 +1,4 @@
 ﻿@page "/adm/tt"
-@inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 @inject IDialogService DialogService
@@ -65,8 +64,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter]
-    private UserStateProvider? USP { get; set; }
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
 
     private IEnumerable<TT>? data; // = new List<Element>();
     private int selectedRowNumber = -1;

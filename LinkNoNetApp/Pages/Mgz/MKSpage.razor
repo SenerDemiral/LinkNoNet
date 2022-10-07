@@ -1,5 +1,4 @@
 ﻿@page "/mgz/mks"
-@inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 @inject ISnackbar Snackbar
@@ -88,7 +87,7 @@
     {
         MKS item = new()
             {
-                MTid = AppState.UsrRefId,
+                MTid = USP.UsrRefId,
                 Mode = "N",
                 EndTS = DateTime.Today.AddMonths(1),
                 Aktif = "E"
@@ -127,7 +126,7 @@
     protected override async Task OnInitializedAsync()
     {
         string sql = $"select * from MKS where MTid = @MTid order by EndTS desc";
-        data = (await db.LoadData<MKS, dynamic>(sql, new { MTid = AppState.UsrRefId })).ToList();
+        data = (await db.LoadData<MKS, dynamic>(sql, new { MTid = USP.UsrRefId })).ToList();
     }
 
     public override async Task SetParametersAsync(ParameterView parameters)

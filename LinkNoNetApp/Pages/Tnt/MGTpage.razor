@@ -1,5 +1,4 @@
 ﻿@page "/tnt/mgt"
-@inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 
@@ -30,7 +29,7 @@
     protected override async Task OnInitializedAsync()
     {
         string sql = $"select * from MGT_GET(@Typ, @Id)";
-        data = (await db.LoadData<MGT, dynamic>(sql, new { Typ = AppState.UsrTyp, Id = AppState.UsrRefId })).ToList();
+        data = (await db.LoadData<MGT, dynamic>(sql, new { Typ = USP.UsrTyp, Id = USP.UsrRefId })).ToList();
     }
 
     public override async Task SetParametersAsync(ParameterView parameters)

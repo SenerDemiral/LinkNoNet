@@ -1,5 +1,4 @@
 ﻿@page "/mgz/mgk"
-@inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 
@@ -78,13 +77,13 @@
     void CommittedItemChanges(MGK itm)
     {
         string sql = "update MGK set KmsYzd = @KmsYzd where MTid = @MTid and Grp = @Grp";
-        db.SaveData(sql, new { MTid = AppState.UsrRefId, Grp = itm.Grp, KmsYzd = itm.KmsYzd });
+        db.SaveData(sql, new { MTid = USP.UsrRefId, Grp = itm.Grp, KmsYzd = itm.KmsYzd });
     }
 
     protected override async Task OnInitializedAsync()
     {
         string sql = $"select * from MGK where MTid = @MTid";
-        data = (await db.LoadData<MGK, dynamic>(sql, new { MTid = AppState.UsrRefId })).ToList();
+        data = (await db.LoadData<MGK, dynamic>(sql, new { MTid = USP.UsrRefId })).ToList();
     }
 
     public override async Task SetParametersAsync(ParameterView parameters)

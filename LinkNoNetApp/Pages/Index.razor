@@ -1,8 +1,5 @@
 ﻿@page "/"
-@inject AppState AppState
 @inject IDialogService DialogService
-@inject DataHub dataHub
-@inject IPubs pubs
 
 <style>
     .wrapper {
@@ -45,35 +42,15 @@
     </MudPaper>
 </div>
 
-@foreach(var itm in data)
-{
-    <p>@itm.ECid @itm.ETid @itm.Info</p>
-}
-
 @code {
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    private List<EC> data;
+
 
     private void TaniticiOl()
     {
-        if (AppState.UsrId == 0)
+        if (USP.UsrId == 0)
             DialogService.Show<TntRegisterDialog>();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await dataHub.ChatInit(5);
-        data = dataHub.Chats[5];
-        pubs.ChatChanged += OnChatChanged;
-    }
-
-    private void OnChatChanged(object sender, ChatEventArgs args)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-    public void Dispose()
-    {
-        pubs.ChatChanged -= OnChatChanged;
     }
 
 }

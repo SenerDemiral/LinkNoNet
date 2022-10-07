@@ -1,7 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedLocalStorage PLS
+@inject UsrHub UsrHub
+@inject DataHub DataHub
 @inject IDataAccess db
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 @if (isLoaded)
 {
@@ -51,8 +54,8 @@ else
                     UsrRefId = rtrn.REFID;
                     UsrNN = rtrn.NN;
 
-                    //usrHub.UsrAdd(UsrId, UsrNN);
-                    GoHome();
+                    UsrHub.UsrAdd(UsrId, UsrNN);
+                    //GoHome(); Ozellikle yok
                 }
             }
             isLoaded = true;
@@ -72,7 +75,7 @@ else
 
     public async Task Logout()
     {
-        //usrHub.UsrRemove(UsrId);
+        UsrHub.UsrRemove(UsrId);
 
         db.StoreProc<dynamic, dynamic>("Usr_Logout(@UTid)", new { UTid = UsrId });
         UsrId = 0;
@@ -80,7 +83,8 @@ else
         UsrRefId = 0;
         UsrNN = "";
         await PLS.SetAsync(Constants.BrowserUsrIdKey, UsrId);
-        NavigationManager.NavigateTo("");
+        //NavigationManager.NavigateTo("");
+        GoHome();
         StateHasChanged();
     }
 
@@ -92,9 +96,14 @@ else
         UsrNN = usrNN;
         await PLS.SetAsync(Constants.BrowserUsrIdKey, UsrId);
         //OnUsrChanged();
-        //usrHub.UsrAdd(UsrId, UsrNN);
+        UsrHub.UsrAdd(UsrId, UsrNN);
         GoHome();
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        UsrHub.UsrRemove(UsrId);
     }
 
 }

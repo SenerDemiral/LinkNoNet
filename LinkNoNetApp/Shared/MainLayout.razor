@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
 @inject IPubs pubs
@@ -47,8 +46,7 @@
 </MudLayout>
 
 @code {
-    [CascadingParameter]
-    private UserStateProvider? USP { get; set; }
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
 
     bool _drawerOpen = true;
     string AdmMsg = "";
@@ -71,8 +69,8 @@
     private void OnAdmMsgChanged(object sender, AdmMsgEventArgs e)
     {
         if (e.Who == "H" ||                         // Herkese
-            e.Who == AppState.UsrTyp ||             // Adm, Mgz, Tnt
-            AppState.UsrId == int.Parse(e.Who))     // Usr
+            e.Who == USP.UsrTyp ||             // Adm, Mgz, Tnt
+            USP.UsrId == int.Parse(e.Who))     // Usr
         {
             Snackbar.Add(e.Msg, Severity.Error, config =>
             {

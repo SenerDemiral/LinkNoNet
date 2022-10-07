@@ -1,5 +1,4 @@
-﻿@inject AppState AppState
-@inject NavigationManager NavigationManager
+﻿@inject NavigationManager NavigationManager
 @inject IDialogService DialogService
 
 <MudNavMenu Dense="true">
@@ -47,27 +46,5 @@
 
 @code
 {
-    [CascadingParameter]
-    private UserStateProvider? USP { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        AppState.UsrChanged += App_UsrChanged;
-    }
-
-    private void App_UsrChanged(object sender, EventArgs e)
-    {
-        switch (AppState.UsrTyp)
-        {
-            case "A": NavigationManager.NavigateTo("adm/home"); break;
-            case "M": NavigationManager.NavigateTo("mgz/home"); break;
-            case "T": NavigationManager.NavigateTo("tnt/home"); break;
-            default: NavigationManager.NavigateTo("/"); break;
-        }
-
-        InvokeAsync(StateHasChanged);
-    }
-
-
-
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
 }

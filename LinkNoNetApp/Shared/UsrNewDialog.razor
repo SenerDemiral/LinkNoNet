@@ -1,6 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inject ISnackbar Snackbar
-@inject AppState AppState
 @inject IDataAccess db
 
 <MudDialog>
@@ -38,6 +37,7 @@
 </MudDialog>
 
 @code {
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     public bool success { get; set; } = false;
 
@@ -54,8 +54,8 @@
         success = true;
         StateHasChanged();
 
-        model.Typ = AppState.UsrTyp;
-        model.RefId = AppState.UsrRefId;
+        model.Typ = USP.UsrTyp;
+        model.RefId = USP.UsrRefId;
 
         var rtrn = await db.StoreProcAsync<dynamic, UT>("UT_NEW(@Typ, @RefId, @Name, @eMail, @mTel)", model);
 

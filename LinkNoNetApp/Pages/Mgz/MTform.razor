@@ -1,6 +1,5 @@
 ﻿@page "/mgz/mt"
 @using System.ComponentModel.DataAnnotations
-@inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 @inject ISnackbar Snackbar
@@ -116,19 +115,19 @@
     {
 
         isEditable = false;
-        if (AppState.UsrId == AppState.UsrRefId)
+        if (USP.UsrId == USP.UsrRefId)
             isEditable = true;
 
         await ReadRec();
 
         string sql = $"select UTid, Stu, Name from UT where RefId = @MTid and UTid <> RefId and Stu >= 0";
-        datau = await db.LoadData<UT, dynamic>(sql, new { MTid = AppState.UsrRefId });
+        datau = await db.LoadData<UT, dynamic>(sql, new { MTid = USP.UsrRefId });
     }
 
     private async Task ReadRec()
     {
         string sql = $"select * from MT where MTid = @MTid";
-        model = await db.LoadRec<MT, dynamic>(sql, new { MTid = AppState.UsrRefId });
+        model = await db.LoadRec<MT, dynamic>(sql, new { MTid = USP.UsrRefId });
 
     }
 
@@ -141,7 +140,7 @@
         // Faydasi yok
         //var aaa = context.IsModified();
         
-        model.Who = AppState.UsrId; // Yetkilisi ise izin ver
+        model.Who = USP.UsrId; // Yetkilisi ise izin ver
 
         var rtrn = await db.StoreProcAsync<dynamic, MT>("MT_UPD(@MTid, @Who, @Name, @eMail, @Tel, @Info, @eM2Mgz, @eM2Ytk, @eM2Usr)", model);
 

@@ -33,7 +33,6 @@ builder.Services.AddSingleton<DataHub>();
 
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IDataAccess, FBDataAccess>();
-builder.Services.AddScoped<AppState>();
 builder.Services.AddScoped<ClipboardService>();
 
 //builder.Services.AddMudServices();
@@ -83,6 +82,7 @@ app.MapGet("/pubsDnm/{who}/{msg}", (IPubs pubs, string who, string msg) =>
 
 app.MapGet("/DataHub/{etid}/{utid}/{info}", async (DataHub dHub, int etid, int utid, string info) =>
 {
+    await dHub.ChatInit(etid, utid);
     await dHub.ChatAdd(etid, utid, info);
 });
 

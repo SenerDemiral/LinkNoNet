@@ -1,5 +1,4 @@
 ﻿@page "/tnt/ah"
-@inject AppState AppState
 @inject NavigationManager NavigationManager
 @inject IDataAccess db
 @inject IDialogService DialogService
@@ -167,7 +166,7 @@
     {
         // Deneme
         string sql = $"select * from AH_ACTIVE(@UsrTyp, @UsrId)";
-        data = await db.LoadData<AH, dynamic>(sql, new { UsrTyp = AppState.UsrTyp, UsrId = AppState.UsrId });
+        data = await db.LoadData<AH, dynamic>(sql, new { UsrTyp = USP.UsrTyp, UsrId = USP.UsrId });
     }
 
     void RowClicked(DataGridRowClickEventArgs<AH> args)
@@ -178,7 +177,7 @@
     {
         itm.Ok = itm.isOk ? "H" : "E";
 
-        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = itm.AHid, OkWho = AppState.UsrId, Ok = itm.Ok });
+        db.StoreProc<dynamic, dynamic>("AH_OK(@AHid,@OkWho,@Ok)", new { AHid = itm.AHid, OkWho = USP.UsrId, Ok = itm.Ok });
     }
 
     private sealed class AH

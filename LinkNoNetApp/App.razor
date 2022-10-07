@@ -1,4 +1,4 @@
-﻿@inject AppState AppState
+﻿@implements IDisposable
 
 <UserStateProvider>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -16,10 +16,8 @@
 
 @code
 {
-
-    public override async Task SetParametersAsync(ParameterView parameters)
+    public void Dispose()
     {
-        //await AppState.TryUsrEnter();
-        await base.SetParametersAsync(parameters);
     }
+
 }

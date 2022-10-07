@@ -20,15 +20,17 @@ public sealed class Pubs : IPubs
     }
     //-------------------------
     public event EventHandler<ChatEventArgs>? ChatChanged;
-    public void ChatRaise()
+    public void ChatRaise(int grp)
     {
         var args = new ChatEventArgs();
+        args.Grp = grp;
         ChatChanged?.Invoke(this, args);
     }
     //-------------------------
     public event EventHandler? UsrChanged;
     public void UsrRaise()
     {
+        // Kimin geldigi/gittigi onemli degil
         UsrChanged?.Invoke(this, EventArgs.Empty);
     }
 }
@@ -40,6 +42,5 @@ public sealed class AdmMsgEventArgs : EventArgs
 }
 public sealed class ChatEventArgs : EventArgs
 {
-    public string? Who;
-    public string? Msg;
+    public int Grp;
 }
