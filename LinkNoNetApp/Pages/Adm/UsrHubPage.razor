@@ -1,0 +1,48 @@
+﻿@page "/adm/usrhub"
+
+@inject NavigationManager NavigationManager
+@inject IPubs pubs
+@inject UsrHub UsrHub
+@implements IDisposable
+
+<h3>UsrHubPage</h3>
+
+@foreach(var kv in UsrHub.Usrs)
+{
+    <div style="display:flex">
+        <div style="width:100px">@kv.Value.UsrNN</div>
+        <div style ="width:50px">@kv.Value.Cnt</div>
+        <div>@kv.Value.EXD</div>
+    </div>
+}
+
+@code {
+    [CascadingParameter] private UserStateProvider? USP { get; set; }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<UserStateProvider>(nameof(USP), out var value))
+        {
+            if (value is null || value.UsrTyp != "A")
+                NavigationManager.NavigateTo("");
+            else
+                await base.SetParametersAsync(parameters);  //Diger LifeCyle metodlarini cagiriyor
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pubs.UsrChanged += OnUsrChanged;
+    }
+
+    public void OnUsrChanged(object sender, EventArgs args)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        pubs.UsrChanged -= OnUsrChanged;
+    }
+
+}

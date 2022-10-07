@@ -24,7 +24,7 @@ public sealed class DataHub
         // UI Chat'a girerken mutlaka ilk once buraya gelmeli
         if (!Chats.ContainsKey(grp))
         {
-            Chats[grp] = (await db.LoadData<EC, dynamic>("select * from EC_GET(@ETid)", new { ETid = etId })).ToList();
+            Chats[grp] = (await db.LoadData<EC, dynamic>("select * from EC_GET(@ETid)", new { ETid = grp })).ToList();
         }
 
         if (!ChatUsrs.ContainsKey(grp))
@@ -78,7 +78,7 @@ public sealed class DataHub
 
         Chats[grp].Insert(0, ec);
 
-        pub.ChatRaise();
+        pub.ChatRaise(grp);
         // Publish EC nin ETid sine ekleme yapildi
         // Buna Abone olanlar Refresh yapmali 
         // Aslinda bu Dict uzerinden yapsin tum islemini

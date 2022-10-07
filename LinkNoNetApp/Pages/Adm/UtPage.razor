@@ -177,15 +177,20 @@
         }
     }
 
-    public override async Task SetParametersAsync(ParameterView parameters)
+    //public override Task SetParametersAsync(ParameterView parameters)
+    //{
+    //    return base.SetParametersAsync(parameters);
+    //}
+    public override Task SetParametersAsync(ParameterView parameters)
     {
         if (parameters.TryGetValue<UserStateProvider>(nameof(USP), out var value))
         {
             if (value is null || value.UsrTyp != "A")
                 NavigationManager.NavigateTo("");
             else
-                await base.SetParametersAsync(parameters);  //Diger LifeCyle metodlarini cagiriyor
+                return base.SetParametersAsync(parameters);  //Diger LifeCyle metodlarini cagiriyor
         }
+        return Task.CompletedTask;
     }
 
     protected override async Task OnInitializedAsync()
@@ -193,6 +198,7 @@
         // Deneme
         string sql = $"select * from UT order by UTid";
         data = await db.LoadData<UT, dynamic>(sql, new { });
+        //data = db.LoadData<UT, dynamic>(sql, new { }).Result; //Sonucu beklemek istiyorsan
     }
 
     void RowClicked(DataGridRowClickEventArgs<UT> args)

@@ -31,6 +31,7 @@ public sealed class Pubs : IPubs
     public void UsrRaise()
     {
         // Kimin geldigi/gittigi onemli degil
+        // Bir kisi birden cok Login olabilir
         UsrChanged?.Invoke(this, EventArgs.Empty);
     }
 }

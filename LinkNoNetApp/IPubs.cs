@@ -14,5 +14,5 @@ public interface IPubs
     public void AdmMsgRaise(string who, string msg);
 
     public event EventHandler<ChatEventArgs>? ChatChanged;
-    public void ChatRaise();
+    public void ChatRaise(int grp);
 }

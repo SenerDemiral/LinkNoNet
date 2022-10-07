@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace LinkNoNetApp;
-
+// Login olmus Userlar, eger birden cok yerdeyse sayisi
 public sealed class UsrHub
 {
     public ConcurrentDictionary<int, Usr> Usrs;
@@ -24,10 +24,16 @@ public sealed class UsrHub
                 UsrId = usrId,
                 UsrNN = usrNN,
                 EXD = DateTime.Now,
+                Cnt = 1
             };
-            pub.UsrRaise();
+            //   pub.UsrRaise();
         }
-        Usrs[usrId].Cnt++;
+        else
+        {
+            Usrs[usrId].Cnt++;
+        }
+        pub.UsrRaise();
+
     }
 
     public void UsrRemove(int usrId)
@@ -39,12 +45,12 @@ public sealed class UsrHub
 
             if (Usrs[usrId].Cnt == 0)
             {
-                if(Usrs.TryRemove(usrId, out usr))
+                if (Usrs.TryRemove(usrId, out usr))
                 {
-                    pub.UsrRaise();
                     // User Cikti
                 }
             }
+            pub.UsrRaise();
         }
     }
 }
