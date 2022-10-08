@@ -2,7 +2,11 @@
 @inject IDataAccess db
 
 <h3>TagSeachDialog</h3>
-
+<style>
+    .sener p::first-letter {
+        font-weight:bold;
+    }
+</style>
 <MudPaper>
     <MudList Clickable="true" Dense="true">
         <MudListSubheader DisableGutters="true">
@@ -14,7 +18,7 @@
             <MudChipSet AllClosable="true" OnClose="@ClosedA">
                 @foreach (var lbl in asLbls)
                 {
-                    var fullName = $"{Grps[lbl.LGid].Name}│{lbl.Name}";
+                    var fullName = $"{Grps[lbl.LGid].NN}•{lbl.Name}";
 
                     <MudChip Text="@fullName" Value="@lbl" Color="Color.Primary" Size="Size.Small"></MudChip>
                 }
@@ -23,7 +27,7 @@
             <MudChipSet AllClosable="true" OnClose="@ClosedO">
                 @foreach (var lbl in osLbls)
                 {
-                    var fullName = $"{Grps[lbl.LGid].Name}│{lbl.Name}";
+                    var fullName = $"{Grps[lbl.LGid].NN}•{lbl.Name}";
 
                     <MudChip Text="@fullName" Value="@lbl" Color="Color.Secondary" Size="Size.Small"></MudChip>
                 }
@@ -35,6 +39,7 @@
         {
             var grpVal = grp.Value as LG;
             <MudListItem Text="@grpVal.Name"
+                     Class="sener"
                      Dense="true"
                      Expanded="@grpVal.isExpanded"
                      ExpandedChanged="@(e => this.ToggleExpanded(e, grp.Key))">
@@ -160,6 +165,11 @@
             set { }
         }
         public bool isExpanded { get; set; }
+        public string? NN
+        {
+            get => Name?.Substring(0,1);
+            set { }
+        }
     }
 }
 
